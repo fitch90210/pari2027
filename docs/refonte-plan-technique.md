@@ -88,6 +88,8 @@ Une **seconde base Supabase « test »** (le plan gratuit en permet deux) :
 - même schéma et mêmes migrations que la production, plus une copie des données sauvegardées ;
 - branchée sur les **déploiements de preview** de Vercel (variables d'environnement « Preview ») : chaque push sur la branche de refonte donne une URL de test qui n'écrit jamais dans la vraie base.
 
+**Durée de vie :** à garder jusqu'à la fin de la refonte UI, puis à supprimer (le plan gratuit limite à deux projets actifs). Elle peut se mettre en pause entre-temps, ce n'est pas grave : on la relance d'un clic. À sa suppression, retirer aussi les variables « Preview » dans Vercel.
+
 ## Découpage en lots
 
 | Lot | Contenu | Livrable |
