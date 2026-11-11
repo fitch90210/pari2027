@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import PronosticsReadView from '../components/PronosticsReadView'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGame } from '../store/GameContext'
 import Confetti from '../components/Confetti'
@@ -86,6 +87,33 @@ function PlayerSelector({ players, onSelect, onCreatePlayer }) {
             {err && <div className="error-banner mt-2">{err}</div>}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ── FrozenView — pronostics gelés de la phase active ─────────
+
+function FrozenView({ player, pronosticsMap, lockedAt, session, onBack }) {
+  const date = new Date(lockedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+  return (
+    <div className="page">
+      <div className="container" style={{ maxWidth: 660 }}>
+        <header style={{ paddingTop: 'var(--sp-10)', paddingBottom: 'var(--sp-6)', borderBottom: '3px solid var(--text-primary)', marginBottom: 'var(--sp-8)' }}>
+          <div style={{
+            fontFamily: 'var(--font)', fontSize: '0.7rem', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.14em',
+            color: 'var(--red)', marginBottom: 'var(--sp-3)',
+          }}>
+            Phase {session} · Lecture seule
+          </div>
+          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-3)' }}>{player.name}</h2>
+          <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
+            Tes pronostics de cette phase sont gelés depuis le {date} : ils ne peuvent plus être modifiés.
+          </p>
+        </header>
+        <PronosticsReadView players={[player]} pronosticsMap={pronosticsMap} />
+        <button className="btn btn-secondary mt-4" type="button" onClick={onBack}>Changer de joueur</button>
       </div>
     </div>
   )
@@ -705,6 +733,14 @@ export default function Pronostics() {
       <div className={transitioning ? 'page-fade-out' : 'page-fade-in'}>
         <PlayerSelector players={players} onSelect={handleSelectPlayer} onCreatePlayer={addPlayer} />
       </div>
+    )
+  }
+
+  const frozenAt = pMap[`s${session}`]?.lockedAt
+  if (frozenAt) {
+    return (
+      <FrozenView player={player} pronosticsMap={pronosticsMap} lockedAt={frozenAt} session={session}
+        onBack={() => { setPlayer(null); navigate('/pronostics') }} />
     )
   }
 
