@@ -1,0 +1,15 @@
+# Secrets et données réelles — ne jamais versionner
+secrets/
+backups/
+
+# Variables d'environnement (y compris .env.vercel*, qui contiennent des tokens)
+.env
+.env.*
+!.env.example
+
+# Local
+.DS_Store
+.claude/settings.local.json
+node_modules/
+dist/
+.vercel/

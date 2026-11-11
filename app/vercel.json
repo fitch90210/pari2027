@@ -1,0 +1,5 @@
+{
+  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
+  "crons": [{ "path": "/api/keepalive", "schedule": "0 8 * * *" }],
+  "alias": ["pari2027.vercel.app"]
+}

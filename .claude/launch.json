@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "pari2027", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "app", "run", "dev", "--", "--port", "5174"], "port": 5174 }
+  ]
+}
