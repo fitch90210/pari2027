@@ -1,6 +1,6 @@
 # Refonte fonctionnelle — cadrage
 
-*Novembre 2026 · statut : décisions principales prises, 3 questions ouvertes*
+*Novembre 2026 · statut : cadrage validé*
 
 ## Objectif
 
@@ -27,13 +27,13 @@ Les phases servaient à une chose : **récompenser ceux qui parient tôt**. Sans
 | Fréquence | **Sans limite** : un joueur pose un nouveau pari quand il veut. |
 | Modification | Un pari est **modifiable 24 h** après sa création (pour corriger une erreur), puis figé. Pour changer d'avis ensuite, on pose un nouveau pari, pré-rempli avec le précédent. |
 | Scoring | Chaque pari est **scoré indépendamment**, avec le barème actuel, **sans pondération** selon sa date. |
-| Classement | **Un classement par période**. Dans chaque période, c'est le **dernier pari** de chaque joueur posé dans la période qui compte. |
+| Classement | **Un classement par période, sans classement général.** Dans chaque période, c'est le **dernier pari** de chaque joueur posé dans la période qui compte. Un joueur qui n'a pas parié dans une période **n'apparaît pas** dans son classement. |
 | Visibilité | Les paris de tous les joueurs restent **visibles en permanence**. |
 | Après l'élection | Classements figés, plus un **mode démo** : un visiteur peut parier « à rebours » pour voir son score, sans entrer au classement. |
 
 L'anticipation est donc valorisée par les **périodes**, plus par un multiplicateur : un pari posé un an avant concourt contre les autres paris posés un an avant. Comme seul le dernier pari d'une période compte, multiplier les paris ne donne aucun avantage.
 
-## Périodes *(proposition)*
+## Périodes
 
 Les périodes reprennent le sens des anciennes phases, mais on peut parier à tout moment. Leurs bornes sont des dates saisies par l'admin.
 
@@ -72,11 +72,9 @@ Les paris ne sont jamais écrasés : chaque nouveau pari s'ajoute. On garde ains
 - **Accueil** : nouvelles règles du jeu.
 - **Mode démo**, une fois les résultats saisis.
 
-## Questions ouvertes
+## Conséquence à garder en tête
 
-1. Les bornes des périodes proposées ci-dessus conviennent-elles ?
-2. Faut-il aussi un classement général (par exemple la somme des scores des quatre périodes) ou seulement les classements par période ?
-3. Un joueur qui n'a pas parié dans une période est-il absent de ce classement, ou y figure-t-il avec son dernier pari antérieur ?
+Les 10 paris existants comptent uniquement pour la période 1. Pour figurer au classement des périodes 2, 3 et 4, chaque joueur devra reposer un pari pendant ces périodes : il faudra prévenir le groupe au lancement, puis à chaque changement de période.
 
 ## Hors périmètre
 
