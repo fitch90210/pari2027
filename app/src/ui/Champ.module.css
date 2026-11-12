@@ -1,0 +1,18 @@
+.champ { display: flex; flex-direction: column; gap: var(--sp-1); }
+.label { font: 500 13px/18px var(--font); color: var(--text-2); }
+.entree {
+  height: var(--btn-h);
+  padding: 0 var(--sp-3);
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 16px/1 var(--font); /* 16 px : évite le zoom automatique d'iOS */
+  transition: border-color var(--dur-fast);
+}
+.entree::placeholder { color: var(--text-3); }
+.entree:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--border-strong); }
+.code { text-align: center; letter-spacing: 0.5em; font-size: 22px; font-weight: 600; }
+.erreur { margin: 0; font: var(--type-footnote); color: var(--accent-text); }
+.aide { margin: 0; font: var(--type-footnote); color: var(--text-3); }

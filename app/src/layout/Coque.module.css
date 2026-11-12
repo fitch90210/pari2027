@@ -9,3 +9,6 @@
 @media (min-width: 768px) {
   .contenu :global(.page) { padding-top: calc(56px + var(--sp-8)); padding-bottom: var(--sp-12); }
 }
+
+.masquerMobile { display: none; }
+@media (min-width: 768px) { .masquerMobile { display: block; } }

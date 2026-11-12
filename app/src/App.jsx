@@ -6,7 +6,7 @@ import Carte from './ui/Carte'
 import EtatVide from './ui/EtatVide'
 import Accueil from './pages/Accueil'
 import Regles from './pages/Regles'
-import Pronostics from './pages/Pronostics'
+import Parier from './pages/parier/Parier'
 import Classements from './pages/Classements'
 import Admin from './pages/Admin'
 import Voir from './pages/Voir'
@@ -39,9 +39,8 @@ function AppInner() {
       <Routes>
         <Route path="/" element={<Accueil />} />
         <Route path="/paris" element={<Voir />} />
-        <Route path="/parier" element={<Pronostics />} />
-        {/* Provisoire (ancien parcours avec choix du joueur) : remplacé au lot D */}
-        <Route path="/parier/:playerId" element={<Pronostics />} />
+        <Route path="/parier" element={<Parier />} />
+        <Route path="/parier/:pariId" element={<Parier />} />
         <Route path="/classements" element={<Classements />} />
         <Route path="/regles" element={<Regles />} />
         <Route path="/joueurs/:id" element={<ProfilBientot />} />
