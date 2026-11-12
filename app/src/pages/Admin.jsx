@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useGame } from '../store/GameContext'
 import PronosticsReadView from '../components/PronosticsReadView'
+import { isoVersParis, parisVersIso } from '../lib/periodes'
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -199,7 +200,7 @@ function StepScoresR1({ officialCandidatesR1, results, onSave }) {
             {finalists[0]} <span className="text-muted">vs</span> {finalists[1]}
           </div>
           <div className="text-muted text-xs mt-2">
-            Ces deux candidats seront disponibles en Phase 3.
+            Ces deux candidats serviront aux paris de la période 4.
           </div>
         </div>
       )}
@@ -306,13 +307,58 @@ function StepScoresR2({ results, onSave }) {
   )
 }
 
+// ── Périodes : bornes saisies en heure de Paris ──────────────
+
+function StepPeriodes({ periodes, periodeEnCours, onSave }) {
+  const [rows, setRows] = useState(() =>
+    periodes.map(p => ({ id: p.id, label: p.label, fin: isoVersParis(p.ends_at) })))
+  const [saving, setSaving] = useState(false)
+  const [ok, setOk] = useState(false)
+  const [err, setErr] = useState('')
+
+  const set = (id, patch) => setRows(rs => rs.map(r => r.id === id ? { ...r, ...patch } : r))
+
+  const handle = async (e) => {
+    e.preventDefault()
+    if (rows.some(r => !r.fin)) { setErr('Toutes les dates de fin sont obligatoires.'); return }
+    setSaving(true); setErr('')
+    try {
+      await onSave(rows.map(r => ({ id: r.id, label: r.label, ends_at: parisVersIso(r.fin) })))
+      setOk(true); setTimeout(() => setOk(false), 2000)
+    } catch (e) { setErr(e.message) }
+    finally { setSaving(false) }
+  }
+
+  return (
+    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+      {rows.map(r => (
+        <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
+          <span style={{ fontWeight: 700, minWidth: 24 }}>{r.id}</span>
+          <input className="input" style={{ flex: '2 1 180px' }} value={r.label} maxLength={60}
+            aria-label={`Nom de la période ${r.id}`} onChange={e => set(r.id, { label: e.target.value })} />
+          <label className="text-muted text-sm" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+            fin le
+            <input className="input" type="datetime-local" value={r.fin}
+              aria-label={`Fin de la période ${r.id}`} onChange={e => set(r.id, { fin: e.target.value })} />
+          </label>
+          {r.id === periodeEnCours?.id && <span className="badge badge-active">En cours</span>}
+        </div>
+      ))}
+      <SaveFeedback ok={ok} err={err} />
+      <button className="btn btn-primary" type="submit" disabled={saving} style={{ alignSelf: 'flex-start' }}>
+        {saving ? 'Enregistrement…' : 'Enregistrer les périodes'}
+      </button>
+    </form>
+  )
+}
+
 // ── Panel principal ───────────────────────────────────────────
 
 function AdminPanel() {
   const {
-    session, players, pronosticsMap, results,
+    players, paris, periodes, periodeEnCours, results,
     officialCandidatesR1,
-    changeSession, saveResults, adminCreatePlayer, adminResetPlayerCode, removePlayer,
+    savePeriodes, saveResults, adminCreatePlayer, adminResetPlayerCode, removePlayer,
     saveOfficialCandidatesR1,
   } = useGame()
 
@@ -321,12 +367,6 @@ function AdminPanel() {
   const [addErr, setAddErr] = useState('')
   // Dernier code généré, à transmettre au joueur : { name, code }
   const [issuedCode, setIssuedCode] = useState(null)
-
-  const handleChangeSession = async (s) => {
-    if (s === session) return
-    if (!confirm(`Passer en Phase ${s} ? Les pronostics de la phase précédente seront gelés.`)) return
-    try { await changeSession(s) } catch (e) { alert(e.message) }
-  }
 
   const handleAddPlayer = async (e) => {
     e.preventDefault()
@@ -343,7 +383,7 @@ function AdminPanel() {
   }
 
   const handleRemovePlayer = async (p) => {
-    if (!confirm(`Supprimer ${p.name} et tous ses pronostics ? Action irréversible.`)) return
+    if (!confirm(`Supprimer ${p.name} et tous ses paris ? Action irréversible.`)) return
     try { await removePlayer(p.id) } catch (e) { alert(e.message) }
   }
 
@@ -375,25 +415,24 @@ function AdminPanel() {
           </div>
           <h2 style={{ marginBottom: 'var(--sp-3)', fontStyle: 'italic' }}>Administration</h2>
           <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
-            Gestion des phases, joueurs et résultats.
+            Gestion des périodes, joueurs et résultats.
           </p>
         </header>
 
-        {/* Session */}
+        {/* Périodes */}
         <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
-          <h3 style={{ marginBottom: 'var(--sp-4)' }}>Phase active</h3>
-          <div style={{ display: 'flex', gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
-            {[1, 2, 3].map(s => (
-              <button key={s} className={`btn ${s === session ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => handleChangeSession(s)}>
-                Phase {s}
-              </button>
-            ))}
-          </div>
-          <p className="text-muted text-sm mt-4">
-            Phase active : <strong style={{ color: 'var(--text-primary)' }}>{session}</strong>.
-            Changer de phase gèle automatiquement les pronostics de la phase précédente.
+          <h3 style={{ marginBottom: 'var(--sp-4)' }}>Périodes</h3>
+          <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-4)' }}>
+            Chaque période commence à la fin de la précédente ; le jeu ferme à la fin de la période 4.
+            Dates en heure de Paris. Les paris déjà posés gardent leur période si tu déplaces une borne.
+            La période en cours est : <strong style={{ color: 'var(--text-primary)' }}>
+              {periodeEnCours ? `${periodeEnCours.id}. ${periodeEnCours.label}` : 'aucune (jeu fermé)'}
+            </strong>.
           </p>
+          <StepPeriodes
+            key={periodes.map(p => p.ends_at + p.label).join('|')}
+            periodes={periodes} periodeEnCours={periodeEnCours} onSave={savePeriodes}
+          />
         </section>
 
         {/* Étape 1 — Candidats du 1er tour */}
@@ -402,10 +441,10 @@ function AdminPanel() {
             <h3>Étape 1 : Candidats du 1er tour</h3>
             {step1Done
               ? <span className="badge badge-active">✓ {officialCandidatesR1.length} candidats</span>
-              : <span className="badge badge-soon">Avant Phase 2</span>}
+              : <span className="badge badge-soon">Avant la période 3</span>}
           </div>
           <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-4)' }}>
-            Saisissez la liste officielle des candidats. Elle sera affichée aux joueurs en Phase 2 pour les pronostics de scores et de finalistes.
+            Saisissez la liste officielle des candidats. Tant qu'elle est vide, personne ne peut poser de pari en période 3 : saisissez-la avant la fin de la période 2.
           </p>
           <StepCandidatsR1
             officialCandidatesR1={officialCandidatesR1}
@@ -422,7 +461,7 @@ function AdminPanel() {
               : <span className="badge badge-soon">Après le 1er tour</span>}
           </div>
           <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-4)' }}>
-            Saisissez le score réel de chaque candidat. Les 2 scores les plus élevés désignent automatiquement les finalistes du 2ème tour, disponibles aux joueurs en Phase 3.
+            Saisissez le score réel de chaque candidat. Les 2 scores les plus élevés désignent automatiquement les finalistes du 2ème tour.
           </p>
           <StepScoresR1
             officialCandidatesR1={officialCandidatesR1}
@@ -488,11 +527,11 @@ function AdminPanel() {
 
         {/* Vue pronostics */}
         <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
-          <h3 style={{ marginBottom: 'var(--sp-4)' }}>Vue lecture : tous les pronostics</h3>
+          <h3 style={{ marginBottom: 'var(--sp-4)' }}>Vue lecture : tous les paris</h3>
           {players.length === 0 ? (
             <p className="text-muted text-sm">Aucun joueur.</p>
           ) : (
-            <PronosticsReadView players={players} pronosticsMap={pronosticsMap} />
+            <PronosticsReadView players={players} paris={paris} periodes={periodes} />
           )}
         </section>
 

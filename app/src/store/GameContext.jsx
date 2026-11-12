@@ -8,8 +8,6 @@ const SAVE_ERRORS = {
   bad_code: 'Code incorrect : reconnecte-toi.',
   no_code: 'Ce joueur n\'a pas encore de code. Demande-le à l\'admin.',
   locked: 'Trop d\'essais : réessaie dans 15 minutes.',
-  wrong_session: 'La phase a changé : recharge la page.',
-  frozen: 'Ces pronostics sont gelés.',
   closed: 'Le jeu est fermé : plus aucun pari n\'est possible.',
   not_found: 'Pari introuvable.',
   expired: 'Ce pari n\'est plus modifiable (plus de 24 h).',
@@ -17,11 +15,9 @@ const SAVE_ERRORS = {
 }
 
 export function GameProvider({ children }) {
-  const [session, setSession] = useState(1)
   const [players, setPlayers] = useState([])
-  const [pronosticsMap, setPronosticsMap] = useState({}) // { [playerId]: { s1, s2, s3 } }
   const [results, setResults] = useState(null)
-  // Refonte « paris » : les paris datés et les périodes (bornes saisies par l'admin)
+  // Les paris datés et les périodes (bornes saisies par l'admin)
   const [periodes, setPeriodes] = useState([])
   const [paris, setParis] = useState([])
   // Horloge du navigateur, pour l'affichage seulement (le serveur décide)
@@ -32,8 +28,8 @@ export function GameProvider({ children }) {
   }, [])
   const periodeEnCours = useMemo(() => periodeCourante(periodes, new Date(now)), [periodes, now])
   // Candidats officiels saisis par l'admin
-  // officialCandidatesR1 : liste des candidats du 1er tour (saisie avant S2)
-  // officialFinalists    : les 2 finalistes (saisie avant S3)
+  // officialCandidatesR1 : liste des candidats du 1er tour (saisie avant la période 3)
+  // officialFinalists    : les 2 finalistes (dérivés des scores du 1er tour)
   const [officialCandidatesR1, setOfficialCandidatesR1] = useState([])
   const [officialFinalists, setOfficialFinalists] = useState([])
   const [loading, setLoading] = useState(true)
@@ -44,20 +40,17 @@ export function GameProvider({ children }) {
     setLoading(true)
     setError(null)
     try {
-      const [stateRes, playersRes, pronosticsRes, periodesRes, parisRes] = await Promise.all([
+      const [stateRes, playersRes, periodesRes, parisRes] = await Promise.all([
         supabase.from('game_state').select('*').single(),
         supabase.from('players').select('*').order('created_at'),
-        supabase.from('pronostics').select('*'),
         supabase.from('periodes').select('*').order('id'),
         supabase.from('paris').select('*').order('created_at'),
       ])
       if (stateRes.error) throw stateRes.error
       if (playersRes.error) throw playersRes.error
-      if (pronosticsRes.error) throw pronosticsRes.error
       if (periodesRes.error) throw periodesRes.error
       if (parisRes.error) throw parisRes.error
 
-      setSession(stateRes.data.session)
       setResults(stateRes.data.results)
       setOfficialCandidatesR1(stateRes.data.official_candidates_r1 ?? [])
       // Les finalistes sont dérivés des scores R1, stockés dans results.finalists
@@ -66,21 +59,6 @@ export function GameProvider({ children }) {
       setPeriodes(periodesRes.data)
       setParis(parisRes.data)
 
-      // Construire la map { playerId: { s1, s2, s3 } }
-      const map = {}
-      pronosticsRes.data.forEach(row => {
-        const key = `s${row.session}`
-        if (!map[row.player_id]) map[row.player_id] = {}
-        map[row.player_id][key] = {
-          m1: row.m1 ?? [],
-          m2: row.m2 ?? {},
-          m3: row.m3 ?? [],
-          m4: row.m4 ?? '',
-          m5: row.m5 ?? null,
-          lockedAt: row.locked_at,
-        }
-      })
-      setPronosticsMap(map)
     } catch (e) {
       setError(e.message)
     } finally {
@@ -121,41 +99,7 @@ export function GameProvider({ children }) {
     return data
   }
 
-  // ── Pronostics ──────────────────────────────────────────────
-  const upsertPronostic = async (playerId, sessionNum, patch) => {
-    const current = pronosticsMap[playerId]?.[`s${sessionNum}`] ?? {
-      m1: [], m2: {}, m3: [], m4: '', m5: null, lockedAt: null
-    }
-    const updated = { ...current, ...patch }
-
-    const { data, error } = await supabase.rpc('save_pronostic', {
-      p_player_id: playerId,
-      p_code: getPlayerCode(playerId),
-      p_session: sessionNum,
-      p_m1: updated.m1,
-      p_m2: updated.m2,
-      p_m3: updated.m3,
-      p_m4: updated.m4,
-      p_m5: updated.m5,
-    })
-    if (error) throw error
-    if (data !== 'ok') {
-      if (data === 'bad_code' || data === 'no_code') forgetPlayerCode(playerId)
-      const err = new Error(SAVE_ERRORS[data] ?? 'Erreur de sauvegarde')
-      err.code = data
-      throw err
-    }
-
-    setPronosticsMap(prev => ({
-      ...prev,
-      [playerId]: {
-        ...prev[playerId],
-        [`s${sessionNum}`]: updated,
-      }
-    }))
-  }
-
-  // ── Paris (refonte) ─────────────────────────────────────────
+  // ── Paris ───────────────────────────────────────────────────
   const reloadParis = async () => {
     const { data, error } = await supabase.from('paris').select('*').order('created_at')
     if (error) throw error
@@ -213,10 +157,12 @@ export function GameProvider({ children }) {
     setOfficialCandidatesR1(candidates)
   }
 
-  const changeSession = async (newSession) => {
-    await adminRpc('admin_set_session', { p_session: newSession })
-    setSession(newSession)
-    await loadAll()
+  // periodes : [{ id, label, ends_at }] ×4, dates de fin croissantes
+  const savePeriodes = async (liste) => {
+    await adminRpc('admin_save_periodes', { p_periodes: liste })
+    const { data, error } = await supabase.from('periodes').select('*').order('id')
+    if (error) throw error
+    setPeriodes(data)
   }
 
   const saveResults = async (resultsData) => {
@@ -238,23 +184,19 @@ export function GameProvider({ children }) {
   const removePlayer = async (playerId) => {
     await adminRpc('admin_remove_player', { p_player_id: playerId })
     setPlayers(prev => prev.filter(p => p.id !== playerId))
-    setPronosticsMap(prev => {
-      const next = { ...prev }
-      delete next[playerId]
-      return next
-    })
+    setParis(prev => prev.filter(p => p.player_id !== playerId))
   }
 
   return (
     <GameContext.Provider value={{
-      session, players, pronosticsMap, results,
+      players, results,
       periodes, paris, periodeEnCours, now, createPari, updatePari,
       officialCandidatesR1, officialFinalists,
       loading, error,
-      addPlayer, upsertPronostic,
+      addPlayer,
       getPlayerCode, verifyPlayerCode, forgetPlayerCode,
       isAdmin: adminPin != null, adminLogin,
-      saveOfficialCandidatesR1, changeSession, saveResults,
+      saveOfficialCandidatesR1, savePeriodes, saveResults,
       adminCreatePlayer, adminResetPlayerCode, removePlayer,
       reload: loadAll,
     }}>

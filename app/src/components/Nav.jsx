@@ -5,13 +5,13 @@ import { useGame } from '../store/GameContext'
 const LINKS = [
   { to: '/', label: 'Accueil', end: true },
   { to: '/pronostics', label: 'Mes paris' },
-  { to: '/voir', label: 'Tous les pronostics' },
+  { to: '/voir', label: 'Tous les paris' },
   { to: '/classements', label: 'Classements' },
   { to: '/admin', label: 'Admin' },
 ]
 
 export default function Nav() {
-  const { session } = useGame()
+  const { periodeEnCours } = useGame()
   const [open, setOpen] = useState(false)
   const location = useLocation()
 
@@ -44,7 +44,7 @@ export default function Nav() {
           </ul>
 
           <div className="nav-right">
-            <div className="nav-session">P{session}</div>
+            <div className="nav-session">{periodeEnCours ? `P${periodeEnCours.id}` : 'Fermé'}</div>
             {/* Hamburger button — mobile uniquement */}
             <button
               className="nav-hamburger"
@@ -75,7 +75,7 @@ export default function Nav() {
           ))}
         </ul>
         <div className="nav-panel-footer">
-          <span className="nav-session">Phase {session} active</span>
+          <span className="nav-session">{periodeEnCours ? `Période ${periodeEnCours.id} en cours` : 'Jeu fermé'}</span>
         </div>
       </div>
     </>

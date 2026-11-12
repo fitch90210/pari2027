@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   scoreM1, scoreM2, scoreM3, scoreM4, scoreM5, scorePari, classementPeriode,
 } from './scoring'
-import { periodeCourante } from './periodes'
+import { periodeCourante, isoVersParis, parisVersIso } from './periodes'
 
 const ALL = ['m1', 'm2', 'm3', 'm4', 'm5']
 const P1 = { id: 1, scored: ALL }
@@ -155,5 +155,18 @@ describe('periodeCourante', () => {
   })
   it('renvoie null une fois le jeu fermé', () => {
     expect(periodeCourante(periodes, new Date('2027-04-25T00:00:00Z'))).toBeNull()
+  })
+})
+
+describe('heure de Paris', () => {
+  it('convertit en hiver (UTC+1) et en été (UTC+2)', () => {
+    expect(parisVersIso('2027-03-15T00:00')).toBe('2027-03-14T23:00:00.000Z')
+    expect(parisVersIso('2026-09-01T00:00')).toBe('2026-08-31T22:00:00.000Z')
+  })
+  it('fait l\'aller-retour', () => {
+    for (const iso of ['2026-08-31T22:00:00.000Z', '2027-03-14T23:00:00.000Z', '2027-04-10T22:00:00.000Z']) {
+      expect(parisVersIso(isoVersParis(iso))).toBe(iso)
+    }
+    expect(isoVersParis('2027-04-24T22:00:00.000Z')).toBe('2027-04-25T00:00')
   })
 })

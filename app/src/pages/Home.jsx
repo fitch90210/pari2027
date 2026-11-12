@@ -1,23 +1,17 @@
 import { useNavigate } from 'react-router-dom'
 import { useGame } from '../store/GameContext'
 
-const PHASES = [
-  {
-    num: 1,
-    timing: 'Avril 2026',
-    desc: 'Pronostics libres : candidats, scores, finalistes, vainqueur.',
-  },
-  {
-    num: 2,
-    timing: 'Mars 2027',
-    desc: 'Même chose que la Phase 1, mais avec les candidats réels au 1er tour.',
-  },
-  {
-    num: 3,
-    timing: 'Entre les deux tours',
-    desc: 'Pronostic du pourcentage des deux candidats du 2ème tour.',
-  },
-]
+// Ce qui se joue dans chaque période (les noms et les dates viennent de la base)
+const PERIODES_DESC = {
+  1: 'Les cinq pronostics, en toute liberté.',
+  2: 'Les cinq pronostics, en toute liberté : on parie plus tard, avec plus d\'informations.',
+  3: 'La liste officielle des candidats est connue : pronostics 2 à 5, sur les candidats officiels.',
+  4: 'Les deux finalistes sont connus : le vainqueur et son score.',
+}
+
+const fmtJour = (iso) => new Date(iso).toLocaleDateString('fr-FR', {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris',
+})
 
 const PRONOSTICS = [
   {
@@ -48,18 +42,19 @@ const PRONOSTICS = [
     num: 5,
     title: 'Score du second tour',
     pts: '+2 pts si votre score est à ± 2 points du résultat réel',
-    desc: 'Estimez le score du vainqueur au second tour. En Phase 3, les deux finalistes sont connus.',
+    desc: 'Estimez le score du vainqueur au second tour.',
   },
 ]
 
-function PhaseStatus({ current, num }) {
-  if (num < current)  return <span className="badge badge-done">Passée</span>
-  if (num === current) return <span className="badge badge-active">En cours</span>
+function PeriodeStatus({ enCours, id }) {
+  if (!enCours) return <span className="badge badge-done">Passée</span>
+  if (id < enCours.id) return <span className="badge badge-done">Passée</span>
+  if (id === enCours.id) return <span className="badge badge-active">En cours</span>
   return <span className="badge badge-soon">À venir</span>
 }
 
 export default function Home() {
-  const { session, players } = useGame()
+  const { players, periodes, periodeEnCours } = useGame()
   const navigate = useNavigate()
 
   return (
@@ -101,8 +96,9 @@ export default function Home() {
             marginBottom: 'var(--sp-8)',
             lineHeight: 1.6,
           }}>
-            Trois phases, cinq pronostics : candidats, scores, finalistes et vainqueur.
-            Les phases 1 et 2 couvrent les cinq pronostics. La phase 3 porte uniquement sur le score du second tour entre les deux finalistes.
+            Cinq pronostics : candidats, scores, finalistes, vainqueur et score du second tour.
+            Parie quand tu veux, autant de fois que tu veux : un pari est daté, modifiable pendant 24 h,
+            et le dernier pari de chaque période est celui qui compte.
           </p>
 
           {/* Barre action */}
@@ -117,7 +113,7 @@ export default function Home() {
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}>
-              {players.length} joueur{players.length !== 1 ? 's' : ''} · Phase {session} active
+              {players.length} joueur{players.length !== 1 ? 's' : ''} · {periodeEnCours ? `Période ${periodeEnCours.id} en cours` : 'Jeu fermé'}
             </span>
           </div>
         </header>
@@ -128,25 +124,25 @@ export default function Home() {
           {/* Colonne gauche : Phases */}
           <section className="home-phases">
             <h4 style={{ marginBottom: 'var(--sp-5)', color: 'var(--text-secondary)' }}>
-              Les trois phases
+              Les quatre périodes
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {PHASES.map((p, i) => (
-                <div key={p.num} style={{
+              {periodes.map((p, i) => (
+                <div key={p.id} style={{
                   paddingBottom: 'var(--sp-5)',
                   marginBottom: 'var(--sp-5)',
-                  borderBottom: i < PHASES.length - 1 ? '1px solid var(--border)' : 'none',
+                  borderBottom: i < periodes.length - 1 ? '1px solid var(--border)' : 'none',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--sp-2)' }}>
                     <div style={{
                       fontFamily: 'var(--font-serif)',
                       fontWeight: 700,
                       fontSize: '1rem',
-                      color: p.num === session ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      color: p.id === periodeEnCours?.id ? 'var(--text-primary)' : 'var(--text-secondary)',
                     }}>
-                      Phase {p.num}
+                      {p.id}. {p.label}
                     </div>
-                    <PhaseStatus current={session} num={p.num} />
+                    <PeriodeStatus enCours={periodeEnCours} id={p.id} />
                   </div>
                   <div style={{
                     fontFamily: 'var(--font)',
@@ -157,10 +153,10 @@ export default function Home() {
                     color: 'var(--red)',
                     marginBottom: 'var(--sp-2)',
                   }}>
-                    {p.timing}
+                    Jusqu'au {fmtJour(p.ends_at)}
                   </div>
                   <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
-                    {p.desc}
+                    {PERIODES_DESC[p.id]}
                   </p>
                 </div>
               ))}
@@ -170,7 +166,8 @@ export default function Home() {
             <div style={{ borderTop: '3px solid var(--text-primary)', paddingTop: 'var(--sp-5)' }}>
               <h4 style={{ marginBottom: 'var(--sp-4)', color: 'var(--text-secondary)' }}>Classement</h4>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--sp-3)' }}>
-                Chaque phase est scorée indépendamment. Le score général est la somme des trois phases.
+                Un classement par période, sans classement général : parier tôt, c'est concourir contre ceux qui parient tôt.
+                Dans chaque période, seul ton dernier pari compte. Pas de pari dans une période, pas de place dans son classement.
               </p>
               <div style={{
                 fontSize: '0.78rem',
