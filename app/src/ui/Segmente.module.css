@@ -1,0 +1,29 @@
+.segmente {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  height: 36px;
+  padding: 3px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+}
+.option {
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--text-2);
+  font: 500 13px/1 var(--font);
+  cursor: pointer;
+  transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.option:hover { color: var(--text); }
+.option:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.active {
+  border-color: var(--border);
+  background: var(--raised);
+  box-shadow: var(--shadow-raised);
+  color: var(--text);
+  font-weight: 600;
+}

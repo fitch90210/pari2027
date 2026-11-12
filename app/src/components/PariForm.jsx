@@ -7,7 +7,7 @@ function Bloc({ num, title, children }) {
   return (
     <div className="card">
       <div className="flex items-center gap-3 mb-4">
-        <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 900, fontStyle: 'italic', fontSize: '1.1rem', minWidth: 28 }}>{num}</div>
+        <div style={{ fontFamily: 'var(--v1-font-serif)', fontWeight: 900, fontStyle: 'italic', fontSize: '1.1rem', minWidth: 28 }}>{num}</div>
         <span style={{ fontWeight: 700 }}>{title}</span>
       </div>
       {children}
@@ -60,7 +60,7 @@ export default function PariForm({ periode, initial, officiels, finalistesOffici
     : officiels.length ? officiels : CANDIDATE_SUGGESTIONS
 
   return (
-    <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
+    <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-4)' }}>
       {intro && <p className="text-muted text-sm" style={{ margin: 0 }}>{intro}</p>}
 
       {ouvert('m1') && (
@@ -89,7 +89,7 @@ export default function PariForm({ periode, initial, officiels, finalistesOffici
       )}
       {ouvert('m5') && (
         <Bloc num={5} title="Score du vainqueur au second tour">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)' }}>
             <span style={{ flex: 1, fontSize: '0.9rem', fontWeight: 600 }}>{form.m4 || 'Le vainqueur'}</span>
             <input type="number" step="0.1" min="0" max="100" className="input input-sm" style={{ width: 100 }}
               placeholder="Ex : 55.4" value={form.m5} onChange={e => update({ m5: e.target.value })} />
@@ -104,7 +104,7 @@ export default function PariForm({ periode, initial, officiels, finalistesOffici
         </div>
       )}
       {err && <div className="error-banner">{err}</div>}
-      <div style={{ display: 'flex', gap: 'var(--sp-3)' }}>
+      <div style={{ display: 'flex', gap: 'var(--v1-sp-3)' }}>
         <button className="btn btn-primary" type="submit" disabled={saving || listeOfficielleManquante}>
           {saving ? '…' : submitLabel}
         </button>

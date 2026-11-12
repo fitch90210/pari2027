@@ -1,0 +1,34 @@
+.liste { list-style: none; margin: 0; padding: 0; }
+
+.ligne + .ligne .contenu { border-top: 1px solid var(--border); }
+.ligne:first-child .contenu { border-top: 0; }
+
+.lien, .statique {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--row-h);
+  padding: 0 0 0 14px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font);
+}
+.bouton { width: 100%; border: 0; background: none; text-align: left; font: inherit; }
+.lien { cursor: pointer; transition: background var(--dur-fast); }
+.lien:hover { background: var(--surface); }
+.lien:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+
+.contenu {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-right: 14px;
+}
+.textes { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding: 9px 0; }
+.titre { font: 500 15px/20px var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sousTitre { font: var(--type-footnote); color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fin { font: var(--type-footnote); color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chevron { color: var(--text-3); flex-shrink: 0; }

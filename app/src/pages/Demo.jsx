@@ -18,15 +18,15 @@ export default function Demo() {
   const periode = periodes.find(p => p.id === periodeId)
 
   const header = (
-    <header style={{ paddingTop: 'var(--sp-10)', paddingBottom: 'var(--sp-6)', borderBottom: '3px solid var(--text-primary)', marginBottom: 'var(--sp-8)' }}>
+    <header style={{ paddingTop: 'var(--v1-sp-10)', paddingBottom: 'var(--v1-sp-6)', borderBottom: '3px solid var(--v1-text-primary)', marginBottom: 'var(--v1-sp-8)' }}>
       <div style={{
-        fontFamily: 'var(--font)', fontSize: '0.7rem', fontWeight: 700,
-        textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--red)', marginBottom: 'var(--sp-3)',
+        fontFamily: 'var(--v1-font)', fontSize: '0.7rem', fontWeight: 700,
+        textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--v1-red)', marginBottom: 'var(--v1-sp-3)',
       }}>
         Pari 2027 · Mode démo
       </div>
-      <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-3)' }}>Et si tu avais parié ?</h2>
-      <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
+      <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--v1-sp-3)' }}>Et si tu avais parié ?</h2>
+      <p style={{ fontFamily: 'var(--v1-font)', fontSize: '0.875rem', color: 'var(--v1-text-secondary)', margin: 0 }}>
         Remplis un pari comme si tu jouais dans une période, et vois le score que tu aurais obtenu.
         Rien n'est enregistré et tu n'entres dans aucun classement.
       </p>
@@ -64,7 +64,7 @@ export default function Demo() {
       <div className="container" style={{ maxWidth: 700 }}>
         {header}
 
-        <div style={{ display: 'flex', gap: 'var(--sp-2)', flexWrap: 'wrap', marginBottom: 'var(--sp-6)' }}>
+        <div style={{ display: 'flex', gap: 'var(--v1-sp-2)', flexWrap: 'wrap', marginBottom: 'var(--v1-sp-6)' }}>
           {periodes.map(p => (
             <button key={p.id} type="button"
               className={`btn btn-sm ${p.id === periodeId ? 'btn-primary' : 'btn-secondary'}`}
@@ -74,7 +74,7 @@ export default function Demo() {
           ))}
         </div>
 
-        <div className="card" style={{ marginBottom: 'var(--sp-6)' }}>
+        <div className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
           <PariForm
             key={`${periodeId}-${essai}`}
             periode={periode}
@@ -89,7 +89,7 @@ export default function Demo() {
 
         {resultat && (
           <div className="card">
-            <div className="flex items-center justify-between mb-4" style={{ gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
+            <div className="flex items-center justify-between mb-4" style={{ gap: 'var(--v1-sp-3)', flexWrap: 'wrap' }}>
               <div>
                 <h3 style={{ marginBottom: 4 }}>{resultat.scores.total} pts</h3>
                 {resultat.rang != null && (

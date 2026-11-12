@@ -34,11 +34,11 @@ function LeaderboardTable({ entries, periode, nomDe, onDetail }) {
             <th>Rang</th>
             <th>Joueur</th>
             {periode.scored.map((m, i) => (
-              <th key={m} style={{ textAlign: 'center', borderLeft: i === 0 ? '1px solid var(--border)' : undefined }}>
+              <th key={m} style={{ textAlign: 'center', borderLeft: i === 0 ? '1px solid var(--v1-border)' : undefined }}>
                 {m.slice(1)}
               </th>
             ))}
-            <th style={{ textAlign: 'center', borderLeft: '1px solid var(--border)' }}>Total</th>
+            <th style={{ textAlign: 'center', borderLeft: '1px solid var(--v1-border)' }}>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -49,7 +49,7 @@ function LeaderboardTable({ entries, periode, nomDe, onDetail }) {
               {periode.scored.map(m => <ScoreCell key={m} value={entry.scores[m]} />)}
               <td style={{
                 textAlign: 'center', fontWeight: 900, fontSize: '1rem',
-                color: 'var(--text-primary)', borderLeft: '1px solid var(--border)',
+                color: 'var(--v1-text-primary)', borderLeft: '1px solid var(--v1-border)',
               }}>
                 {entry.scores.total}
               </td>
@@ -70,7 +70,7 @@ function DetailModal({ entry, periode, nom, results, onClose }) {
       style={{
         position: 'fixed', inset: 0, zIndex: 200,
         background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--sp-4)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--v1-sp-4)',
       }}
       onClick={onClose}
     >
@@ -79,9 +79,9 @@ function DetailModal({ entry, periode, nom, results, onClose }) {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 style={{ marginBottom: 4 }}>{nom}</h3>
-            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--v1-text-muted)' }}>
               Pari du {fmtDate(pari.created_at)} · Période {periode.id} :{' '}
-              <strong style={{ color: 'var(--text-primary)' }}>{scores.total} pts</strong>
+              <strong style={{ color: 'var(--v1-text-primary)' }}>{scores.total} pts</strong>
             </span>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={onClose}>✕</button>
@@ -107,22 +107,22 @@ export default function Classements() {
   return (
     <div className="page">
       <div className="container">
-        <header style={{ paddingTop: 'var(--sp-10)', paddingBottom: 'var(--sp-6)', borderBottom: '3px solid var(--text-primary)', marginBottom: 'var(--sp-8)' }}>
+        <header style={{ paddingTop: 'var(--v1-sp-10)', paddingBottom: 'var(--v1-sp-6)', borderBottom: '3px solid var(--v1-text-primary)', marginBottom: 'var(--v1-sp-8)' }}>
           <div style={{
-            fontFamily: 'var(--font)', fontSize: '0.7rem', fontWeight: 700,
-            textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--red)', marginBottom: 'var(--sp-3)',
+            fontFamily: 'var(--v1-font)', fontSize: '0.7rem', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--v1-red)', marginBottom: 'var(--v1-sp-3)',
           }}>
             Pari 2027 · Résultats
           </div>
-          <h2 style={{ marginBottom: 'var(--sp-3)', fontStyle: 'italic' }}>Classements par période</h2>
-          <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
+          <h2 style={{ marginBottom: 'var(--v1-sp-3)', fontStyle: 'italic' }}>Classements par période</h2>
+          <p style={{ fontFamily: 'var(--v1-font)', fontSize: '0.875rem', color: 'var(--v1-text-secondary)', margin: 0 }}>
             {results
               ? 'Dans chaque période, le dernier pari de chaque joueur compte. Cliquez sur un joueur pour voir le détail.'
               : 'En attente des résultats officiels.'}
           </p>
         </header>
 
-        <div style={{ display: 'flex', gap: 'var(--sp-2)', flexWrap: 'wrap', marginBottom: 'var(--sp-6)' }}>
+        <div style={{ display: 'flex', gap: 'var(--v1-sp-2)', flexWrap: 'wrap', marginBottom: 'var(--v1-sp-6)' }}>
           {periodes.map(p => (
             <button key={p.id} type="button"
               className={`btn btn-sm ${p.id === periode?.id ? 'btn-primary' : 'btn-secondary'}`}
@@ -133,11 +133,11 @@ export default function Classements() {
         </div>
 
         {!results && (
-          <div className="card" style={{ padding: 'var(--sp-10) var(--sp-6)' }}>
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '0.8rem', fontWeight: 700, fontStyle: 'italic', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 'var(--sp-3)' }}>
+          <div className="card" style={{ padding: 'var(--v1-sp-10) var(--v1-sp-6)' }}>
+            <div style={{ fontFamily: 'var(--v1-font-serif)', fontSize: '0.8rem', fontWeight: 700, fontStyle: 'italic', color: 'var(--v1-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 'var(--v1-sp-3)' }}>
               Résultats non disponibles
             </div>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>
+            <p style={{ fontSize: '0.9rem', color: 'var(--v1-text-secondary)', margin: 0 }}>
               Les scores seront calculés une fois que l'administrateur aura saisi les résultats officiels.
             </p>
           </div>

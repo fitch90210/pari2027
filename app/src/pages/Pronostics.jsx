@@ -32,30 +32,30 @@ function PlayerSelector({ players, onSelect, onCreatePlayer }) {
   return (
     <div className="page">
       <div className="container" style={{ maxWidth: 600 }}>
-        <header style={{ paddingTop: 'var(--sp-10)', paddingBottom: 'var(--sp-6)', borderBottom: '3px solid var(--text-primary)', marginBottom: 'var(--sp-8)' }}>
+        <header style={{ paddingTop: 'var(--v1-sp-10)', paddingBottom: 'var(--v1-sp-6)', borderBottom: '3px solid var(--v1-text-primary)', marginBottom: 'var(--v1-sp-8)' }}>
           <div style={{
-            fontFamily: 'var(--font)',
+            fontFamily: 'var(--v1-font)',
             fontSize: '0.7rem', fontWeight: 700,
             textTransform: 'uppercase', letterSpacing: '0.14em',
-            color: 'var(--red)', marginBottom: 'var(--sp-3)',
+            color: 'var(--v1-red)', marginBottom: 'var(--v1-sp-3)',
           }}>
             Paris
           </div>
-          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-3)' }}>Qui es-tu ?</h2>
-          <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
+          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--v1-sp-3)' }}>Qui es-tu ?</h2>
+          <p style={{ fontFamily: 'var(--v1-font)', fontSize: '0.875rem', color: 'var(--v1-text-secondary)', margin: 0 }}>
             Sélectionne ton profil ou crée-en un nouveau.
           </p>
         </header>
         <div>
           {players.length > 0 && (
-            <div style={{ marginBottom: 'var(--sp-8)' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--sp-3)' }}>
+            <div style={{ marginBottom: 'var(--v1-sp-8)' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--v1-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--v1-sp-3)' }}>
                 Joueurs existants
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-2)' }}>
                 {players.map(p => (
                   <button key={p.id} className="btn btn-secondary w-full"
-                    style={{ justifyContent: 'flex-start', fontSize: '1rem', padding: 'var(--sp-4)' }}
+                    style={{ justifyContent: 'flex-start', fontSize: '1rem', padding: 'var(--v1-sp-4)' }}
                     onClick={() => onSelect(p)}>
                     {p.name}
                   </button>
@@ -64,10 +64,10 @@ function PlayerSelector({ players, onSelect, onCreatePlayer }) {
             </div>
           )}
           <div>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--sp-3)' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--v1-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--v1-sp-3)' }}>
               Nouveau joueur
             </div>
-            <form onSubmit={handleCreate} style={{ display: 'flex', gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
+            <form onSubmit={handleCreate} style={{ display: 'flex', gap: 'var(--v1-sp-2)', flexWrap: 'wrap' }}>
               <input className="input" placeholder="Ton prénom ou pseudo" value={newName}
                 onChange={e => setNewName(e.target.value)} disabled={creating} maxLength={40}
                 style={{ flex: '2 1 180px' }} />
@@ -117,21 +117,21 @@ function CodeGate({ player, onVerify, onUnlocked, onBack }) {
   return (
     <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 360, width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: 'var(--sp-8)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--v1-sp-8)' }}>
           <div style={{
-            fontFamily: 'var(--font)', fontSize: '0.7rem', fontWeight: 700,
+            fontFamily: 'var(--v1-font)', fontSize: '0.7rem', fontWeight: 700,
             textTransform: 'uppercase', letterSpacing: '0.14em',
-            color: 'var(--red)', marginBottom: 'var(--sp-3)',
+            color: 'var(--v1-red)', marginBottom: 'var(--v1-sp-3)',
           }}>
             Paris
           </div>
-          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-2)' }}>{player.name}</h2>
-          <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--v1-sp-2)' }}>{player.name}</h2>
+          <p style={{ fontFamily: 'var(--v1-font)', fontSize: '0.875rem', color: 'var(--v1-text-secondary)' }}>
             Saisis ton code à 4 chiffres pour modifier tes pronostics.
           </p>
         </div>
         <div className="card">
-          <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+          <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
             <input className="input" type="password" inputMode="numeric" maxLength={4}
               autoComplete="off" placeholder="Code" value={code} autoFocus aria-label="Code secret"
               onChange={e => { setCode(e.target.value.replace(/[^0-9]/g, '')); setErr('') }}
@@ -175,7 +175,7 @@ function Resume({ pari }) {
     pari.m5 != null ? ['Score du vainqueur', `${pari.m5} %`] : null,
   ].filter(Boolean)
   return (
-    <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'max-content 1fr', gap: 'var(--sp-1) var(--sp-4)', fontSize: '0.85rem' }}>
+    <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'max-content 1fr', gap: 'var(--v1-sp-1) var(--v1-sp-4)', fontSize: '0.85rem' }}>
       {lignes.map(([k, v]) => (
         <div key={k} style={{ display: 'contents' }}>
           <dt className="text-muted">{k}</dt>
@@ -200,13 +200,13 @@ export default function Pronostics() {
   const [confirmation, setConfirmation] = useState('')
 
   const player = players.find(p => p.id === playerId) ?? null
-  const retour = () => { setPlayerId(null); setMode(null); setConfirmation(''); navigate('/pronostics') }
+  const retour = () => { setPlayerId(null); setMode(null); setConfirmation(''); navigate('/parier') }
 
   if (!player) {
     return (
       <div className="page-fade-in">
         <PlayerSelector players={players} onCreatePlayer={addPlayer}
-          onSelect={(p) => { setPlayerId(p.id); navigate(`/pronostics/${p.id}`, { replace: true }) }} />
+          onSelect={(p) => { setPlayerId(p.id); navigate(`/parier/${p.id}`, { replace: true }) }} />
       </div>
     )
   }
@@ -231,16 +231,16 @@ export default function Pronostics() {
   return (
     <div className="page">
       <div className="container" style={{ maxWidth: 700 }}>
-        <header style={{ paddingTop: 'var(--sp-10)', paddingBottom: 'var(--sp-6)', borderBottom: '3px solid var(--text-primary)', marginBottom: 'var(--sp-6)' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--sp-3)' }}>
+        <header style={{ paddingTop: 'var(--v1-sp-10)', paddingBottom: 'var(--v1-sp-6)', borderBottom: '3px solid var(--v1-text-primary)', marginBottom: 'var(--v1-sp-6)' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--v1-sp-3)' }}>
             <div>
               <div style={{
-                fontFamily: 'var(--font)', fontSize: '0.7rem', fontWeight: 700,
-                textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--red)', marginBottom: 'var(--sp-2)',
+                fontFamily: 'var(--v1-font)', fontSize: '0.7rem', fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--v1-red)', marginBottom: 'var(--v1-sp-2)',
               }}>
                 {periodeEnCours ? `Période ${periodeEnCours.id} · ${periodeEnCours.label}` : 'Jeu fermé'}
               </div>
-              <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-1)' }}>Paris de {player.name}</h2>
+              <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--v1-sp-1)' }}>Paris de {player.name}</h2>
               {periodeEnCours && (
                 <p className="text-muted text-sm" style={{ margin: 0 }}>
                   Cette période se termine le {fmtJour(periodeEnCours.ends_at)}.
@@ -251,7 +251,7 @@ export default function Pronostics() {
           </div>
         </header>
 
-        {confirmation && <div className="card mb-4" style={{ borderColor: 'var(--success)' }}>{confirmation}</div>}
+        {confirmation && <div className="card mb-4" style={{ borderColor: 'var(--v1-success)' }}>{confirmation}</div>}
 
         {mode ? (
           <div className="card">
@@ -289,16 +289,16 @@ export default function Pronostics() {
             {mesParis.length === 0 ? (
               <div className="card text-muted">Tu n'as encore posé aucun pari.</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-4)' }}>
                 {mesParis.map((pari, i) => (
                   <div key={pari.id} className="card">
-                    <div className="flex items-center justify-between mb-4" style={{ gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
+                    <div className="flex items-center justify-between mb-4" style={{ gap: 'var(--v1-sp-3)', flexWrap: 'wrap' }}>
                       <div>
                         <strong>{fmtDate(pari.created_at)}</strong>
-                        <span className="badge badge-session1" style={{ marginLeft: 'var(--sp-3)' }}>
+                        <span className="badge badge-session1" style={{ marginLeft: 'var(--v1-sp-3)' }}>
                           Période {pari.periode}{periodeDe(pari) ? ` · ${periodeDe(pari).label}` : ''}
                         </span>
-                        {i === 0 && <span className="badge badge-done" style={{ marginLeft: 'var(--sp-2)' }}>Dernier pari</span>}
+                        {i === 0 && <span className="badge badge-done" style={{ marginLeft: 'var(--v1-sp-2)' }}>Dernier pari</span>}
                       </div>
                       {modifiable(pari) && (
                         <button className="btn btn-secondary btn-sm"

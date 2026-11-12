@@ -1,0 +1,9 @@
+.carte {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+  color: var(--text);
+}
+.surface { background: var(--surface); }
+.rembourree { padding: var(--sp-5) var(--sp-4) var(--sp-4); }
+.liste { overflow: hidden; }

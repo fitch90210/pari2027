@@ -8,7 +8,7 @@ import { isoVersParis, parisVersIso } from '../lib/periodes'
 function SaveFeedback({ ok, err }) {
   if (err) return <div className="error-banner">{err}</div>
   if (ok) return (
-    <div style={{ background: 'var(--success-dim)', border: '1px solid rgba(76,175,125,0.2)', borderRadius: 'var(--r-sm)', padding: 'var(--sp-2) var(--sp-3)', color: 'var(--success)', fontSize: '0.875rem' }}>
+    <div style={{ background: 'var(--v1-success-dim)', border: '1px solid rgba(76,175,125,0.2)', borderRadius: 'var(--v1-r-sm)', padding: 'var(--v1-sp-2) var(--v1-sp-3)', color: 'var(--v1-success)', fontSize: '0.875rem' }}>
       Enregistré ✓
     </div>
   )
@@ -36,22 +36,22 @@ function PinScreen({ onLogin }) {
   return (
     <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: 360, width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: 'var(--sp-8)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--v1-sp-8)' }}>
           <div style={{
-            fontFamily: 'var(--font)',
+            fontFamily: 'var(--v1-font)',
             fontSize: '0.7rem', fontWeight: 700,
             textTransform: 'uppercase', letterSpacing: '0.14em',
-            color: 'var(--red)', marginBottom: 'var(--sp-3)',
+            color: 'var(--v1-red)', marginBottom: 'var(--v1-sp-3)',
           }}>
             Accès restreint
           </div>
-          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-2)' }}>Administration</h2>
-          <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--v1-sp-2)' }}>Administration</h2>
+          <p style={{ fontFamily: 'var(--v1-font)', fontSize: '0.875rem', color: 'var(--v1-text-secondary)' }}>
             Saisir le mot de passe admin pour continuer.
           </p>
         </div>
         <div className="card">
-          <form onSubmit={check} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+          <form onSubmit={check} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
             <input className="input" type="password" maxLength={64} autoComplete="current-password"
               placeholder="Mot de passe" value={pin} autoFocus aria-label="Mot de passe admin"
               onChange={e => { setPin(e.target.value); setErr('') }}
@@ -88,10 +88,10 @@ function StepCandidatsR1({ officialCandidatesR1, onSave }) {
   }
 
   return (
-    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
-      <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
+      <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--v1-text-secondary)' }}>
         Candidats présents au 1er tour
-        <span style={{ fontWeight: 400, color: 'var(--text-muted)', marginLeft: 6 }}>(un par ligne)</span>
+        <span style={{ fontWeight: 400, color: 'var(--v1-text-muted)', marginLeft: 6 }}>(un par ligne)</span>
       </label>
       <textarea className="input" rows={8} placeholder={"Marine Le Pen\nEmmanuel Macron\nJean-Luc Mélenchon\n..."}
         value={raw} onChange={e => setRaw(e.target.value)} style={{ resize: 'vertical' }} />
@@ -161,10 +161,10 @@ function StepScoresR1({ officialCandidatesR1, results, onSave }) {
   }
 
   return (
-    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-4)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
         {officialCandidatesR1.map(c => (
-          <div key={c} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
+          <div key={c} style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)' }}>
             <span style={{ flex: 1, fontSize: '0.9rem', fontWeight: 500 }}>{c}</span>
             <input type="number" step="0.1" min="0" max="100"
               className="input input-sm" style={{ width: 100 }}
@@ -177,12 +177,12 @@ function StepScoresR1({ officialCandidatesR1, results, onSave }) {
 
       {/* Total */}
       <div style={{
-        display: 'flex', justifyContent: 'flex-end', gap: 'var(--sp-2)',
+        display: 'flex', justifyContent: 'flex-end', gap: 'var(--v1-sp-2)',
         fontSize: '0.875rem', fontWeight: 700,
-        paddingTop: 'var(--sp-2)', borderTop: '1px solid var(--border)',
+        paddingTop: 'var(--v1-sp-2)', borderTop: '1px solid var(--v1-border)',
       }}>
         <span className="text-muted">Total :</span>
-        <span style={{ color: totalOk ? 'var(--success)' : parsed.length > 0 ? 'var(--danger)' : 'var(--text-muted)' }}>
+        <span style={{ color: totalOk ? 'var(--v1-success)' : parsed.length > 0 ? 'var(--v1-danger)' : 'var(--v1-text-muted)' }}>
           {parsed.length > 0 ? `${total.toFixed(1)} %` : 'n/a'} {totalOk && '✓'}
         </span>
       </div>
@@ -190,10 +190,10 @@ function StepScoresR1({ officialCandidatesR1, results, onSave }) {
       {/* Finalistes calculés */}
       {finalists.length === 2 && (
         <div style={{
-          borderLeft: '3px solid var(--border-strong)',
-          paddingLeft: 'var(--sp-4)',
+          borderLeft: '3px solid var(--v1-border-strong)',
+          paddingLeft: 'var(--v1-sp-4)',
         }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--sp-2)' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--v1-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--v1-sp-2)' }}>
             Finalistes calculés automatiquement
           </div>
           <div style={{ fontWeight: 700 }}>
@@ -256,10 +256,10 @@ function StepScoresR2({ results, onSave }) {
   }
 
   return (
-    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-4)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
         {/* Finaliste A */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)' }}>
           <span style={{ flex: 1, fontSize: '0.9rem', fontWeight: 500 }}>{finalists[0]}</span>
           <input type="number" step="0.1" min="0" max="100"
             className="input input-sm" style={{ width: 100 }}
@@ -268,12 +268,12 @@ function StepScoresR2({ results, onSave }) {
           <span className="text-muted text-sm">%</span>
         </div>
         {/* Finaliste B — calculé auto */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)' }}>
           <span style={{ flex: 1, fontSize: '0.9rem', fontWeight: 500 }}>{finalists[1]}</span>
           <span style={{
-            width: 100, textAlign: 'right', padding: 'var(--sp-2) var(--sp-3)',
-            background: 'var(--bg-3)', border: '1px solid var(--border)',
-            borderRadius: 'var(--r-sm)', fontSize: '0.875rem', color: 'var(--text-muted)',
+            width: 100, textAlign: 'right', padding: 'var(--v1-sp-2) var(--v1-sp-3)',
+            background: 'var(--v1-bg-3)', border: '1px solid var(--v1-border)',
+            borderRadius: 'var(--v1-r-sm)', fontSize: '0.875rem', color: 'var(--v1-text-muted)',
           }}>
             {valB != null ? valB : 'n/a'}
           </span>
@@ -282,17 +282,17 @@ function StepScoresR2({ results, onSave }) {
       </div>
 
       {/* Total */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--sp-2)', fontSize: '0.875rem', fontWeight: 700, paddingTop: 'var(--sp-2)', borderTop: '1px solid var(--border)' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--v1-sp-2)', fontSize: '0.875rem', fontWeight: 700, paddingTop: 'var(--v1-sp-2)', borderTop: '1px solid var(--v1-border)' }}>
         <span className="text-muted">Total :</span>
-        <span style={{ color: valB != null ? 'var(--success)' : 'var(--text-muted)' }}>
+        <span style={{ color: valB != null ? 'var(--v1-success)' : 'var(--v1-text-muted)' }}>
           {valB != null ? '100.0 % ✓' : 'n/a'}
         </span>
       </div>
 
       {/* Vainqueur calculé */}
       {winner && (
-        <div style={{ borderLeft: '3px solid var(--gold)', paddingLeft: 'var(--sp-4)' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--sp-2)' }}>
+        <div style={{ borderLeft: '3px solid var(--v1-gold)', paddingLeft: 'var(--v1-sp-4)' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--v1-gold)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--v1-sp-2)' }}>
             Vainqueur calculé automatiquement
           </div>
           <div style={{ fontWeight: 700 }}>{winner} · {winnerScore?.toFixed(1)} %</div>
@@ -330,13 +330,13 @@ function StepPeriodes({ periodes, periodeEnCours, onSave }) {
   }
 
   return (
-    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+    <form onSubmit={handle} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
       {rows.map(r => (
-        <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
+        <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)', flexWrap: 'wrap' }}>
           <span style={{ fontWeight: 700, minWidth: 24 }}>{r.id}</span>
           <input className="input" style={{ flex: '2 1 180px' }} value={r.label} maxLength={60}
             aria-label={`Nom de la période ${r.id}`} onChange={e => set(r.id, { label: e.target.value })} />
-          <label className="text-muted text-sm" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+          <label className="text-muted text-sm" style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-2)' }}>
             fin le
             <input className="input" type="datetime-local" value={r.fin}
               aria-label={`Fin de la période ${r.id}`} onChange={e => set(r.id, { fin: e.target.value })} />
@@ -401,31 +401,31 @@ function AdminPanel() {
   return (
     <div className="page">
       <div className="container" style={{ maxWidth: 700 }}>
-        <header style={{ paddingTop: 'var(--sp-10)', paddingBottom: 'var(--sp-6)', borderBottom: '3px solid var(--text-primary)', marginBottom: 'var(--sp-8)' }}>
+        <header style={{ paddingTop: 'var(--v1-sp-10)', paddingBottom: 'var(--v1-sp-6)', borderBottom: '3px solid var(--v1-text-primary)', marginBottom: 'var(--v1-sp-8)' }}>
           <div style={{
-            fontFamily: 'var(--font)',
+            fontFamily: 'var(--v1-font)',
             fontSize: '0.7rem',
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.14em',
-            color: 'var(--red)',
-            marginBottom: 'var(--sp-3)',
+            color: 'var(--v1-red)',
+            marginBottom: 'var(--v1-sp-3)',
           }}>
             Accès restreint
           </div>
-          <h2 style={{ marginBottom: 'var(--sp-3)', fontStyle: 'italic' }}>Administration</h2>
-          <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
+          <h2 style={{ marginBottom: 'var(--v1-sp-3)', fontStyle: 'italic' }}>Administration</h2>
+          <p style={{ fontFamily: 'var(--v1-font)', fontSize: '0.875rem', color: 'var(--v1-text-secondary)', margin: 0 }}>
             Gestion des périodes, joueurs et résultats.
           </p>
         </header>
 
         {/* Périodes */}
-        <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
-          <h3 style={{ marginBottom: 'var(--sp-4)' }}>Périodes</h3>
-          <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-4)' }}>
+        <section className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
+          <h3 style={{ marginBottom: 'var(--v1-sp-4)' }}>Périodes</h3>
+          <p className="text-muted text-sm" style={{ marginBottom: 'var(--v1-sp-4)' }}>
             Chaque période commence à la fin de la précédente ; le jeu ferme à la fin de la période 4.
             Dates en heure de Paris. Les paris déjà posés gardent leur période si tu déplaces une borne.
-            La période en cours est : <strong style={{ color: 'var(--text-primary)' }}>
+            La période en cours est : <strong style={{ color: 'var(--v1-text-primary)' }}>
               {periodeEnCours ? `${periodeEnCours.id}. ${periodeEnCours.label}` : 'aucune (jeu fermé)'}
             </strong>.
           </p>
@@ -436,14 +436,14 @@ function AdminPanel() {
         </section>
 
         {/* Étape 1 — Candidats du 1er tour */}
-        <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
+        <section className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3>Étape 1 : Candidats du 1er tour</h3>
             {step1Done
               ? <span className="badge badge-active">✓ {officialCandidatesR1.length} candidats</span>
               : <span className="badge badge-soon">Avant la période 3</span>}
           </div>
-          <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-4)' }}>
+          <p className="text-muted text-sm" style={{ marginBottom: 'var(--v1-sp-4)' }}>
             Saisissez la liste officielle des candidats. Tant qu'elle est vide, personne ne peut poser de pari en période 3 : saisissez-la avant la fin de la période 2.
           </p>
           <StepCandidatsR1
@@ -453,14 +453,14 @@ function AdminPanel() {
         </section>
 
         {/* Étape 2 — Scores réels du 1er tour */}
-        <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
+        <section className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3>Étape 2 : Résultats du 1er tour</h3>
             {step2Done
               ? <span className="badge badge-active">✓ Scores enregistrés</span>
               : <span className="badge badge-soon">Après le 1er tour</span>}
           </div>
-          <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-4)' }}>
+          <p className="text-muted text-sm" style={{ marginBottom: 'var(--v1-sp-4)' }}>
             Saisissez le score réel de chaque candidat. Les 2 scores les plus élevés désignent automatiquement les finalistes du 2ème tour.
           </p>
           <StepScoresR1
@@ -471,14 +471,14 @@ function AdminPanel() {
         </section>
 
         {/* Étape 3 — Scores réels du 2nd tour */}
-        <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
+        <section className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3>Étape 3 : Résultats du 2nd tour</h3>
             {step3Done
               ? <span className="badge badge-active">✓ {results.winner} · {results.winnerScore} %</span>
               : <span className="badge badge-soon">Après le 2nd tour</span>}
           </div>
-          <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-4)' }}>
+          <p className="text-muted text-sm" style={{ marginBottom: 'var(--v1-sp-4)' }}>
             Saisissez le score réel d'un des deux finalistes. Le vainqueur et le score complémentaire sont calculés automatiquement. Déclenche le calcul final des classements.
           </p>
           <StepScoresR2
@@ -488,16 +488,16 @@ function AdminPanel() {
         </section>
 
         {/* Joueurs */}
-        <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
-          <h3 style={{ marginBottom: 'var(--sp-4)' }}>Joueurs ({players.length})</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)', marginBottom: 'var(--sp-4)' }}>
+        <section className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
+          <h3 style={{ marginBottom: 'var(--v1-sp-4)' }}>Joueurs ({players.length})</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-2)', marginBottom: 'var(--v1-sp-4)' }}>
             {players.map(p => (
               <div key={p.id} className="flex items-center justify-between" style={{
-                padding: 'var(--sp-3) var(--sp-4)', background: 'var(--bg-3)',
-                borderRadius: 'var(--r-sm)', border: '1px solid var(--border)',
+                padding: 'var(--v1-sp-3) var(--v1-sp-4)', background: 'var(--v1-bg-3)',
+                borderRadius: 'var(--v1-r-sm)', border: '1px solid var(--v1-border)',
               }}>
                 <span style={{ fontWeight: 600 }}>{p.name}</span>
-                <div style={{ display: 'flex', gap: 'var(--sp-2)' }}>
+                <div style={{ display: 'flex', gap: 'var(--v1-sp-2)' }}>
                   <button className="btn btn-secondary btn-sm" onClick={() => handleResetCode(p)}>Nouveau code</button>
                   <button className="btn btn-danger btn-sm" onClick={() => handleRemovePlayer(p)}>Supprimer</button>
                 </div>
@@ -505,7 +505,7 @@ function AdminPanel() {
             ))}
             {players.length === 0 && <p className="text-muted text-sm">Aucun joueur.</p>}
           </div>
-          <form onSubmit={handleAddPlayer} style={{ display: 'flex', gap: 'var(--sp-2)' }}>
+          <form onSubmit={handleAddPlayer} style={{ display: 'flex', gap: 'var(--v1-sp-2)' }}>
             <input className="input" placeholder="Nouveau joueur" value={newPlayerName}
               onChange={e => setNewPlayerName(e.target.value)} disabled={addingPlayer} maxLength={50} />
             <button className="btn btn-primary" type="submit" disabled={addingPlayer || !newPlayerName.trim()}>
@@ -515,19 +515,19 @@ function AdminPanel() {
           {addErr && <div className="error-banner mt-2">{addErr}</div>}
           {issuedCode && (
             <div className="mt-4" role="status" style={{
-              padding: 'var(--sp-3) var(--sp-4)', background: 'var(--success-dim)',
-              border: '1px solid rgba(76,175,125,0.2)', borderRadius: 'var(--r-sm)', fontSize: '0.875rem',
+              padding: 'var(--v1-sp-3) var(--v1-sp-4)', background: 'var(--v1-success-dim)',
+              border: '1px solid rgba(76,175,125,0.2)', borderRadius: 'var(--v1-r-sm)', fontSize: '0.875rem',
             }}>
               Code de <strong>{issuedCode.name}</strong> : <strong style={{ letterSpacing: '0.2em' }}>{issuedCode.code}</strong>
               {' '}— à lui transmettre, il ne sera plus affiché.
-              <button className="btn btn-ghost btn-sm" style={{ marginLeft: 'var(--sp-2)' }} onClick={() => setIssuedCode(null)}>OK</button>
+              <button className="btn btn-ghost btn-sm" style={{ marginLeft: 'var(--v1-sp-2)' }} onClick={() => setIssuedCode(null)}>OK</button>
             </div>
           )}
         </section>
 
         {/* Vue pronostics */}
-        <section className="card" style={{ marginBottom: 'var(--sp-6)' }}>
-          <h3 style={{ marginBottom: 'var(--sp-4)' }}>Vue lecture : tous les paris</h3>
+        <section className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
+          <h3 style={{ marginBottom: 'var(--v1-sp-4)' }}>Vue lecture : tous les paris</h3>
           {players.length === 0 ? (
             <p className="text-muted text-sm">Aucun joueur.</p>
           ) : (

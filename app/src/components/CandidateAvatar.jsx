@@ -10,16 +10,16 @@ function AvatarPlaceholder({ size }) {
       width: size,
       height: size,
       borderRadius: '50%',
-      background: 'var(--bg-3)',
-      border: '1px solid var(--border)',
+      background: 'var(--v1-bg-3)',
+      border: '1px solid var(--v1-border)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       flexShrink: 0,
     }}>
       <svg width={Math.round(size * 0.6)} height={Math.round(size * 0.6)} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="8" r="4" fill="var(--text-muted)" opacity="0.45" />
-        <path d="M2 22c0-5.523 4.477-10 10-10s10 4.477 10 10" fill="var(--text-muted)" opacity="0.3" />
+        <circle cx="12" cy="8" r="4" fill="var(--v1-text-muted)" opacity="0.45" />
+        <path d="M2 22c0-5.523 4.477-10 10-10s10 4.477 10 10" fill="var(--v1-text-muted)" opacity="0.3" />
       </svg>
     </div>
   )
@@ -65,8 +65,8 @@ export default function CandidateAvatar({ name, size = 32 }) {
         width: size,
         height: size,
         borderRadius: '50%',
-        background: 'var(--bg-3)',
-        border: '1px solid var(--border)',
+        background: 'var(--v1-bg-3)',
+        border: '1px solid var(--v1-border)',
         flexShrink: 0,
       }} />
     )
@@ -85,7 +85,7 @@ export default function CandidateAvatar({ name, size = 32 }) {
         objectFit: 'cover',
         objectPosition: 'top',
         flexShrink: 0,
-        border: '1px solid var(--border)',
+        border: '1px solid var(--v1-border)',
         display: 'block',
       }}
       onError={() => { photoCache[name] = false; setFailed(true) }}

@@ -1,0 +1,13 @@
+.pile { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-3); }
+.pile > * { align-self: stretch; }
+.pile > :first-child { align-self: flex-start; }
+.rangee { display: flex; flex-wrap: wrap; gap: var(--sp-2); width: 100%; }
+.titre { margin: 0; font: var(--type-title-1); letter-spacing: var(--track-title-1); color: var(--text); }
+.texte { margin: 0; font: var(--type-callout); color: var(--text-2); }
+.bonus { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.chiffre {
+  font: var(--type-display);
+  letter-spacing: var(--track-display);
+  color: var(--accent-text);
+  font-variant-numeric: tabular-nums;
+}

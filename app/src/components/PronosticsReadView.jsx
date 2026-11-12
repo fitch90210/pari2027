@@ -12,9 +12,9 @@ const fmtDate = (iso) => new Date(iso).toLocaleString('fr-FR', {
 function SectionLabel({ children }) {
   return (
     <div style={{
-      color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem',
+      color: 'var(--v1-text-muted)', fontWeight: 600, fontSize: '0.72rem',
       textTransform: 'uppercase', letterSpacing: '0.06em',
-      paddingTop: 'var(--sp-3)', paddingBottom: 'var(--sp-2)',
+      paddingTop: 'var(--v1-sp-3)', paddingBottom: 'var(--v1-sp-2)',
     }}>
       {children}
     </div>
@@ -24,15 +24,15 @@ function SectionLabel({ children }) {
 function CandidateRow({ name, score, badge }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 'var(--sp-3)',
-      paddingTop: 'var(--sp-2)', paddingBottom: 'var(--sp-2)',
-      borderBottom: '1px solid var(--border)',
+      display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)',
+      paddingTop: 'var(--v1-sp-2)', paddingBottom: 'var(--v1-sp-2)',
+      borderBottom: '1px solid var(--v1-border)',
     }}>
       <CandidateAvatar name={name} size={32} />
-      <span style={{ flex: 1, fontSize: '0.875rem', color: 'var(--text-primary)' }}>{name}</span>
+      <span style={{ flex: 1, fontSize: '0.875rem', color: 'var(--v1-text-primary)' }}>{name}</span>
       {badge && <span style={{ fontSize: '0.85rem' }}>{badge}</span>}
       {score != null && (
-        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums' }}>
+        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--v1-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
           {score} %
         </span>
       )}
@@ -72,7 +72,7 @@ function PariContenu({ pari }) {
       {pari.m5 != null && (
         <>
           <SectionLabel>Score du vainqueur au second tour</SectionLabel>
-          <div style={{ fontSize: '0.875rem', paddingBottom: 'var(--sp-2)' }}>{pari.m5} %</div>
+          <div style={{ fontSize: '0.875rem', paddingBottom: 'var(--v1-sp-2)' }}>{pari.m5} %</div>
         </>
       )}
     </div>
@@ -81,7 +81,7 @@ function PariContenu({ pari }) {
 
 function PariEntete({ pari, periode, dernier }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', flexWrap: 'wrap', fontSize: '0.8rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-2)', flexWrap: 'wrap', fontSize: '0.8rem' }}>
       <strong>{fmtDate(pari.created_at)}</strong>
       <span className="badge badge-session1">
         Période {pari.periode}{periode ? ` · ${periode.label}` : ''}
@@ -96,27 +96,27 @@ function Historique({ paris, periodes }) {
   const [ouvert, setOuvert] = useState(null) // id du pari déplié
   if (!paris.length) return null
   return (
-    <div style={{ borderTop: '1px solid var(--border-mid)' }}>
+    <div style={{ borderTop: '1px solid var(--v1-border-mid)' }}>
       <button type="button" onClick={() => setOpen(o => !o)} style={{
         width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: 'var(--sp-3) var(--sp-4)', background: 'none', border: 'none',
-        cursor: 'pointer', color: 'var(--text-secondary)', textAlign: 'left', fontSize: '0.8rem', fontWeight: 600,
+        padding: 'var(--v1-sp-3) var(--v1-sp-4)', background: 'none', border: 'none',
+        cursor: 'pointer', color: 'var(--v1-text-secondary)', textAlign: 'left', fontSize: '0.8rem', fontWeight: 600,
       }}>
         <span>Historique : {paris.length} pari{paris.length > 1 ? 's' : ''} précédent{paris.length > 1 ? 's' : ''}</span>
-        <span style={{ color: 'var(--text-muted)' }}>{open ? '▲' : '▼'}</span>
+        <span style={{ color: 'var(--v1-text-muted)' }}>{open ? '▲' : '▼'}</span>
       </button>
       {open && paris.map(pari => (
-        <div key={pari.id} style={{ borderTop: '1px solid var(--border)' }}>
+        <div key={pari.id} style={{ borderTop: '1px solid var(--v1-border)' }}>
           <button type="button" onClick={() => setOuvert(o => o === pari.id ? null : pari.id)} style={{
             width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: 'var(--sp-3) var(--sp-4)', background: 'none', border: 'none',
-            cursor: 'pointer', color: 'var(--text-primary)', textAlign: 'left',
+            padding: 'var(--v1-sp-3) var(--v1-sp-4)', background: 'none', border: 'none',
+            cursor: 'pointer', color: 'var(--v1-text-primary)', textAlign: 'left',
           }}>
             <PariEntete pari={pari} periode={periodes.find(p => p.id === pari.periode)} />
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{ouvert === pari.id ? '▲' : '▼'}</span>
+            <span style={{ color: 'var(--v1-text-muted)', fontSize: '0.8rem' }}>{ouvert === pari.id ? '▲' : '▼'}</span>
           </button>
           {ouvert === pari.id && (
-            <div style={{ padding: 'var(--sp-1) var(--sp-4) var(--sp-4)' }}>
+            <div style={{ padding: 'var(--v1-sp-1) var(--v1-sp-4) var(--v1-sp-4)' }}>
               <PariContenu pari={pari} />
             </div>
           )}
@@ -135,40 +135,40 @@ function PlayerAccordion({ player, paris, periodes, defaultOpen }) {
   const [dernier, ...anciens] = siens
 
   return (
-    <div style={{ border: '1px solid var(--border-mid)', marginBottom: 'var(--sp-2)' }}>
+    <div style={{ border: '1px solid var(--v1-border-mid)', marginBottom: 'var(--v1-sp-2)' }}>
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: 'var(--sp-3) var(--sp-4)', background: open ? 'var(--bg-3)' : 'var(--bg-2)',
-          border: 'none', cursor: 'pointer', color: 'var(--text-primary)', textAlign: 'left',
-          transition: 'background var(--t-fast)',
+          padding: 'var(--v1-sp-3) var(--v1-sp-4)', background: open ? 'var(--v1-bg-3)' : 'var(--v1-bg-2)',
+          border: 'none', cursor: 'pointer', color: 'var(--v1-text-primary)', textAlign: 'left',
+          transition: 'background var(--v1-t-fast)',
         }}
       >
         <span style={{ fontWeight: 700 }}>{player.name}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--v1-text-muted)', fontFamily: 'var(--v1-font)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             {siens.length === 0 ? 'Aucun pari' : `${siens.length} pari${siens.length > 1 ? 's' : ''}`}
           </span>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{open ? '▲' : '▼'}</span>
+          <span style={{ color: 'var(--v1-text-muted)', fontSize: '0.8rem' }}>{open ? '▲' : '▼'}</span>
         </div>
       </button>
 
       {open && (
-        <div style={{ borderTop: '1px solid var(--border-mid)' }}>
+        <div style={{ borderTop: '1px solid var(--v1-border-mid)' }}>
           {dernier ? (
             <>
-              <div style={{ padding: 'var(--sp-3) var(--sp-4) var(--sp-1)' }}>
+              <div style={{ padding: 'var(--v1-sp-3) var(--v1-sp-4) var(--v1-sp-1)' }}>
                 <PariEntete pari={dernier} periode={periodes.find(p => p.id === dernier.periode)} dernier />
               </div>
-              <div style={{ padding: 'var(--sp-1) var(--sp-4) var(--sp-4)' }}>
+              <div style={{ padding: 'var(--v1-sp-1) var(--v1-sp-4) var(--v1-sp-4)' }}>
                 <PariContenu pari={dernier} />
               </div>
               <Historique paris={anciens} periodes={periodes} />
             </>
           ) : (
-            <p className="text-muted text-sm" style={{ fontStyle: 'italic', padding: 'var(--sp-4)', margin: 0 }}>
+            <p className="text-muted text-sm" style={{ fontStyle: 'italic', padding: 'var(--v1-sp-4)', margin: 0 }}>
               Ce joueur n'a pas encore posé de pari.
             </p>
           )}
@@ -182,16 +182,16 @@ export default function PronosticsReadView({ players, paris, periodes }) {
   if (!players.length) {
     return (
       <div style={{
-        padding: 'var(--sp-12) var(--sp-6)', borderTop: '1px solid var(--border)',
-        borderBottom: '1px solid var(--border)', textAlign: 'center',
+        padding: 'var(--v1-sp-12) var(--v1-sp-6)', borderTop: '1px solid var(--v1-border)',
+        borderBottom: '1px solid var(--v1-border)', textAlign: 'center',
       }}>
         <div style={{
-          fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.5rem', fontWeight: 700,
-          color: 'var(--text-muted)', marginBottom: 'var(--sp-3)', lineHeight: 1.2,
+          fontFamily: 'var(--v1-font-serif)', fontStyle: 'italic', fontSize: '1.5rem', fontWeight: 700,
+          color: 'var(--v1-text-muted)', marginBottom: 'var(--v1-sp-3)', lineHeight: 1.2,
         }}>
           Aucun pari<br />n'a encore été posé.
         </div>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        <p style={{ fontSize: '0.8rem', color: 'var(--v1-text-muted)', fontFamily: 'var(--v1-font)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
           Les paris apparaîtront ici dès qu'un joueur aura rejoint la partie.
         </p>
       </div>

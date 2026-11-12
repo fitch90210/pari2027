@@ -99,8 +99,8 @@ export function CandidateCombobox({ suggestions, value, onChange, placeholder = 
           left: 0,
           right: 0,
           zIndex: 50,
-          background: 'var(--bg-2)',
-          border: '1px solid var(--border-mid)',
+          background: 'var(--v1-bg-2)',
+          border: '1px solid var(--v1-border-mid)',
           borderRadius: '4px',
           maxHeight: '220px',
           overflowY: 'auto',
@@ -116,14 +116,14 @@ export function CandidateCombobox({ suggestions, value, onChange, placeholder = 
                 onMouseDown={e => { e.preventDefault(); select(label) }}
                 onMouseEnter={() => setActiveIdx(i)}
                 style={isCustom ? {
-                  padding: 'var(--sp-2) var(--sp-3)',
-                  borderTop: '1px solid var(--border)',
+                  padding: 'var(--v1-sp-2) var(--v1-sp-3)',
+                  borderTop: '1px solid var(--v1-border)',
                 } : {
-                  padding: 'var(--sp-2) var(--sp-3)',
+                  padding: 'var(--v1-sp-2) var(--v1-sp-3)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
-                  background: isActive ? 'var(--bg-3)' : 'transparent',
-                  color: 'var(--text-primary)',
+                  background: isActive ? 'var(--v1-bg-3)' : 'transparent',
+                  color: 'var(--v1-text-primary)',
                   transition: 'background 80ms',
                 }}
               >
@@ -168,14 +168,14 @@ export function M1Input({ value, onChange, locked }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--v1-sp-2)', marginBottom: 'var(--v1-sp-3)' }}>
         {value.map((c, i) => (
           <span key={c} className={`tag tag-animated ${removingIdx === i ? 'tag-removing' : 'tag-entering'}`}>
             {c}
             {!locked && <button type="button" onClick={() => remove(i)}>×</button>}
           </span>
         ))}
-        {value.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Aucun candidat ajouté</span>}
+        {value.length === 0 && <span style={{ color: 'var(--v1-text-muted)', fontSize: '0.875rem' }}>Aucun candidat ajouté</span>}
       </div>
       {!locked && (
         <CandidateCombobox
@@ -203,11 +203,11 @@ export function M2Input({ candidates, value, onChange, locked }) {
   const totalOk = Math.abs(total - 100) < 0.15
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
       {candidates.map(c => (
-        <div key={c} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
+        <div key={c} style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)' }}>
           <span style={{ flex: 1, fontSize: '0.9rem' }}>{c}</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-2)' }}>
             <input type="number" step="0.1" min="0" max="100"
               className="input input-sm" style={{ width: 90 }}
               placeholder="0.0" value={value[c] ?? ''}
@@ -219,12 +219,12 @@ export function M2Input({ candidates, value, onChange, locked }) {
       ))}
       <div style={{
         display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
-        gap: 'var(--sp-2)', paddingTop: 'var(--sp-2)',
-        borderTop: '1px solid var(--border)',
+        gap: 'var(--v1-sp-2)', paddingTop: 'var(--v1-sp-2)',
+        borderTop: '1px solid var(--v1-border)',
         fontSize: '0.875rem', fontWeight: 700,
       }}>
         <span className="text-muted">Total :</span>
-        <span style={{ color: totalOk ? 'var(--success)' : total > 0 ? 'var(--danger)' : 'var(--text-muted)' }}>
+        <span style={{ color: totalOk ? 'var(--v1-success)' : total > 0 ? 'var(--v1-danger)' : 'var(--v1-text-muted)' }}>
           {total.toFixed(1)} %
           {totalOk && ' ✓'}
           {!totalOk && total > 0 && ` (écart : ${(total - 100).toFixed(1)}%)`}
@@ -253,22 +253,22 @@ export function M3Input({ value, onChange, locked, officialCandidates }) {
       }
     }
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
-        <p className="text-muted text-sm" style={{ marginBottom: 'var(--sp-2)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-2)' }}>
+        <p className="text-muted text-sm" style={{ marginBottom: 'var(--v1-sp-2)' }}>
           Sélectionnez exactement 2 candidats qualifiés pour le second tour.
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-2)' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--v1-sp-2)' }}>
           {officialCandidates.map(c => {
             const selected = v.some(x => normalize(x) === normalize(c))
             return (
               <button key={c} type="button" onClick={() => toggle(c)} disabled={locked}
                 style={{
-                  padding: 'var(--sp-2) var(--sp-3)',
-                  border: `1px solid ${selected ? 'var(--border-strong)' : 'var(--border)'}`,
-                  background: selected ? 'var(--bg-4)' : 'var(--bg-2)',
-                  color: selected ? 'var(--text-primary)' : 'var(--text-secondary)',
-                  fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-                  cursor: locked ? 'default' : 'pointer', transition: 'all var(--t-fast)',
+                  padding: 'var(--v1-sp-2) var(--v1-sp-3)',
+                  border: `1px solid ${selected ? 'var(--v1-border-strong)' : 'var(--v1-border)'}`,
+                  background: selected ? 'var(--v1-bg-4)' : 'var(--v1-bg-2)',
+                  color: selected ? 'var(--v1-text-primary)' : 'var(--v1-text-secondary)',
+                  fontFamily: 'var(--v1-font)', fontSize: '0.875rem', fontWeight: 600,
+                  cursor: locked ? 'default' : 'pointer', transition: 'all var(--v1-t-fast)',
                 }}>
                 {selected ? '✓ ' : ''}{c}
               </button>
@@ -276,7 +276,7 @@ export function M3Input({ value, onChange, locked, officialCandidates }) {
           })}
         </div>
         {v.filter(Boolean).length > 0 && (
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 'var(--sp-1)' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--v1-text-muted)', marginTop: 'var(--v1-sp-1)' }}>
             Sélectionnés : {v.filter(Boolean).join(' vs ')}
           </div>
         )}
@@ -285,10 +285,10 @@ export function M3Input({ value, onChange, locked, officialCandidates }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--v1-sp-3)' }}>
       {[0, 1].map(i => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 700, minWidth: 24 }}>#{i + 1}</span>
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-3)' }}>
+          <span style={{ color: 'var(--v1-text-muted)', fontSize: '0.8rem', fontWeight: 700, minWidth: 24 }}>#{i + 1}</span>
           <div style={{ flex: 1 }}>
             <CandidateCombobox
               suggestions={CANDIDATE_SUGGESTIONS.filter(c => normalize(c) !== normalize(v[1 - i] ?? ''))}

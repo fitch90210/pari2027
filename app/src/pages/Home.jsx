@@ -62,17 +62,17 @@ export default function Home() {
       <div className="container">
 
         {/* ── Une ── */}
-        <header style={{ paddingTop: 'var(--sp-10)', paddingBottom: 'var(--sp-8)', borderBottom: '3px solid var(--text-primary)' }}>
+        <header style={{ paddingTop: 'var(--v1-sp-10)', paddingBottom: 'var(--v1-sp-8)', borderBottom: '3px solid var(--v1-text-primary)' }}>
 
           {/* Surtitre */}
           <div style={{
-            fontFamily: 'var(--font)',
+            fontFamily: 'var(--v1-font)',
             fontSize: '0.7rem',
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.14em',
-            color: 'var(--red)',
-            marginBottom: 'var(--sp-4)',
+            color: 'var(--v1-red)',
+            marginBottom: 'var(--v1-sp-4)',
           }}>
             Le jeu de pronostics · Présidentielle 2027
           </div>
@@ -80,7 +80,7 @@ export default function Home() {
           {/* Titre principal */}
           <h1 style={{
             fontStyle: 'italic',
-            marginBottom: 'var(--sp-5)',
+            marginBottom: 'var(--v1-sp-5)',
             maxWidth: 700,
             lineHeight: 1.05,
           }}>
@@ -89,11 +89,11 @@ export default function Home() {
 
           {/* Chapeau */}
           <p style={{
-            fontFamily: 'var(--font)',
+            fontFamily: 'var(--v1-font)',
             fontSize: '1.05rem',
-            color: 'var(--text-secondary)',
+            color: 'var(--v1-text-secondary)',
             maxWidth: 560,
-            marginBottom: 'var(--sp-8)',
+            marginBottom: 'var(--v1-sp-8)',
             lineHeight: 1.6,
           }}>
             Cinq pronostics : candidats, scores, finalistes, vainqueur et score du second tour.
@@ -102,14 +102,14 @@ export default function Home() {
           </p>
 
           {/* Barre action */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-5)', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary btn-lg" onClick={() => navigate('/pronostics')}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--v1-sp-5)', flexWrap: 'wrap' }}>
+            <button className="btn btn-primary btn-lg" onClick={() => navigate('/parier')}>
               Jouer maintenant
             </button>
             <span style={{
-              fontFamily: 'var(--font)',
+              fontFamily: 'var(--v1-font)',
               fontSize: '0.8rem',
-              color: 'var(--text-muted)',
+              color: 'var(--v1-text-muted)',
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}>
@@ -123,39 +123,39 @@ export default function Home() {
 
           {/* Colonne gauche : Phases */}
           <section className="home-phases">
-            <h4 style={{ marginBottom: 'var(--sp-5)', color: 'var(--text-secondary)' }}>
+            <h4 style={{ marginBottom: 'var(--v1-sp-5)', color: 'var(--v1-text-secondary)' }}>
               Les quatre périodes
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {periodes.map((p, i) => (
                 <div key={p.id} style={{
-                  paddingBottom: 'var(--sp-5)',
-                  marginBottom: 'var(--sp-5)',
-                  borderBottom: i < periodes.length - 1 ? '1px solid var(--border)' : 'none',
+                  paddingBottom: 'var(--v1-sp-5)',
+                  marginBottom: 'var(--v1-sp-5)',
+                  borderBottom: i < periodes.length - 1 ? '1px solid var(--v1-border)' : 'none',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--sp-2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--v1-sp-2)' }}>
                     <div style={{
-                      fontFamily: 'var(--font-serif)',
+                      fontFamily: 'var(--v1-font-serif)',
                       fontWeight: 700,
                       fontSize: '1rem',
-                      color: p.id === periodeEnCours?.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      color: p.id === periodeEnCours?.id ? 'var(--v1-text-primary)' : 'var(--v1-text-secondary)',
                     }}>
                       {p.id}. {p.label}
                     </div>
                     <PeriodeStatus enCours={periodeEnCours} id={p.id} />
                   </div>
                   <div style={{
-                    fontFamily: 'var(--font)',
+                    fontFamily: 'var(--v1-font)',
                     fontSize: '0.72rem',
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em',
-                    color: 'var(--red)',
-                    marginBottom: 'var(--sp-2)',
+                    color: 'var(--v1-red)',
+                    marginBottom: 'var(--v1-sp-2)',
                   }}>
                     Jusqu'au {fmtJour(p.ends_at)}
                   </div>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--v1-text-secondary)', margin: 0 }}>
                     {PERIODES_DESC[p.id]}
                   </p>
                 </div>
@@ -163,18 +163,18 @@ export default function Home() {
             </div>
 
             {/* Classement */}
-            <div style={{ borderTop: '3px solid var(--text-primary)', paddingTop: 'var(--sp-5)' }}>
-              <h4 style={{ marginBottom: 'var(--sp-4)', color: 'var(--text-secondary)' }}>Classement</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--sp-3)' }}>
+            <div style={{ borderTop: '3px solid var(--v1-text-primary)', paddingTop: 'var(--v1-sp-5)' }}>
+              <h4 style={{ marginBottom: 'var(--v1-sp-4)', color: 'var(--v1-text-secondary)' }}>Classement</h4>
+              <p style={{ fontSize: '0.875rem', color: 'var(--v1-text-secondary)', lineHeight: 1.7, marginBottom: 'var(--v1-sp-3)' }}>
                 Un classement par période, sans classement général : parier tôt, c'est concourir contre ceux qui parient tôt.
                 Dans chaque période, seul ton dernier pari compte. Pas de pari dans une période, pas de place dans son classement.
               </p>
               <div style={{
                 fontSize: '0.78rem',
-                color: 'var(--text-muted)',
-                fontFamily: 'var(--font)',
-                borderLeft: '2px solid var(--border-mid)',
-                paddingLeft: 'var(--sp-3)',
+                color: 'var(--v1-text-muted)',
+                fontFamily: 'var(--v1-font)',
+                borderLeft: '2px solid var(--v1-border-mid)',
+                paddingLeft: 'var(--v1-sp-3)',
               }}>
                 Départage en cas d'égalité : score du pronostic 2 (scores du 1er tour).
               </div>
@@ -183,7 +183,7 @@ export default function Home() {
 
           {/* Colonne droite : Pronostics */}
           <section className="home-pronostics">
-            <h4 style={{ marginBottom: 'var(--sp-5)', color: 'var(--text-secondary)' }}>
+            <h4 style={{ marginBottom: 'var(--v1-sp-5)', color: 'var(--v1-text-secondary)' }}>
               Les cinq pronostics
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -191,32 +191,32 @@ export default function Home() {
                 <div key={p.num} style={{
                   display: 'grid',
                   gridTemplateColumns: '28px 1fr',
-                  gap: 'var(--sp-4)',
-                  paddingBottom: 'var(--sp-5)',
-                  marginBottom: 'var(--sp-5)',
-                  borderBottom: i < PRONOSTICS.length - 1 ? '1px solid var(--border)' : 'none',
+                  gap: 'var(--v1-sp-4)',
+                  paddingBottom: 'var(--v1-sp-5)',
+                  marginBottom: 'var(--v1-sp-5)',
+                  borderBottom: i < PRONOSTICS.length - 1 ? '1px solid var(--v1-border)' : 'none',
                 }}>
                   <div style={{
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--v1-font-serif)',
                     fontWeight: 900,
                     fontStyle: 'italic',
                     fontSize: '1.1rem',
-                    color: 'var(--text-muted)',
+                    color: 'var(--v1-text-muted)',
                     paddingTop: 2,
                   }}>
                     {p.num}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 'var(--sp-1)' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 'var(--v1-sp-1)' }}>
                       {p.title}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 'var(--sp-1)' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--v1-text-secondary)', marginBottom: 'var(--v1-sp-1)' }}>
                       {p.desc}
                     </div>
                     <div style={{
-                      fontFamily: 'var(--font)',
+                      fontFamily: 'var(--v1-font)',
                       fontSize: '0.72rem',
-                      color: 'var(--success)',
+                      color: 'var(--v1-success)',
                       fontWeight: 600,
                     }}>
                       {p.pts}
@@ -230,9 +230,9 @@ export default function Home() {
 
         {/* ── CTA bas de page ── */}
         <div style={{
-          borderTop: '1px solid var(--border)',
-          marginTop: 'var(--sp-10)',
-          paddingTop: 'var(--sp-8)',
+          borderTop: '1px solid var(--v1-border)',
+          marginTop: 'var(--v1-sp-10)',
+          paddingTop: 'var(--v1-sp-8)',
           display: 'flex',
           justifyContent: 'center',
         }}>

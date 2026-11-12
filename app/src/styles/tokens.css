@@ -1,0 +1,152 @@
+/* ============================================================
+   Pari 2027 — tokens de la refonte UI
+   Piste B « Scrutin », épurée (références : Arc, Linear, Notion).
+   Validés le 12/11/2026. Clair par défaut, sombre selon le système,
+   forçable avec <html data-theme="light|dark">.
+   Ce fichier n'est encore importé nulle part : il sera branché au lot B.
+   ============================================================ */
+
+:root {
+  /* ── Couleurs : fond et surfaces ── */
+  --bg:            #FFFFFF;
+  --surface:       #F8F8F9;   /* cartes, bannière, champs */
+  --raised:        #FFFFFF;   /* élément posé sur une surface (onglet actif) */
+  --bar:           rgba(255, 255, 255, 0.92); /* barre d'onglets, barres collantes */
+
+  /* ── Couleurs : traits ── */
+  --border:        #E6E6E9;   /* 1 px partout */
+  --border-strong: #D4D4D8;   /* pouce de curseur, champ actif */
+  --track:         #ECECEF;   /* pistes de curseur, jauges, frise des mois */
+
+  /* ── Couleurs : texte (contraste AA sur --bg et --surface) ── */
+  --text:          #111113;
+  --text-2:        #62626A;   /* secondaire */
+  --text-3:        #75757D;   /* tertiaire : dates, rangs, onglets inactifs */
+
+  /* ── Accent unique : rouge « scrutin » ──
+     Réservé au bonus, à l'urgence et à la moyenne. Jamais pour une action. */
+  --accent:        #E5484D;   /* aplats, traits */
+  --accent-text:   #CD2B31;   /* texte rouge (AA) */
+  --accent-soft:   #FDECEC;   /* fond discret */
+
+  /* ── Action principale ── */
+  --btn:           #111113;
+  --btn-text:      #FFFFFF;
+  --focus:         #111113;   /* anneau de focus */
+
+  /* ── Avatars : teintes pâles (fond / initiales) ── */
+  --avatar-1-bg: #FDECEC;  --avatar-1-fg: #A1262B;
+  --avatar-2-bg: #E8F0FE;  --avatar-2-fg: #2350A8;
+  --avatar-3-bg: #E6F5EC;  --avatar-3-fg: #1F6B3E;
+  --avatar-4-bg: #FCF3DC;  --avatar-4-fg: #7A5A0E;
+
+  /* ── Typographie : Geist (Vercel, licence OFL), graisses 400 à 600 ──
+     Inter écartée (trop utilisée ailleurs). Geist Mono pour les petites
+     données techniques (dates, numéros) si besoin. */
+  --font: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
+  --font-numeric: tabular-nums;  /* chiffres alignés pour scores et pourcentages */
+
+  /* taille / interligne / graisse / approche */
+  --type-display:  600 56px/0.9 var(--font);   --track-display: -2.5px;  /* « +4 » */
+  --type-title-1:  600 28px/34px var(--font);  --track-title-1: -0.7px;  /* grand titre d'écran */
+  --type-title-2:  600 24px/30px var(--font);  --track-title-2: -0.5px;  /* titre d'étape */
+  --type-number:   600 22px/26px var(--font);  --track-number:  -0.6px;  /* moyennes, scores */
+  --type-headline: 600 15px/20px var(--font);  /* titre de barre, bouton */
+  --type-body:     400 15px/22px var(--font);
+  --type-callout:  400 14px/20px var(--font);
+  --type-footnote: 400 13px/18px var(--font);
+  --type-caption:  500 12px/16px var(--font);
+  --type-tab:      500 10px/12px var(--font);  /* libellés de la barre d'onglets */
+
+  /* ── Espacements : base 4 px ── */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px;
+  --gutter: 16px;            /* marge latérale mobile */
+
+  /* ── Rayons ── */
+  --r-sm:   6px;   /* segments, puces */
+  --r-md:   8px;   /* boutons, champs */
+  --r-lg:   12px;  /* cartes, listes groupées */
+  --r-full: 9999px;
+
+  /* ── Élévation : quasi nulle ── */
+  --shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  /* ── Dimensions ── */
+  --hit:        44px;  /* cible tactile minimale */
+  --btn-h:      44px;
+  --tabbar-h:   82px;  /* safe area comprise */
+  --row-h:      56px;  /* ligne de liste */
+
+  /* ── Mouvement ── */
+  --ease-out:   cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:   120ms;  /* pression, survol */
+  --dur-base:   200ms;  /* changement d'état */
+  --dur-slow:   320ms;  /* feuille, transition d'écran */
+
+  color-scheme: light;
+}
+
+/* ── Sombre : suit le système, sauf thème forcé ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:            #0E0E10;
+    --surface:       #17171A;
+    --raised:        #232328;
+    --bar:           rgba(14, 14, 16, 0.92);
+    --border:        #27272C;
+    --border-strong: #3A3A41;
+    --track:         #27272C;
+    --text:          #EDEDEF;
+    --text-2:        #A1A1AA;
+    --text-3:        #8A8A93;
+    --accent:        #FF6369;
+    --accent-text:   #FF6369;
+    --accent-soft:   #3B2123;
+    --btn:           #EDEDEF;
+    --btn-text:      #0E0E10;
+    --focus:         #EDEDEF;
+    --avatar-1-bg: #3B2123;  --avatar-1-fg: #FFB4B6;
+    --avatar-2-bg: #1C2A40;  --avatar-2-fg: #A8C8FF;
+    --avatar-3-bg: #1B3326;  --avatar-3-fg: #9EE2B8;
+    --avatar-4-bg: #3A3019;  --avatar-4-fg: #F2D58C;
+    --shadow-raised: none;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:            #0E0E10;
+  --surface:       #17171A;
+  --raised:        #232328;
+  --bar:           rgba(14, 14, 16, 0.92);
+  --border:        #27272C;
+  --border-strong: #3A3A41;
+  --track:         #27272C;
+  --text:          #EDEDEF;
+  --text-2:        #A1A1AA;
+  --text-3:        #8A8A93;
+  --accent:        #FF6369;
+  --accent-text:   #FF6369;
+  --accent-soft:   #3B2123;
+  --btn:           #EDEDEF;
+  --btn-text:      #0E0E10;
+  --focus:         #EDEDEF;
+  --avatar-1-bg: #3B2123;  --avatar-1-fg: #FFB4B6;
+  --avatar-2-bg: #1C2A40;  --avatar-2-fg: #A8C8FF;
+  --avatar-3-bg: #1B3326;  --avatar-3-fg: #9EE2B8;
+  --avatar-4-bg: #3A3019;  --avatar-4-fg: #F2D58C;
+  --shadow-raised: none;
+  color-scheme: dark;
+}
+
+/* ── Mouvement réduit ── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+}

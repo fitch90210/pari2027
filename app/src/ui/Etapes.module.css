@@ -1,0 +1,2 @@
+.etapes { height: 2px; background: var(--border); display: flex; }
+.rempli { background: var(--text); transition: width var(--dur-slow) var(--ease-out); }

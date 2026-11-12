@@ -114,6 +114,36 @@ Tout sur la branche `refonte-ui` ; chaque push donne une URL de preview branché
 
 **Inchangé** : `store/GameContext.jsx`, `lib/*`, `data/*`, base Supabase, fonctions SQL. Aucune migration.
 
+## Lot A — direction visuelle (en cours)
+
+Canevas : https://claude.ai/artifact/FCHDF4hEs3pZLVwpLjnYeq
+
+- **Pistes v1 (12/11)** : A Natif (rejetée : générique, bleu sans personnalité), B Scrutin (retenue comme base : de la personnalité en restant épuré), C Entre potes (violet et barre flottante « IA » rejetés ; on garde la bannière d'accueil, les curseurs de pourcentage et la visualisation des paris par avatars). Consigne : une UI plus « sharp ».
+- **Veille (12/11)** : 4 territoires construits sur B + les éléments retenus de C — 1 Bulletin (matière du vote, Archivo étroit, tampon rouge), 2 Ticket (le pari comme ticket imprimé, tout en mono, orange signal), 3 Soirée électorale (B affûtée, Geist, rouge « direct »), 4 Marché (codes des marchés de prédiction, sombre, vert acide). Jugée de mauvaise qualité (références tirées de recherches web) : écartée.
+- **Veille v2 (12/11, pixlpin.com)** : 24 références réelles en 6 thèmes (typo et grilles, données et classements, paris, ticket et reçu, curseurs, temps et groupe) et 3 territoires : 1 Affiche suisse (grille apparente, capitales serrées, accent chartreuse), 2 Reçu (le pari comme ticket imprimé, tampon, stylo rouge), 3 Tableau de score (en-tête de score, tableaux denses, cadran du bonus). Jugée trop proche de la v1 : écartée.
+- **Pistes de brand (12/11, pixlpin, ~270 fiches parcourues)** : 6 univers neufs, chacun avec couleurs, typos, mise en page, références et accueil maquetté — 1 Supporters (bleu club et orange, Anton), 2 Atelier riso (bleu et rose fluo superposés, Rubik Mono One), 3 La Gazette (hebdo satirique, manchette gothique, DM Serif), 4 Jeu de société (neo-brutal, cartes et dés, Lilita One), 5 3615 Pari (Minitel, palette 8 couleurs, Silkscreen/VT323), 6 Affiche militante (sérigraphie, pochoir, une encre par écran). Retour : la plus proche est la piste B (épurée), avec plus de couleurs comme le Jeu de société et peut-être des bordures épaisses.
+- **Piste B+ (12/11)** : base B (blanc, noir, Inter Tight, grands chiffres) + aplats ciel #4CC2FF, jaune #FFD23F, tomate #FF5A3C, menthe #2ED47A + bannière, curseurs et avatars de C. Trois écrans, en deux variantes : bordures épaisses (cerne 2,5 px, ombre dure) ou filets fins. Écartée : on laisse tomber l'aspect « jeu de société ».
+- **Direction retenue (12/11) : piste B Scrutin, épurée façon Arc / Linear / Notion.** Gris neutres, bordures d'un pixel, rayons de 8 à 12 px, Geist en graisses 500–600, un seul accent rouge (#E5484D, texte #CD2B31) réservé au bonus et à l'urgence, grands chiffres tabulaires. Avatars en teintes pâles, bannière, curseurs et avatars sur la ligne des paris conservés en version discrète. Maquettes clair et sombre sur la page « B · Scrutin épuré » du canevas, **validées le 12/11**.
+
+## Tokens (validés le 12/11/2026)
+
+Source de vérité : [app/src/styles/tokens.css](../app/src/styles/tokens.css), branché au lot B. Clair par défaut, sombre selon le système, forçable par `data-theme`.
+
+| Famille | Valeurs |
+|---|---|
+| Fonds | `--bg` #FFFFFF / #0E0E10 · `--surface` #F8F8F9 / #17171A · `--raised` (onglet actif) |
+| Traits | 1 px : `--border` #E6E6E9 / #27272C · `--border-strong` · `--track` (curseurs, jauges) |
+| Texte | `--text` #111113 / #EDEDEF · `--text-2` #62626A / #A1A1AA · `--text-3` #75757D / #8A8A93 (tous AA) |
+| Accent unique | rouge `--accent` #E5484D / #FF6369, `--accent-text` #CD2B31 : bonus, urgence, moyenne. Jamais pour une action |
+| Action | `--btn` noir en clair, blanc en sombre |
+| Avatars | 4 teintes pâles (fond + initiales) |
+| Typo | Geist 400–600 (Inter écartée : trop utilisée dans les autres projets ; Geist Mono en appoint) ; échelle display 56 · title-1 28 · title-2 24 · number 22 · headline/body 15 · callout 14 · footnote 13 · caption 12 · tab 10 ; chiffres tabulaires |
+| Espacements | base 4 px (4 → 48), gouttière 16 px |
+| Rayons | 6 (segments) · 8 (boutons) · 12 (cartes) |
+| Élévation | aucune ombre, sauf l'onglet actif (souffle de 1 px) |
+| Dimensions | cible tactile 44 px, bouton 44 px, ligne 56 px, barre d'onglets 82 px |
+| Mouvement | courbe `--ease-out`, 120 / 200 / 320 ms, coupés si `prefers-reduced-motion` |
+
 ## Vérification
 
 - `npm --prefix app test` (barème inchangé, nouveaux tests du bonus et du classement général), `npm --prefix app run build`, lint sans nouvelle erreur.

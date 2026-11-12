@@ -1,0 +1,11 @@
+/* Coque de l'app : contenu + barre d'onglets.
+   Transition : les anciennes pages (.page, style v1) gardent leur aspect,
+   mais leurs marges sont adaptées à la nouvelle navigation. Retiré au lot H. */
+.contenu :global(.page) {
+  padding-top: var(--sp-6);
+  padding-bottom: calc(var(--tabbar-h) + var(--sp-8));
+}
+
+@media (min-width: 768px) {
+  .contenu :global(.page) { padding-top: calc(56px + var(--sp-8)); padding-bottom: var(--sp-12); }
+}

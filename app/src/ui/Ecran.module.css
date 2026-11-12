@@ -1,0 +1,25 @@
+/* Écran de la nouvelle UI : fond, typo et marges des tokens, quel que soit l'ancien CSS global. */
+.ecran {
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: var(--sp-5) var(--gutter) calc(var(--tabbar-h) + var(--sp-8));
+  background: var(--bg);
+  color: var(--text);
+  font: var(--type-body);
+  font-family: var(--font);
+}
+.colonne { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.entete { display: flex; flex-direction: column; gap: var(--sp-1); padding: 0 2px; }
+.surtitre { font: var(--type-caption); color: var(--text-2); }
+.titre {
+  margin: 0;
+  font: var(--type-title-1);
+  font-family: var(--font);
+  letter-spacing: var(--track-title-1);
+  color: var(--text);
+}
+
+@media (min-width: 768px) {
+  .ecran { padding-top: calc(56px + var(--sp-8)); padding-bottom: var(--sp-12); }
+}

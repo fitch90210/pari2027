@@ -1,0 +1,15 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--r-full);
+  font-family: var(--font);
+  font-weight: 600;
+  line-height: 1;
+  user-select: none;
+}
+.t1 { background: var(--avatar-1-bg); color: var(--avatar-1-fg); }
+.t2 { background: var(--avatar-2-bg); color: var(--avatar-2-fg); }
+.t3 { background: var(--avatar-3-bg); color: var(--avatar-3-fg); }
+.t4 { background: var(--avatar-4-bg); color: var(--avatar-4-fg); }
