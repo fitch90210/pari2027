@@ -112,3 +112,59 @@ export function computeLeaderboard(players, pronosticsMap, results) {
     })
     .map((e, i) => ({ ...e, rank: i + 1 }))
 }
+
+// ============================================================
+// Refonte « paris » (lot 2) — scoring par période
+// Les fonctions ci-dessus (scoreDetail, scoreS3, computeLeaderboard)
+// servent encore l'ancienne interface ; elles seront retirées à la bascule.
+// ============================================================
+
+// Score d'un pari, limité aux pronostics scorés de la période (`periode.scored`).
+// - Pronostic 2 : la liste de référence est celle du pari (m1) en périodes 1 et 2,
+//   et les vrais candidats du 1er tour à partir de la période 3 (liste officielle connue).
+// - Pronostic 5 : toujours le score prédit pour le vainqueur.
+export function scorePari(pari, results, periode) {
+  const empty = { m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, total: 0 }
+  if (!pari || !results || !periode) return empty
+  const scored = new Set(periode.scored ?? [])
+  const m1 = scored.has('m1') ? scoreM1(pari.m1, results.candidates) : 0
+  const m2List = periode.id <= 2 ? pari.m1 : results.candidates
+  const m2 = scored.has('m2') ? scoreM2(pari.m2, results.scores, m2List) : 0
+  const m3 = scored.has('m3') ? scoreM3(pari.m3, results.finalists) : 0
+  const m4 = scored.has('m4') ? scoreM4(pari.m4, results.winner) : 0
+  const m5 = scored.has('m5') ? scoreM5(pari.m5, results.winnerScore) : 0
+  return { m1, m2, m3, m4, m5, total: m1 + m2 + m3 + m4 + m5 }
+}
+
+// Classement d'une période : le dernier pari de chaque joueur posé dans la période.
+// Un joueur sans pari dans la période n'apparaît pas.
+// Départage : score du pronostic 2, puis pari le plus ancien.
+// Sans résultats saisis, il n'y a pas de classement.
+export function classementPeriode(paris, periode, results) {
+  if (!results || !periode) return []
+
+  const dernierParJoueur = new Map()
+  for (const pari of paris) {
+    if (pari.periode !== periode.id) continue
+    const t = new Date(pari.created_at).getTime()
+    const cur = dernierParJoueur.get(pari.player_id)
+    if (!cur || t > cur.t || (t === cur.t && pari.id > cur.pari.id)) {
+      dernierParJoueur.set(pari.player_id, { pari, t })
+    }
+  }
+
+  return [...dernierParJoueur.values()]
+    .map(({ pari, t }) => ({
+      player_id: pari.player_id,
+      pari,
+      scores: scorePari(pari, results, periode),
+      t,
+    }))
+    .sort((a, b) =>
+      b.scores.total - a.scores.total ||
+      b.scores.m2 - a.scores.m2 ||
+      a.t - b.t ||
+      a.pari.id - b.pari.id
+    )
+    .map(({ player_id, pari, scores }, i) => ({ player_id, pari, scores, rank: i + 1 }))
+}
