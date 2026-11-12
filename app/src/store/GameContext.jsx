@@ -160,6 +160,7 @@ export function GameProvider({ children }) {
     const { data, error } = await supabase.from('paris').select('*').order('created_at')
     if (error) throw error
     setParis(data)
+    setNow(Date.now())
   }
 
   const checkPariStatus = (playerId, status) => {

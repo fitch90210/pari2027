@@ -371,7 +371,7 @@ export default function Pronostics() {
   const modifiable = (pari) =>
     periodeEnCours?.id === pari.periode && new Date(pari.created_at).getTime() > now - FENETRE_MS
   const heuresRestantes = (pari) =>
-    Math.max(1, Math.ceil((new Date(pari.created_at).getTime() + FENETRE_MS - now) / 3600000))
+    Math.min(24, Math.max(1, Math.ceil((new Date(pari.created_at).getTime() + FENETRE_MS - now) / 3600000)))
 
   const initialNouveau = periodeEnCours ? formDepuis(dernier, periodeEnCours, officialCandidatesR1) : VIDE
   const termine = () => { setMode(null); setConfirmation('Pari enregistré.') }
