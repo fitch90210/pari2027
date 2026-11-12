@@ -10,7 +10,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 - **En ligne** : https://pari2027.vercel.app, version sécurisée, phase 1 active.
 - **Données** : 11 joueurs, 10 pronostics de phase 1 (avril–mai 2026). 9 sont **gelés volontairement** depuis le 3 mai 2026 (`locked_at`), seul celui de Willy ne l'est pas. Le site les affiche en lecture seule.
-- **Prochaine étape** : la refonte fonctionnelle « parier à tout moment, sans phases ». Cadrage validé et plan technique prêts, aucun code écrit. Démarrer par le **lot 0** du plan.
+- **En cours** : la refonte fonctionnelle « parier à tout moment, sans phases », sur la branche `refonte-paris`. Lot 0 fait le 12 novembre 2026 (voir « Environnement de test »). Prochaine étape : **lot 1**, migration v4 sur la base de test.
 - **Ensuite** : une refonte UI, prévue après la refonte fonctionnelle.
 
 ## Documents
@@ -31,6 +31,12 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
   - Secrets hachés (bcrypt) dans le schéma `private`, non exposé par l'API.
 - **Hébergement** : Vercel, projet `pari2027`, relié au dépôt GitHub `fitch90210/pari2027` (public), **Root Directory = `app`**. Un push sur `main` déploie en production.
 - **Keepalive** : [app/api/keepalive.js](app/api/keepalive.js) + cron quotidien (8h UTC) dans `app/vercel.json`, pour que Supabase gratuit ne se mette pas en pause.
+
+## Environnement de test
+
+- **Base Supabase de test** : `https://yrgbugbasrilwxkqmhnm.supabase.co`, amorcée avec `secrets/test_bootstrap.local.sql` (schéma, migrations, copie de la sauvegarde du 11/11). Ses codes sont différents de ceux de la prod : `secrets/codes_test.txt`.
+- **Vercel** : `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` sont définies pour **Preview** (base de test) et **Production** (vraie base). Tout push sur une autre branche que `main` donne une URL de preview branchée sur la base de test.
+- À supprimer après la refonte UI : le projet Supabase de test et les variables Preview.
 
 ## Opérations
 
