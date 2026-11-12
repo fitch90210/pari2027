@@ -10,7 +10,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 - **En ligne** : https://pari2027.vercel.app, version sécurisée, phase 1 active.
 - **Données** : 11 joueurs, 10 pronostics de phase 1 (avril–mai 2026). 9 sont **gelés volontairement** depuis le 3 mai 2026 (`locked_at`), seul celui de Willy ne l'est pas. Le site les affiche en lecture seule.
-- **En cours** : la refonte fonctionnelle « parier à tout moment, sans phases », sur la branche `refonte-paris`. Lot 0 fait le 12 novembre 2026 (voir « Environnement de test »). Prochaine étape : **lot 1**, migration v4 sur la base de test.
+- **En cours** : la refonte fonctionnelle « parier à tout moment, sans phases », sur la branche `refonte-paris`. Lots 0 et 1 faits le 12 novembre 2026 : base de test, puis migration v4 (`supabase_migration_v4_paris.sql`, tests dans `supabase_test_v4.sql`) jouée et contrôlée sur la base de test uniquement, pas en prod. Prochaine étape : **lot 2** (`scoring.js` par période + Vitest).
 - **Ensuite** : une refonte UI, prévue après la refonte fonctionnelle.
 
 ## Documents
