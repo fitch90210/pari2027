@@ -6,12 +6,13 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 **Les paris enregistrés en base sont de vraies données, irremplaçables.** Jamais de `DELETE`, `TRUNCATE`, reset ou migration destructive sur la base de production. Avant toute migration : sauvegarde JSON des tables (voir « Sauvegarde » ci-dessous), migration additive, contrôle après coup.
 
-## État au 11 novembre 2026
+## État au 12 novembre 2026
 
-- **En ligne** : https://pari2027.vercel.app, version sécurisée, phase 1 active.
-- **Données** : 11 joueurs, 10 pronostics de phase 1 (avril–mai 2026). 9 sont **gelés volontairement** depuis le 3 mai 2026 (`locked_at`), seul celui de Willy ne l'est pas. Le site les affiche en lecture seule.
-- **En cours** : la refonte fonctionnelle « parier à tout moment, sans phases », sur la branche `refonte-paris`. Lots 0 et 1 faits le 12 novembre 2026 : base de test, puis migration v4 (`supabase_migration_v4_paris.sql`, tests dans `supabase_test_v4.sql`) jouée et contrôlée sur la base de test uniquement, pas en prod. Lot 2 fait le même jour : `scorePari` et `classementPeriode` dans `scoring.js`, `periodeCourante` dans `lib/periodes.js`, 20 tests Vitest (`npm --prefix app test`). Lot 3 fait le même jour : `GameContext` charge `paris` et `periodes` (en plus de l'ancien modèle, retiré aux lots 5 et 7) et expose `createPari`/`updatePari` ; la page `/pronostics` est devenue « Mes paris » (champs de saisie dans `components/PronosticInputs.jsx`), testée en preview sur la base de test. Lot 4 fait le même jour : « Tous les paris » (dernier pari + historique) et classements par période (un onglet par période) ; l'ancien scoring par phases est retiré. Lot 5 fait le même jour : Admin (bornes des périodes en heure de Paris), Accueil et navigation sans phases ; `session`, `pronosticsMap` et `upsertPronostic` retirés du `GameContext`. Lot 6 fait le même jour : mode démo (`pages/Demo.jsx`, visible dans la nav seulement quand les résultats des deux tours sont saisis ; calcul local, aucun appel serveur), vérifié avec de faux résultats saisis dans la base de test (classements par période compris). L'éditeur de périodes de l'admin a aussi été validé par l'utilisateur en preview. Prochaine étape : **lot 7** (bascule en production : sauvegarde, migration v4, merge sur `main`, retrait de `save_pronostic` et `admin_set_session`).
-- **Ensuite** : une refonte UI, prévue après la refonte fonctionnelle.
+- **En ligne** : https://pari2027.vercel.app, **refonte fonctionnelle déployée** (lots 0 à 7 : parier à tout moment, sans phases). Migration v4 jouée en production et contrôlée : les 10 pronostics de phase 1 sont devenus 10 paris de période 1, identiques aux originaux.
+- **Données** : 11 joueurs, 10 paris (avril–mai 2026), tous en période 1. La table `pronostics` est conservée en archive. Sauvegardes dans `backups/` (dernière : `backups/2026-11-12_1108/`, faite juste avant la migration).
+- **Périodes** : bornes provisoires (fin P1 : 1er sept. 2026, P2 : 15 mars 2027, P3 : 11 avril 2027, P4 : 25 avril 2027), modifiables dans l'admin. La période en cours est la 2.
+- **Reste à faire** : jouer `supabase_migration_v5_nettoyage.sql` en prod (retire `save_pronostic` et `admin_set_session`), supprimer les variables Vercel « Preview » et la base de test *à la fin de la refonte UI*, prévenir le groupe (lot 8 : les joueurs doivent reposer un pari en période 2 pour figurer à son classement).
+- **Ensuite** : la refonte UI, à lancer sur demande.
 
 ## Documents
 
@@ -20,14 +21,14 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 | [docs/refonte-fonctionnelle.md](docs/refonte-fonctionnelle.md) | Cadrage validé : paris datés, modifiables 24 h, classements par période, mode démo |
 | [docs/refonte-plan-technique.md](docs/refonte-plan-technique.md) | Modèle de données, fonctions SQL, lots 0 à 8, risques |
 | [specs_pari2027.docx](specs_pari2027.docx) | Specs d'origine (avril 2026). Le code a divergé : un seul classement qui additionne les phases, pas deux. |
-| `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql` | Schéma et migrations, à jouer dans cet ordre |
+| `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql`, `supabase_migration_v4_paris.sql`, `supabase_migration_v5_nettoyage.sql` | Schéma et migrations, à jouer dans cet ordre. `supabase_test_v4.sql` : tests SQL de la v4, à jouer sur la base de test seulement (tout est annulé en fin de script). |
 
 ## Architecture
 
-- **Frontend** : React 19 + Vite dans `app/`. Tout l'accès aux données passe par [app/src/store/GameContext.jsx](app/src/store/GameContext.jsx). Barème dans [app/src/lib/scoring.js](app/src/lib/scoring.js).
-- **Base** : Supabase. Le public n'a que la **lecture** sur `game_state`, `players`, `pronostics`. Toute écriture passe par des fonctions SQL `SECURITY DEFINER` (migration v3) :
-  - joueurs : `create_player`, `verify_player_code`, `save_pronostic` (code à 4 chiffres, 5 échecs = blocage 15 min) ;
-  - admin : `admin_login`, `admin_set_session`, `admin_save_results`, `admin_save_official_candidates`, `admin_create_player`, `admin_reset_player_code`, `admin_remove_player`.
+- **Frontend** : React 19 + Vite dans `app/`. Tout l'accès aux données passe par [app/src/store/GameContext.jsx](app/src/store/GameContext.jsx). Barème et classements par période dans [app/src/lib/scoring.js](app/src/lib/scoring.js) (tests Vitest : `npm --prefix app test`).
+- **Base** : Supabase. Le public n'a que la **lecture** sur `game_state`, `players`, `periodes`, `paris` (et `pronostics`, archive). Toute écriture passe par des fonctions SQL `SECURITY DEFINER` (migration v3) :
+  - joueurs : `create_player`, `verify_player_code`, `create_pari`, `update_pari` (code à 4 chiffres, 5 échecs = blocage 15 min ; la période d'un pari est fixée par le serveur, un pari n'est modifiable que 24 h et tant que sa période est en cours) ;
+  - admin : `admin_login`, `admin_save_periodes`, `admin_save_results`, `admin_save_official_candidates`, `admin_create_player`, `admin_reset_player_code`, `admin_remove_player`.
   - Secrets hachés (bcrypt) dans le schéma `private`, non exposé par l'API.
 - **Hébergement** : Vercel, projet `pari2027`, relié au dépôt GitHub `fitch90210/pari2027` (public), **Root Directory = `app`**. Un push sur `main` déploie en production.
 - **Keepalive** : [app/api/keepalive.js](app/api/keepalive.js) + cron quotidien (8h UTC) dans `app/vercel.json`, pour que Supabase gratuit ne se mette pas en pause.
@@ -45,7 +46,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **CLI Vercel** : `/Users/paulalbagli/.nvm/versions/node/v20.9.0/bin/vercel` (absente du PATH de la version de Node par défaut).
 - **SQL** : Claude n'a que la clé `anon`. Toute migration se fait en collant le SQL dans Supabase > SQL Editor ; l'alerte « destructive operations » sur des `DROP POLICY`/`REVOKE` est normale, choisir « Run and enable RLS ».
 - **Sauvegarde** : lire les 3 tables via l'API REST avec la clé `anon` et les écrire dans `backups/<date>/` (dernière : `backups/2026-11-11_2151/`).
-- **Lint** : 5 erreurs préexistantes (`set-state-in-effect`, `only-export-components`), non bloquantes pour le build.
+- **Lint** : 4 erreurs préexistantes (`set-state-in-effect`, `only-export-components`), non bloquantes pour le build.
 
 ## Fichiers locaux non versionnés
 
