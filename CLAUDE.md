@@ -11,8 +11,8 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **En ligne** : https://pari2027.vercel.app, **refonte fonctionnelle déployée** (lots 0 à 7 : parier à tout moment, sans phases). Migration v4 jouée en production et contrôlée : les 10 pronostics de phase 1 sont devenus 10 paris de période 1, identiques aux originaux.
 - **Données** : 11 joueurs, 10 paris (avril–mai 2026), tous en période 1. La table `pronostics` est conservée en archive. Sauvegardes dans `backups/` (dernière : `backups/2026-11-12_1108/`, faite juste avant la migration).
 - **Périodes** : bornes provisoires (fin P1 : 1er sept. 2026, P2 : 15 mars 2027, P3 : 11 avril 2027, P4 : 25 avril 2027), modifiables dans l'admin. La période en cours est la 2.
-- **Reste à faire** : (migration v5 jouée en prod le 12/11 : `save_pronostic` et `admin_set_session` n'existent plus) supprimer les variables Vercel « Preview » et la base de test *à la fin de la refonte UI*, prévenir le groupe (lot 8 : les joueurs doivent reposer un pari en période 2 pour figurer à son classement).
-- **Ensuite** : la refonte UI, à lancer sur demande.
+- **Reste à faire** : (migration v5 jouée en prod le 12/11 : `save_pronostic` et `admin_set_session` n'existent plus) supprimer les variables Vercel « Preview » et la base de test *à la fin de la refonte UI*, prévenir le groupe (lot 8) — à la bascule de la refonte UI, car la règle change : bonus d'anticipation et classement général de paris (révision du 12/11 dans `docs/refonte-fonctionnelle.md`).
+- **Ensuite** : la refonte UI, **cadrée le 12/11** ([docs/refonte-ui.md](docs/refonte-ui.md), lots A à H, branche `refonte-ui`). Lot R fait sur la branche `refonte-ui` (non commité) : `bonusAnticipation` et `classementGeneral` dans `scoring.js`, 33 tests verts ; `classementPeriode` reste utilisé par Classements et Demo jusqu'à l'UI. Prochaine étape : lot A (pistes de DA).
 
 ## Documents
 
@@ -20,6 +20,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 |---|---|
 | [docs/refonte-fonctionnelle.md](docs/refonte-fonctionnelle.md) | Cadrage validé : paris datés, modifiables 24 h, classements par période, mode démo |
 | [docs/refonte-plan-technique.md](docs/refonte-plan-technique.md) | Modèle de données, fonctions SQL, lots 0 à 8, risques |
+| [docs/refonte-ui.md](docs/refonte-ui.md) | Cadrage validé de la refonte UI : décisions, arborescence, parcours, lots A à H |
 | [specs_pari2027.docx](specs_pari2027.docx) | Specs d'origine (avril 2026). Le code a divergé : un seul classement qui additionne les phases, pas deux. |
 | `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql`, `supabase_migration_v4_paris.sql`, `supabase_migration_v5_nettoyage.sql` | Schéma et migrations, à jouer dans cet ordre. `supabase_test_v4.sql` : tests SQL de la v4, à jouer sur la base de test seulement (tout est annulé en fin de script). |
 

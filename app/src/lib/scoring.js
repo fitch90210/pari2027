@@ -2,6 +2,8 @@
 // Moteur de scoring — Jeu de Paris 2027
 // ============================================================
 
+import { isoVersParis } from './periodes'
+
 const normalize = (str) => str?.trim().toLowerCase() ?? ''
 
 // Manche 1 : candidats prédits vs réels
@@ -99,6 +101,60 @@ export function classementPeriode(paris, periode, results) {
       scores: scorePari(pari, results, periode),
       t,
     }))
+    .sort((a, b) =>
+      b.scores.total - a.scores.total ||
+      b.scores.m2 - a.scores.m2 ||
+      a.t - b.t ||
+      a.pari.id - b.pari.id
+    )
+    .map(({ player_id, pari, scores }, i) => ({ player_id, pari, scores, rank: i + 1 }))
+}
+
+// ============================================================
+// Classement général (révision du 12/11/2026)
+// ============================================================
+// Chaque pari est scoré indépendamment (barème de sa période) et reçoit un
+// bonus d'anticipation : +1 point par mois entier entre sa date et la fin de
+// la période 3 (la veille du 1er tour). Un pari de la période 4 gagne 0.
+// Le classement liste des paris : un joueur peut y figurer plusieurs fois.
+
+export const BONUS_PAR_MOIS = 1
+const PERIODE_BORNE_BONUS = 3
+
+// Mois entiers (heure de Paris) entre deux instants ISO ; 0 si `finIso` est passé.
+function moisEntiers(debutIso, finIso) {
+  const a = isoVersParis(debutIso)
+  const b = isoVersParis(finIso)
+  let mois = (Number(b.slice(0, 4)) - Number(a.slice(0, 4))) * 12 + (Number(b.slice(5, 7)) - Number(a.slice(5, 7)))
+  if (b.slice(8) < a.slice(8)) mois-- // jour et heure du mois non encore atteints
+  return Math.max(0, mois)
+}
+
+// Bonus d'un pari daté de `createdAt`, selon la fin de la période 3.
+export function bonusAnticipation(createdAt, periodes) {
+  const fin = periodes?.find(p => p.id === PERIODE_BORNE_BONUS)?.ends_at
+  if (!createdAt || !fin) return 0
+  return moisEntiers(createdAt, fin) * BONUS_PAR_MOIS
+}
+
+// Classement général : une ligne par pari, trié par total (barème + bonus).
+// Départage : score du pronostic 2, puis pari le plus ancien.
+// Sans résultats saisis, il n'y a pas de classement.
+export function classementGeneral(paris, periodes, results) {
+  if (!results || !periodes?.length) return []
+
+  return paris
+    .map(pari => {
+      const periode = periodes.find(p => p.id === pari.periode)
+      const base = scorePari(pari, results, periode)
+      const bonus = bonusAnticipation(pari.created_at, periodes)
+      return {
+        player_id: pari.player_id,
+        pari,
+        scores: { ...base, bareme: base.total, bonus, total: base.total + bonus },
+        t: new Date(pari.created_at).getTime(),
+      }
+    })
     .sort((a, b) =>
       b.scores.total - a.scores.total ||
       b.scores.m2 - a.scores.m2 ||

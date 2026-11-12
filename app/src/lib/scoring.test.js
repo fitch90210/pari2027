@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  scoreM1, scoreM2, scoreM3, scoreM4, scoreM5, scorePari, classementPeriode,
+  scoreM1, scoreM2, scoreM3, scoreM4, scoreM5, scorePari, classementPeriode, bonusAnticipation, classementGeneral,
 } from './scoring'
 import { periodeCourante, isoVersParis, parisVersIso } from './periodes'
 import { resultatsComplets } from './pari'
@@ -189,5 +189,86 @@ describe('mode démo', () => {
     expect(c.map(e => e.player_id)).toEqual(['x', '__demo__', 'y'])
     expect(c.find(e => e.player_id === '__demo__').rank).toBe(2) // égalité avec x : x est plus ancien
     expect(vrais).toHaveLength(2)
+  })
+})
+
+describe('bonus d\'anticipation', () => {
+  // Fin de la période 3 : 11 avril 2027, 00:00 heure de Paris
+  const periodes = [
+    { ...P1, ends_at: '2026-08-31T22:00:00Z' },
+    { ...P2, ends_at: '2027-03-14T23:00:00Z' },
+    { ...P3, ends_at: '2027-04-10T22:00:00Z' },
+    { ...P4, ends_at: '2027-04-24T22:00:00Z' },
+  ]
+
+  it('+1 point par mois entier d\'avance', () => {
+    expect(bonusAnticipation('2026-04-01T10:00:00Z', periodes)).toBe(12)
+    expect(bonusAnticipation('2026-04-23T10:00:00Z', periodes)).toBe(11)
+    expect(bonusAnticipation('2026-11-12T10:00:00Z', periodes)).toBe(4)
+  })
+  it('un mois n\'est acquis qu\'une fois révolu (heure de Paris)', () => {
+    // 11 décembre 2026 à 00:00 (Paris) → 4 mois pile ; une minute plus tard → 3
+    expect(bonusAnticipation('2026-12-10T23:00:00Z', periodes)).toBe(4)
+    expect(bonusAnticipation('2026-12-10T23:01:00Z', periodes)).toBe(3)
+  })
+  it('0 la veille du scrutin, en période 4, ou sans période 3', () => {
+    expect(bonusAnticipation('2027-04-10T12:00:00Z', periodes)).toBe(0)
+    expect(bonusAnticipation('2027-04-15T12:00:00Z', periodes)).toBe(0)
+    expect(bonusAnticipation('2026-04-01T10:00:00Z', [])).toBe(0)
+    expect(bonusAnticipation(null, periodes)).toBe(0)
+  })
+})
+
+describe('classementGeneral', () => {
+  const periodes = [
+    { ...P1, ends_at: '2026-08-31T22:00:00Z' },
+    { ...P2, ends_at: '2027-03-14T23:00:00Z' },
+    { ...P3, ends_at: '2027-04-10T22:00:00Z' },
+    { ...P4, ends_at: '2027-04-24T22:00:00Z' },
+  ]
+  const mk = (id, player_id, periode, created_at, over = {}) => ({
+    ...pari, id, player_id, periode, created_at, ...over,
+  })
+
+  it('sans résultats, pas de classement', () => {
+    expect(classementGeneral([pari], periodes, null)).toEqual([])
+  })
+
+  it('chaque pari est une ligne : un joueur peut apparaître plusieurs fois', () => {
+    const paris = [
+      mk(1, 'x', 1, '2026-05-01T10:00:00Z'),
+      mk(2, 'x', 2, '2026-11-12T10:00:00Z'),
+    ]
+    const c = classementGeneral(paris, periodes, results)
+    expect(c.map(e => [e.pari.id, e.rank])).toEqual([[1, 1], [2, 2]])
+  })
+
+  it('total = barème de la période du pari + bonus', () => {
+    const c = classementGeneral([mk(1, 'x', 1, '2026-05-01T10:00:00Z')], periodes, results)
+    expect(c[0].scores).toMatchObject({ bareme: 26, bonus: 11, total: 37 })
+  })
+
+  it('le bonus peut renverser un meilleur pari posé plus tard', () => {
+    const paris = [
+      mk(1, 'tard', 2, '2027-02-01T10:00:00Z'),                          // 26 + 2
+      mk(2, 'tot', 1, '2026-04-30T10:00:00Z', { m4: 'B', m5: 10 }),      // 18 + 11
+    ]
+    expect(classementGeneral(paris, periodes, results).map(e => e.player_id)).toEqual(['tot', 'tard'])
+  })
+
+  it('chaque pari est scoré avec le barème de sa période', () => {
+    const c = classementGeneral([mk(1, 'x', 4, '2027-04-15T10:00:00Z')], periodes, results)
+    expect(c[0].scores).toMatchObject({ bareme: 8, bonus: 0, total: 8 })
+  })
+
+  it('départage : pronostic 2, puis pari le plus ancien', () => {
+    const base = { m1: [], m3: [], m4: '' }
+    const paris = [
+      mk(1, 'y', 3, '2027-03-20T10:00:00Z', { ...base, m2: { A: 31 }, m5: 53 }),
+      mk(2, 'x', 3, '2027-03-20T10:00:00Z', { ...base, m2: { A: 30, C: 24 }, m5: null }),
+    ]
+    const c = classementGeneral(paris, periodes, results)
+    expect(c.map(e => e.scores.total)).toEqual([c[0].scores.total, c[0].scores.total])
+    expect(c.map(e => e.player_id)).toEqual(['x', 'y'])
   })
 })

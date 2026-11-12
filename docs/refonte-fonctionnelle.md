@@ -76,6 +76,23 @@ Les paris ne sont jamais écrasés : chaque nouveau pari s'ajoute. On garde ains
 
 Les 10 paris existants comptent uniquement pour la période 1. Pour figurer au classement des périodes 2, 3 et 4, chaque joueur devra reposer un pari pendant ces périodes : il faudra prévenir le groupe au lancement, puis à chaque changement de période.
 
+## Révision du 12 novembre 2026 : bonus d'anticipation
+
+*Décidée pendant le cadrage de la refonte UI. Remplace les lignes « Scoring » et « Classement » du tableau des décisions ; le reste tient toujours.*
+
+| Sujet | Avant | Désormais |
+|---|---|---|
+| Scoring | Barème seul, sans pondération par la date | Barème **+ bonus d'anticipation : +1 point par mois entier** entre la date du pari et la veille du 1er tour (fin de la période 3). Un pari d'avril 2026 gagne +11 ou +12, un pari de la période 4 gagne 0 |
+| Classement | Un par période, dernier pari de chaque joueur dans la période | **Un classement général unique, de paris** : chaque pari y figure, un joueur peut y apparaître plusieurs fois |
+| Rôle des périodes | Classements séparés | **Ouverture et fermeture des pronostics seulement** (liste officielle imposée en P3, pronostics 4 et 5 seuls en P4). Un pari reste scoré sur les pronostics ouverts dans sa période |
+| Départage | Pronostic 2, puis pari le plus ancien | Inchangé |
+
+**Faille assumée** : rien n'empêche un joueur de poser beaucoup de paris variés tôt pour placer l'un d'eux en tête. Entre amis, on choisit de faire confiance plutôt que d'ajouter une limite.
+
+**Conséquence** : les 10 paris de la période 1 concourent directement au classement général, avec le bonus maximal. Plus besoin de « reposer un pari en P2 pour figurer au classement » : le message prévu au lot 8 change de contenu.
+
+**Mise en œuvre** : côté navigateur uniquement (`lib/scoring.js` et ses tests), à partir de `created_at` et de la fin de la période 3. Aucune migration. Livrée avec la refonte UI, dans la même bascule.
+
 ## Hors périmètre
 
 - **Refonte UI** : prévue juste après cette refonte fonctionnelle.
