@@ -11,7 +11,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **En ligne** : https://pari2027.vercel.app, **refonte fonctionnelle déployée** (lots 0 à 7 : parier à tout moment, sans phases). Migration v4 jouée en production et contrôlée : les 10 pronostics de phase 1 sont devenus 10 paris de période 1, identiques aux originaux.
 - **Données** : 11 joueurs, 10 paris (avril–mai 2026), tous en période 1. La table `pronostics` est conservée en archive. Sauvegardes dans `backups/` (dernière : `backups/2026-11-12_1108/`, faite juste avant la migration).
 - **Périodes** : bornes provisoires (fin P1 : 1er sept. 2026, P2 : 15 mars 2027, P3 : 11 avril 2027, P4 : 25 avril 2027), modifiables dans l'admin. La période en cours est la 2.
-- **Reste à faire** : jouer `supabase_migration_v5_nettoyage.sql` en prod (retire `save_pronostic` et `admin_set_session`), supprimer les variables Vercel « Preview » et la base de test *à la fin de la refonte UI*, prévenir le groupe (lot 8 : les joueurs doivent reposer un pari en période 2 pour figurer à son classement).
+- **Reste à faire** : (migration v5 jouée en prod le 12/11 : `save_pronostic` et `admin_set_session` n'existent plus) supprimer les variables Vercel « Preview » et la base de test *à la fin de la refonte UI*, prévenir le groupe (lot 8 : les joueurs doivent reposer un pari en période 2 pour figurer à son classement).
 - **Ensuite** : la refonte UI, à lancer sur demande.
 
 ## Documents
