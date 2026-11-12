@@ -32,3 +32,6 @@
 .sousTitre { font: var(--type-footnote); color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fin { font: var(--type-footnote); color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .chevron { color: var(--text-3); flex-shrink: 0; }
+
+/* Texte long : revient à la ligne au lieu d'être coupé */
+.multiligne { white-space: normal; overflow: visible; text-overflow: clip; }

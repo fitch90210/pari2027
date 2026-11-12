@@ -1,0 +1,11 @@
+.pied {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) 0 var(--sp-2);
+  font: var(--type-caption);
+  font-family: var(--font);
+  color: var(--text-3);
+}
+.pied a { color: var(--text-3); text-decoration: none; }
+.pied a:hover { color: var(--text); }

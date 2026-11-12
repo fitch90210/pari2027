@@ -9,14 +9,14 @@ export function Liste({ children, ...props }) {
 
 // Ligne : visuel à gauche, titre et sous-titre, information à droite.
 // Avec `to`, la ligne entière est un lien (chevron affiché).
-export function Ligne({ debut, titre, sousTitre, fin, to, onClick }) {
+export function Ligne({ debut, titre, sousTitre, fin, to, onClick, multiligne = false }) {
   const interieur = (
     <>
       {debut}
       <span className={s.contenu}>
         <span className={s.textes}>
           <span className={s.titre}>{titre}</span>
-          {sousTitre && <span className={s.sousTitre}>{sousTitre}</span>}
+          {sousTitre && <span className={[s.sousTitre, multiligne && s.multiligne].filter(Boolean).join(' ')}>{sousTitre}</span>}
         </span>
         {fin != null && <span className={s.fin}>{fin}</span>}
         {(to || onClick) && <Icone nom="chevron" taille={14} epaisseur={2.2} className={s.chevron} />}

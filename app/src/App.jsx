@@ -4,7 +4,8 @@ import Coque from './layout/Coque'
 import Ecran from './ui/Ecran'
 import Carte from './ui/Carte'
 import EtatVide from './ui/EtatVide'
-import Home from './pages/Home'
+import Accueil from './pages/Accueil'
+import Regles from './pages/Regles'
 import Pronostics from './pages/Pronostics'
 import Classements from './pages/Classements'
 import Admin from './pages/Admin'
@@ -36,13 +37,13 @@ function AppInner() {
   return (
     <Coque>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Accueil />} />
         <Route path="/paris" element={<Voir />} />
         <Route path="/parier" element={<Pronostics />} />
         {/* Provisoire (ancien parcours avec choix du joueur) : remplacé au lot D */}
         <Route path="/parier/:playerId" element={<Pronostics />} />
         <Route path="/classements" element={<Classements />} />
-        <Route path="/regles" element={<Home />} />
+        <Route path="/regles" element={<Regles />} />
         <Route path="/joueurs/:id" element={<ProfilBientot />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/admin" element={<Admin />} />

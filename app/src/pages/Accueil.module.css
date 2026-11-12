@@ -1,0 +1,49 @@
+.marque { display: flex; justify-content: space-between; align-items: center; min-height: 32px; padding: 0 2px; }
+.nom { display: flex; align-items: center; gap: var(--sp-2); font: 600 15px/1 var(--font); letter-spacing: -0.2px; }
+.point { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
+
+.banniere { display: flex; flex-direction: column; gap: var(--sp-3); }
+.surtitre { font: var(--type-caption); color: var(--text-2); }
+.titre { margin: 0; font: var(--type-title-1); font-size: 28px; letter-spacing: var(--track-title-1); color: var(--text); }
+.texte { margin: 0; font: var(--type-body); color: var(--text-2); }
+.actions { display: flex; gap: var(--sp-2); margin-top: var(--sp-1); }
+.actions > * { flex: 1; }
+
+.bonus { display: flex; flex-direction: column; gap: var(--sp-3); }
+.bonusLigne { display: flex; align-items: center; gap: 14px; }
+.chiffre {
+  font: var(--type-display);
+  letter-spacing: var(--track-display);
+  color: var(--accent-text);
+  font-variant-numeric: tabular-nums;
+}
+.chiffreNul { color: var(--text-3); }
+.bonusTextes { display: flex; flex-direction: column; gap: 2px; }
+.bonusTitre { font: 500 15px/20px var(--font); color: var(--text); }
+.bonusSous { font: var(--type-footnote); color: var(--text-2); }
+.frise { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; }
+.mois { height: 4px; border-radius: 2px; background: var(--track); }
+.moisActif { background: var(--accent); }
+
+.rubrique { display: flex; flex-direction: column; gap: var(--sp-2); }
+.rubriqueEntete { display: flex; justify-content: space-between; align-items: baseline; padding: 0 2px; }
+.rubriqueTitre { margin: 0; font: 500 13px/18px var(--font); color: var(--text-2); }
+.lienDiscret { font: 500 13px/18px var(--font); color: var(--text); text-decoration: none; }
+
+.numero {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font: 600 13px/1 var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+@media (min-width: 768px) {
+  .marque { display: none; }
+  .banniere { padding: var(--sp-2) 0; }
+  .titre { font-size: 36px; line-height: 42px; letter-spacing: -1px; }
+}
