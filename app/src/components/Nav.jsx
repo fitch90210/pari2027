@@ -4,7 +4,7 @@ import { useGame } from '../store/GameContext'
 
 const LINKS = [
   { to: '/', label: 'Accueil', end: true },
-  { to: '/pronostics', label: 'Mes pronostics' },
+  { to: '/pronostics', label: 'Mes paris' },
   { to: '/voir', label: 'Tous les pronostics' },
   { to: '/classements', label: 'Classements' },
   { to: '/admin', label: 'Admin' },

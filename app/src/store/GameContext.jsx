@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
+import { periodeCourante } from '../lib/periodes'
 
 const GameContext = createContext(null)
 
@@ -9,6 +10,10 @@ const SAVE_ERRORS = {
   locked: 'Trop d\'essais : réessaie dans 15 minutes.',
   wrong_session: 'La phase a changé : recharge la page.',
   frozen: 'Ces pronostics sont gelés.',
+  closed: 'Le jeu est fermé : plus aucun pari n\'est possible.',
+  not_found: 'Pari introuvable.',
+  expired: 'Ce pari n\'est plus modifiable (plus de 24 h).',
+  period_closed: 'La période de ce pari est terminée : pose un nouveau pari.',
 }
 
 export function GameProvider({ children }) {
@@ -16,6 +21,16 @@ export function GameProvider({ children }) {
   const [players, setPlayers] = useState([])
   const [pronosticsMap, setPronosticsMap] = useState({}) // { [playerId]: { s1, s2, s3 } }
   const [results, setResults] = useState(null)
+  // Refonte « paris » : les paris datés et les périodes (bornes saisies par l'admin)
+  const [periodes, setPeriodes] = useState([])
+  const [paris, setParis] = useState([])
+  // Horloge du navigateur, pour l'affichage seulement (le serveur décide)
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 60000)
+    return () => clearInterval(t)
+  }, [])
+  const periodeEnCours = useMemo(() => periodeCourante(periodes, new Date(now)), [periodes, now])
   // Candidats officiels saisis par l'admin
   // officialCandidatesR1 : liste des candidats du 1er tour (saisie avant S2)
   // officialFinalists    : les 2 finalistes (saisie avant S3)
@@ -29,14 +44,18 @@ export function GameProvider({ children }) {
     setLoading(true)
     setError(null)
     try {
-      const [stateRes, playersRes, pronosticsRes] = await Promise.all([
+      const [stateRes, playersRes, pronosticsRes, periodesRes, parisRes] = await Promise.all([
         supabase.from('game_state').select('*').single(),
         supabase.from('players').select('*').order('created_at'),
         supabase.from('pronostics').select('*'),
+        supabase.from('periodes').select('*').order('id'),
+        supabase.from('paris').select('*').order('created_at'),
       ])
       if (stateRes.error) throw stateRes.error
       if (playersRes.error) throw playersRes.error
       if (pronosticsRes.error) throw pronosticsRes.error
+      if (periodesRes.error) throw periodesRes.error
+      if (parisRes.error) throw parisRes.error
 
       setSession(stateRes.data.session)
       setResults(stateRes.data.results)
@@ -44,6 +63,8 @@ export function GameProvider({ children }) {
       // Les finalistes sont dérivés des scores R1, stockés dans results.finalists
       setOfficialFinalists(stateRes.data.results?.finalists ?? [])
       setPlayers(playersRes.data)
+      setPeriodes(periodesRes.data)
+      setParis(parisRes.data)
 
       // Construire la map { playerId: { s1, s2, s3 } }
       const map = {}
@@ -134,6 +155,42 @@ export function GameProvider({ children }) {
     }))
   }
 
+  // ── Paris (refonte) ─────────────────────────────────────────
+  const reloadParis = async () => {
+    const { data, error } = await supabase.from('paris').select('*').order('created_at')
+    if (error) throw error
+    setParis(data)
+  }
+
+  const checkPariStatus = (playerId, status) => {
+    if (status === 'ok') return
+    if (status === 'bad_code' || status === 'no_code') forgetPlayerCode(playerId)
+    const err = new Error(SAVE_ERRORS[status] ?? 'Erreur de sauvegarde')
+    err.code = status
+    throw err
+  }
+
+  // values : { m1, m2, m3, m4, m5 }. La période est décidée par le serveur.
+  const createPari = async (playerId, values) => {
+    const { data, error } = await supabase.rpc('create_pari', {
+      p_player_id: playerId, p_code: getPlayerCode(playerId),
+      p_m1: values.m1, p_m2: values.m2, p_m3: values.m3, p_m4: values.m4, p_m5: values.m5,
+    })
+    if (error) throw error
+    checkPariStatus(playerId, data)
+    await reloadParis()
+  }
+
+  const updatePari = async (pariId, playerId, values) => {
+    const { data, error } = await supabase.rpc('update_pari', {
+      p_pari_id: pariId, p_player_id: playerId, p_code: getPlayerCode(playerId),
+      p_m1: values.m1, p_m2: values.m2, p_m3: values.m3, p_m4: values.m4, p_m5: values.m5,
+    })
+    if (error) throw error
+    checkPariStatus(playerId, data)
+    await reloadParis()
+  }
+
   // ── Admin (mot de passe vérifié côté serveur) ───────────────
   const [adminPin, setAdminPin] = useState(null)
 
@@ -190,6 +247,7 @@ export function GameProvider({ children }) {
   return (
     <GameContext.Provider value={{
       session, players, pronosticsMap, results,
+      periodes, paris, periodeEnCours, now, createPari, updatePari,
       officialCandidatesR1, officialFinalists,
       loading, error,
       addPlayer, upsertPronostic,
