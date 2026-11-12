@@ -7,6 +7,7 @@ import Pronostics from './pages/Pronostics'
 import Classements from './pages/Classements'
 import Admin from './pages/Admin'
 import Voir from './pages/Voir'
+import Demo from './pages/Demo'
 
 function AppInner() {
   const { loading, error } = useGame()
@@ -38,6 +39,7 @@ function AppInner() {
         <Route path="/pronostics/:playerId" element={<Pronostics />} />
         <Route path="/classements" element={<Classements />} />
         <Route path="/voir" element={<Voir />} />
+        <Route path="/demo" element={<Demo />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
     </>

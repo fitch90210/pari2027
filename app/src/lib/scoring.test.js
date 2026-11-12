@@ -3,6 +3,7 @@ import {
   scoreM1, scoreM2, scoreM3, scoreM4, scoreM5, scorePari, classementPeriode,
 } from './scoring'
 import { periodeCourante, isoVersParis, parisVersIso } from './periodes'
+import { resultatsComplets } from './pari'
 
 const ALL = ['m1', 'm2', 'm3', 'm4', 'm5']
 const P1 = { id: 1, scored: ALL }
@@ -168,5 +169,25 @@ describe('heure de Paris', () => {
       expect(parisVersIso(isoVersParis(iso))).toBe(iso)
     }
     expect(isoVersParis('2027-04-24T22:00:00.000Z')).toBe('2027-04-25T00:00')
+  })
+})
+
+describe('mode démo', () => {
+  it('resultatsComplets exige les deux tours', () => {
+    expect(resultatsComplets(null)).toBe(false)
+    expect(resultatsComplets({ candidates: ['A'], scores: { A: 100 }, finalists: ['A', 'B'], winner: '', winnerScore: null })).toBe(false)
+    expect(resultatsComplets(results)).toBe(true)
+  })
+
+  it('un pari de démo se classe parmi les vrais paris sans les modifier', () => {
+    const vrais = [
+      { ...pari, id: 1, player_id: 'x', periode: 1 },                                  // 26 pts
+      { ...pari, id: 2, player_id: 'y', periode: 1, m4: 'B', m5: 10 },                 // 18 pts
+    ]
+    const demo = { ...pari, id: -1, player_id: '__demo__', periode: 1, created_at: new Date().toISOString() }
+    const c = classementPeriode([...vrais, demo], P1, results)
+    expect(c.map(e => e.player_id)).toEqual(['x', '__demo__', 'y'])
+    expect(c.find(e => e.player_id === '__demo__').rank).toBe(2) // égalité avec x : x est plus ancien
+    expect(vrais).toHaveLength(2)
   })
 })

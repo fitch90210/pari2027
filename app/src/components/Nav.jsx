@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useGame } from '../store/GameContext'
+import { resultatsComplets } from '../lib/pari'
 
 const LINKS = [
   { to: '/', label: 'Accueil', end: true },
@@ -11,7 +12,11 @@ const LINKS = [
 ]
 
 export default function Nav() {
-  const { periodeEnCours } = useGame()
+  const { periodeEnCours, results } = useGame()
+  // Le mode démo n'apparaît qu'une fois les résultats connus
+  const links = resultatsComplets(results)
+    ? [...LINKS.slice(0, -1), { to: '/demo', label: 'Mode démo' }, LINKS.at(-1)]
+    : LINKS
   const [open, setOpen] = useState(false)
   const location = useLocation()
 
@@ -34,7 +39,7 @@ export default function Nav() {
 
           {/* Desktop links */}
           <ul className="nav-links nav-links-desktop">
-            {LINKS.map(({ to, label, end }) => (
+            {links.map(({ to, label, end }) => (
               <li key={to}>
                 <NavLink to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="label">{label}</span>
@@ -66,7 +71,7 @@ export default function Nav() {
       {/* Panel mobile */}
       <div className={`nav-panel ${open ? 'nav-panel-open' : ''}`}>
         <ul className="nav-panel-links">
-          {LINKS.map(({ to, label, end }) => (
+          {links.map(({ to, label, end }) => (
             <li key={to}>
               <NavLink to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}>
                 {label}
