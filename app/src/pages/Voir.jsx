@@ -2,7 +2,7 @@ import { useGame } from '../store/GameContext'
 import PronosticsReadView from '../components/PronosticsReadView'
 
 export default function Voir() {
-  const { players, pronosticsMap, session } = useGame()
+  const { players, paris, periodes, periodeEnCours } = useGame()
 
   return (
     <div className="page">
@@ -14,15 +14,15 @@ export default function Voir() {
             textTransform: 'uppercase', letterSpacing: '0.14em',
             color: 'var(--red)', marginBottom: 'var(--sp-3)',
           }}>
-            Phase {session} · Lecture seule
+            {periodeEnCours ? `Période ${periodeEnCours.id} · ${periodeEnCours.label}` : 'Jeu fermé'} · Lecture seule
           </div>
-          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-3)' }}>Pronostics des joueurs</h2>
+          <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--sp-3)' }}>Tous les paris</h2>
           <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
-            Consultez les pronostics de tous les joueurs. Les pronostics des phases en cours peuvent évoluer jusqu'à leur clôture.
+            Le dernier pari de chaque joueur, et l'historique de ses paris précédents. Les paris sont publics en permanence.
           </p>
         </header>
 
-        <PronosticsReadView players={players} pronosticsMap={pronosticsMap} />
+        <PronosticsReadView players={players} paris={paris} periodes={periodes} />
       </div>
     </div>
   )
