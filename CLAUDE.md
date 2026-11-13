@@ -8,11 +8,11 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 ## État au 13 novembre 2026
 
-- **En ligne** : https://pari2027.vercel.app, version « Au doigt mouillé » (pivot pronostics), **bascule faite le 13/11** : sauvegarde `backups/2026-11-13_1342/`, migrations v6 et v7 (scores des gagnants corrigés dans `paris`) jouées en production, `refonte-ui` puis `correction-gagnants` fusionnées dans `main`, contrôle en lecture OK (10 pronostics, favori et moyenne identiques au calcul depuis la sauvegarde).
+- **En ligne** : https://audoigtmouille.vercel.app (l'ancienne adresse https://pari2027.vercel.app répond toujours, sans redirection), version « Au doigt mouillé » (pivot pronostics), **bascule faite le 13/11** : sauvegarde `backups/2026-11-13_1342/`, migrations v6 et v7 (scores des gagnants corrigés dans `paris`) jouées en production, `refonte-ui` puis `correction-gagnants` fusionnées dans `main`, contrôle en lecture OK (10 pronostics, favori et moyenne identiques au calcul depuis la sauvegarde).
 - **Produit** ([docs/pivot-pronostics.md](docs/pivot-pronostics.md)) : on poste un pronostic (les deux tours) avec un simple pseudo, sans compte ni code, et on voit ce que les autres pronostiquent. Plus de périodes, de score, de profils, de classement ni de démo. Admin réduite aux résultats (sans effet pour l'instant) et à la modération (masquer un pronostic). `refonte-fonctionnelle.md` est l'ancien cadrage.
 - **Écrans** : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostics/:id`, `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `app/src/lib/` (`parcours.js`, `pronostic.js`, `tendances.js`, `photos.js`, `marque.js`). DA : « Scrutin épuré », titres en Newsreader, texte en Geist, emblème ☝️.
 - **Nom** : « Au doigt mouillé », sous-titre « Pronostics pour la présidentielle 2027 » (défini dans `app/src/lib/marque.js`).
-- **Reste à faire** : 1) renommer le projet Vercel (Settings → General) pour obtenir `audoigtmouille.vercel.app`, puis vérifier dans Settings → Domains que `pari2027.vercel.app` redirige bien ; 2) prévenir le groupe ; 3) plus tard, après sauvegarde : retirer les anciennes tables et fonctions (`players`, `periodes`, `pronostics`, `create_pari`, codes…), les variables Vercel « Preview » et la base de test ; 4) brique de scoring quand les candidats officiels seront connus.
+- **Reste à faire** : 1) prévenir le groupe (nouvelle adresse + ce qui change) ; 2) décider si `pari2027.vercel.app` redirige vers `audoigtmouille.vercel.app` (Settings → Domains → Edit → Redirect to) ; 3) plus tard, après sauvegarde : retirer les anciennes tables et fonctions (`players`, `periodes`, `pronostics`, `create_pari`, codes…), les variables Vercel « Preview » et la base de test ; 4) brique de scoring quand les candidats officiels seront connus.
 
 ## Documents
 
@@ -33,7 +33,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
   - admin : `admin_login`, `admin_save_periodes`, `admin_save_results`, `admin_save_official_candidates`, `admin_create_player`, `admin_reset_player_code`, `admin_remove_player`.
   - Secrets hachés (bcrypt) dans le schéma `private`, non exposé par l'API.
   - Après la v6 (pivot) : `create_pronostic` (public, pseudo, sans code, validé côté serveur, anti-rafale), `admin_set_masque`, `admin_paris_masques` ; seuls les pronostics non masqués sont lisibles. Les fonctions ci-dessus restent en place jusqu'au nettoyage.
-- **Hébergement** : Vercel, projet `pari2027`, relié au dépôt GitHub `fitch90210/pari2027` (public), **Root Directory = `app`**. Un push sur `main` déploie en production.
+- **Hébergement** : Vercel, projet `pari2027`, relié au dépôt GitHub `fitch90210/pari2027` (public), **Root Directory = `app`** (le projet Vercel s'appelle désormais `audoigtmouille` ; `app/.vercel/project.json` garde l'ancien nom `app`, sans conséquence : seul l'identifiant compte). Un push sur `main` déploie en production.
 - **Keepalive** : [app/api/keepalive.js](app/api/keepalive.js) + cron quotidien (8h UTC) dans `app/vercel.json`, pour que Supabase gratuit ne se mette pas en pause.
 
 ## Environnement de test
