@@ -1,10 +1,18 @@
 .pile { display: flex; flex-direction: column; gap: var(--sp-4); }
 
-.suggestions { border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+/* Zone de suggestions qui défile seule (environ 5 lignes visibles), sans faire défiler la page */
+.suggestions {
+  max-height: 248px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
 .option {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
   width: 100%; min-height: var(--hit);
-  padding: 0 14px;
+  padding: 8px 14px;
   border: 0; border-top: 1px solid var(--border);
   background: none; color: var(--text);
   font: 400 15px/1.2 var(--font);
@@ -14,7 +22,8 @@
 .option:first-child { border-top: 0; }
 .option:hover { background: var(--surface); }
 .option:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
-.ajout { color: var(--text-2); font-size: 13px; font-weight: 500; }
+.optionNom { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ajout { flex-shrink: 0; color: var(--text-2); font-size: 13px; font-weight: 500; }
 .libre { color: var(--text-2); }
 .rien { padding: var(--sp-4); text-align: center; font: var(--type-callout); color: var(--text-3); }
 

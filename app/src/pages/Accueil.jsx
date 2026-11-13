@@ -9,6 +9,7 @@ import Ecran from '../ui/Ecran'
 import Carte from '../ui/Carte'
 import Bouton from '../ui/Bouton'
 import Avatar from '../ui/Avatar'
+import Visage from '../ui/Visage'
 import Pied from '../ui/Pied'
 import { Liste, Ligne } from '../ui/Liste'
 import s from './Accueil.module.css'
@@ -44,7 +45,7 @@ export default function Accueil() {
           </div>
           {favori && (
             <div className={s.chiffre}>
-              <span className={s.favori}>{favori.nom}</span>
+              <span className={s.favoriTete}><Visage nom={favori.nom} taille={40} /><span className={s.favori}>{favori.nom}</span></span>
               <span className={s.legende}>
                 donné vainqueur par {favori.personnes.length} personne{favori.personnes.length > 1 ? 's' : ''} sur {t2.personnes}{favori.moy != null ? `, avec ${pourcent(favori.moy)} en moyenne` : ''}
               </span>

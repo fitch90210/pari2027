@@ -4,6 +4,7 @@ import { pourcent } from '../../lib/parcours'
 import { pseudoDe } from '../../lib/pronostic'
 import Avatar from '../../ui/Avatar'
 import Icone from '../../ui/Icone'
+import Visage from '../../ui/Visage'
 import s from './Pronostics.module.css'
 
 // Pièces d'affichage d'un pronostic, partagées par la liste et la page d'un pronostic.
@@ -28,6 +29,7 @@ export function DetailPremierTour({ candidats }) {
     <ul className={s.candidats} aria-label="Candidats et pourcentages au 1er tour">
       {candidats.map(c => (
         <li key={c.nom} className={s.candidat}>
+          <Visage nom={c.nom} taille={20} />
           <span className={s.candidatNom}>{c.nom}</span>
           {c.v != null && <span className={s.candidatScore}>{pourcent(c.v)}</span>}
         </li>
@@ -41,11 +43,13 @@ export function DetailSecondTour({ t }) {
     <div className={s.duel}>
       <div className={s.camp}>
         <span className={s.etiquette}>Vainqueur</span>
+        <Visage nom={t.vainqueur} taille={36} />
         <span className={s.campNom}>{t.vainqueur}</span>
         {t.scoreVainqueur != null && <span className={s.campScore}>{pourcent(t.scoreVainqueur)}</span>}
       </div>
       <div className={[s.camp, s.vaincu].join(' ')}>
         <span className={s.etiquette}>Vaincu</span>
+        <Visage nom={t.vaincu} taille={36} className={s.visageVaincu} />
         <span className={s.campNom}>{t.vaincu}</span>
         {t.scoreVaincu != null && <span className={s.campScore}>{pourcent(t.scoreVaincu)}</span>}
       </div>

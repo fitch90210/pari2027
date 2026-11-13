@@ -13,3 +13,6 @@
 .t2 { background: var(--avatar-2-bg); color: var(--avatar-2-fg); }
 .t3 { background: var(--avatar-3-bg); color: var(--avatar-3-fg); }
 .t4 { background: var(--avatar-4-bg); color: var(--avatar-4-fg); }
+.photo { overflow: hidden; background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); }
+/* Portraits : cadrage sur le haut de l'image (le visage) */
+.image { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }

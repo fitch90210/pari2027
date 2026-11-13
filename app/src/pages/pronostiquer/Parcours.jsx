@@ -13,6 +13,7 @@ import Curseur from '../../ui/Curseur'
 import CadreEtape from '../../ui/CadreEtape'
 import { Liste, Ligne } from '../../ui/Liste'
 import CandidatsScores from './CandidatsScores'
+import Visage from '../../ui/Visage'
 import s from './Parcours.module.css'
 
 const VIDE = { m1: [], m2: {}, m4: '', m5: '' }
@@ -66,7 +67,7 @@ function Total({ form }) {
 // Parcours « Pronostiquer » : 1er tour, 2nd tour, pseudo et récapitulatif, puis confirmation.
 // Un pronostic contient toujours les deux tours et n'est plus modifiable une fois envoyé.
 export default function Parcours() {
-  const { createPronostic, pseudoMemorise } = useGame()
+  const { createPronostic, pseudoMemorise, paris } = useGame()
   const [form, setForm] = useState(VIDE)
   const [pseudo, setPseudo] = useState(pseudoMemorise)
   const [index, setIndex] = useState(0)
@@ -102,7 +103,7 @@ export default function Parcours() {
   let corps, pied
 
   if (index === 0) {
-    corps = <CandidatsScores options={CANDIDATE_SUGGESTIONS} valeur={{ m1: form.m1, m2: form.m2 }} onChange={maj} />
+    corps = <CandidatsScores options={CANDIDATE_SUGGESTIONS} paris={paris} valeur={{ m1: form.m1, m2: form.m2 }} onChange={maj} />
     pied = <>
       <Total form={form} />
       <Bouton grand pleineLargeur onClick={versSecondTour} disabled={!premierTourPret(form)}>Continuer</Bouton>
@@ -121,6 +122,7 @@ export default function Parcours() {
             <button key={f} type="button" role="radio" aria-checked={form.m4 === f}
               className={[s.option, form.m4 === f && s.optionChoisie].filter(Boolean).join(' ')}
               onClick={() => maj({ m4: f, m5: form.m5 || SCORE_PAR_DEFAUT })}>
+              <Visage nom={f} taille={40} />
               <span className={s.optionNom}>{f}</span>
               <span className={s.optionAide}>{form.m4 === f ? 'Vainqueur' : 'Choisir'}</span>
             </button>
@@ -128,7 +130,7 @@ export default function Parcours() {
         </div>
         {form.m4 && (
           <Carte className={s.pile}>
-            <Curseur label={`Score de ${form.m4}`} min={50.5} max={80} pas={0.5}
+            <Curseur label={`Score de ${form.m4}`} debut={<Visage nom={form.m4} taille={28} />} min={50.5} max={100} pas={0.5}
               valeur={nombre(form.m5)} format={pourcent} onChange={v => maj({ m5: String(v) })} />
             <p className={s.texte}>{vaincu} : {pourcent(virgule(100 - nombre(form.m5)))}</p>
           </Carte>

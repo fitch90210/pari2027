@@ -1,21 +1,23 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Champ from '../../ui/Champ'
 import Bouton from '../../ui/Bouton'
 import Curseur from '../../ui/Curseur'
 import Icone from '../../ui/Icone'
-import { nombre, pourcent, repartirEgalement } from '../../lib/parcours'
+import Visage from '../../ui/Visage'
+import { nombre, pourcent, repartirEgalement, trierParPopularite } from '../../lib/parcours'
 import s from './CandidatsScores.module.css'
 
 const norme = t => String(t ?? '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-const MAX_PROPOSES = 8
 
 // Candidats du 1er tour ET leur score, en une seule étape : on ajoute un candidat, puis on règle son pourcentage
 // sur la ligne qui vient d'apparaître. Retirer un candidat retire aussi son score.
+// Suggestions : tous les candidats, les plus cités dans les pronostics d'abord, dans une zone qui défile.
 // valeur : { m1: [noms], m2: { nom: 'texte' } } ; onChange reçoit le même format.
-export default function CandidatsScores({ options, valeur, onChange }) {
+export default function CandidatsScores({ options, paris = [], valeur, onChange }) {
   const [requete, setRequete] = useState('')
   const choisis = valeur.m1
   const dejaChoisi = nom => choisis.some(c => norme(c) === norme(nom))
+  const tries = useMemo(() => trierParPopularite(options, paris), [options, paris])
 
   const ajouter = nom => {
     const n = nom.trim()
@@ -35,7 +37,7 @@ export default function CandidatsScores({ options, valeur, onChange }) {
   }
 
   const q = norme(requete)
-  const proposes = options.filter(o => !dejaChoisi(o) && (!q || norme(o).includes(q))).slice(0, q ? 20 : MAX_PROPOSES)
+  const proposes = tries.filter(o => !dejaChoisi(o.nom) && (!q || norme(o.nom).includes(q)))
   const nomLibre = requete.trim()
   const peutAjouter = nomLibre.length > 1 && !dejaChoisi(nomLibre) && !options.some(o => norme(o) === norme(nomLibre))
 
@@ -45,17 +47,19 @@ export default function CandidatsScores({ options, valeur, onChange }) {
         placeholder="Chercher un candidat à ajouter" aria-label="Chercher un candidat à ajouter" />
 
       {(proposes.length > 0 || peutAjouter) && (
-        <div className={s.suggestions} role="group" aria-label="Candidats proposés">
-          {proposes.map(nom => (
-            <button key={nom} type="button" className={s.option} onClick={() => ajouter(nom)}>
-              {nom}<span className={s.ajout}>Ajouter</span>
-            </button>
-          ))}
+        <div className={s.suggestions} role="group" aria-label={q ? 'Candidats trouvés' : 'Candidats, les plus cités d\'abord'}>
           {peutAjouter && (
             <button type="button" className={`${s.option} ${s.libre}`} onClick={() => ajouter(nomLibre)}>
-              Ajouter « {nomLibre} »<Icone nom="plus" taille={16} epaisseur={2.2} />
+              <span className={s.optionNom}><Visage nom={nomLibre} taille={28} />Ajouter « {nomLibre} »</span>
+              <Icone nom="plus" taille={16} epaisseur={2.2} />
             </button>
           )}
+          {proposes.map(o => (
+            <button key={o.nom} type="button" className={s.option} onClick={() => ajouter(o.nom)}>
+              <span className={s.optionNom}><Visage nom={o.nom} taille={28} />{o.nom}</span>
+              <span className={s.ajout}>{o.n > 0 ? `${o.n} pronostic${o.n > 1 ? 's' : ''}` : 'Ajouter'}</span>
+            </button>
+          ))}
         </div>
       )}
 
@@ -69,7 +73,8 @@ export default function CandidatsScores({ options, valeur, onChange }) {
             {[...choisis].reverse().map(nom => (
               <div key={nom} className={s.ligne}>
                 <div className={s.curseur}>
-                  <Curseur label={nom} max={60} pas={0.5} valeur={nombre(valeur.m2[nom])} format={pourcent} onChange={v => regler(nom, v)} />
+                  <Curseur label={nom} debut={<Visage nom={nom} taille={28} />} max={100} pas={0.5}
+                    valeur={nombre(valeur.m2[nom])} format={pourcent} onChange={v => regler(nom, v)} />
                 </div>
                 <button type="button" className={s.retirer} onClick={() => retirer(nom)} aria-label={`Retirer ${nom}`}>
                   <Icone nom="fermer" taille={18} epaisseur={2} />

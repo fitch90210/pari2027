@@ -5,6 +5,7 @@ import { tendancesPremierTour, tendancesSecondTour, placerPoints } from '../../l
 import Carte from '../../ui/Carte'
 import AvatarInfo from '../../ui/AvatarInfo'
 import EtatVide from '../../ui/EtatVide'
+import Visage from '../../ui/Visage'
 import s from './Tendances.module.css'
 
 const virgule = x => String(x).replace('.', ',')
@@ -39,7 +40,6 @@ function PremierTour() {
   if (t.candidats.length === 0) {
     return <Carte><EtatVide titre="Pas encore de pronostic" texte="Les pourcentages du 1er tour apparaîtront ici." /></Carte>
   }
-  const max = Math.max(40, Math.ceil(Math.max(...t.candidats.map(c => c.max)) / 10) * 10)
   return (
     <section className={s.pile}>
       <p className={s.sous}>Le dernier pronostic de {personnes(t.personnes)}. Survole un avatar pour voir son pourcentage.</p>
@@ -48,13 +48,14 @@ function PremierTour() {
           <div key={c.nom} className={s.ligne}>
             <div className={s.tete}>
               <span className={s.rang}>{i + 1}</span>
+              <Visage nom={c.nom} taille={32} />
               <span className={s.noms}>
                 <span className={s.nom}>{c.nom}</span>
                 <span className={s.detail}>Cité {c.n} fois sur {t.personnes} · de {virgule(c.min)} à {virgule(c.max)} %</span>
               </span>
               <span className={s.moyenne}>{virgule(c.moy)}<span className={s.unite}> %</span></span>
             </div>
-            <Echelle valeurs={c.valeurs} moy={c.moy} max={max} />
+            <Echelle valeurs={c.valeurs} moy={c.moy} max={100} />
           </div>
         ))}
       </Carte>
@@ -75,7 +76,7 @@ function SecondTour() {
       <h2 className={s.sous}>{t.favoris.length > 1 ? 'Les favoris, à égalité' : 'Le favori'}</h2>
       {t.favoris.map(v => (
         <Carte key={v.nom} className={s.favori}>
-          <span className={s.favoriNom}>{v.nom}</span>
+          <span className={s.favoriTete}><Visage nom={v.nom} taille={44} /><span className={s.favoriNom}>{v.nom}</span></span>
           {v.moy != null && (
             <span className={s.favoriScore}>{virgule(v.moy)}<span className={s.favoriUnite}> %</span></span>
           )}

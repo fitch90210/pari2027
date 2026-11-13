@@ -19,11 +19,12 @@
 
 /* 1er tour : les candidats en pastilles, du plus haut au plus bas */
 .candidats { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+/* Pastilles : rayon plein pour épouser le visage rond */
 .candidat {
-  display: inline-flex; align-items: baseline; gap: 6px;
-  padding: 4px 8px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px 3px 3px;
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
+  border-radius: var(--r-full);
   background: var(--surface);
   font: 400 13px/18px var(--font);
 }
@@ -34,7 +35,8 @@
 .duel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
 .camp { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); }
 .vaincu { background: none; }
-.etiquette { font: var(--type-caption); color: var(--text-2); }
+.etiquette { margin-bottom: 4px; font: var(--type-caption); color: var(--text-2); }
+.visageVaincu { filter: grayscale(1); opacity: 0.85; }
 .campNom { font: 500 15px/20px var(--font); color: var(--text); }
 .campScore { font: 600 22px/26px var(--font); letter-spacing: -0.6px; color: var(--text); font-variant-numeric: tabular-nums; }
 .vaincu .campNom, .vaincu .campScore { color: var(--text-2); }

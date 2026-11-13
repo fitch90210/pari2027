@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  totalScores, totalOk, repartirEgalement, finalistesProbables, premierTourPret, scoreVainqueurOk, valeursPourEnvoi, pourcent,
+  totalScores, totalOk, trierParPopularite, repartirEgalement, finalistesProbables, premierTourPret, scoreVainqueurOk, valeursPourEnvoi, pourcent,
 } from './parcours'
 
 describe('parcours Pronostiquer', () => {
@@ -51,5 +51,11 @@ describe('parcours Pronostiquer', () => {
   it('pourcentage à la française', () => {
     expect(pourcent(32)).toBe('32\u00a0%')
     expect(pourcent('32.5')).toBe('32,5\u00a0%')
+  })
+
+  it('suggestions : les plus cités d\'abord, noms ajoutés à la main inclus', () => {
+    const paris = [{ m1: ['B', 'X'] }, { m1: ['B', 'C', 'B'] }, { m1: ['C'] }, { m1: [] }]
+    expect(trierParPopularite(['A', 'B', 'C', 'D'], paris))
+      .toEqual([{ nom: 'B', n: 2 }, { nom: 'C', n: 2 }, { nom: 'X', n: 1 }, { nom: 'A', n: 0 }, { nom: 'D', n: 0 }])
   })
 })

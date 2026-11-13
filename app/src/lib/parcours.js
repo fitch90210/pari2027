@@ -50,5 +50,16 @@ export function valeursPourEnvoi(form) {
   return { m2, m3: finalistesProbables(form.m1, form.m2) ?? [], m4: form.m4, m5: nombre(form.m5) }
 }
 
+// Suggestions : [{ nom, n }], n = nombre de pronostics qui citent le candidat au 1er tour ;
+// les plus cités d'abord, puis l'ordre de la liste. Les noms ajoutés à la main par d'autres sont proposés aussi.
+export function trierParPopularite(options, paris) {
+  const compte = new Map()
+  for (const p of paris) for (const nom of new Set(p.m1 ?? [])) compte.set(nom, (compte.get(nom) ?? 0) + 1)
+  const noms = [...options, ...[...compte.keys()].filter(n => !options.includes(n))]
+  return noms.map((nom, i) => ({ nom, n: compte.get(nom) ?? 0, i }))
+    .sort((a, b) => b.n - a.n || a.i - b.i)
+    .map(({ nom, n }) => ({ nom, n }))
+}
+
 // « 32 » → « 32 % », « 32.5 » → « 32,5 % » (espace insécable : le % ne passe jamais seul à la ligne)
 export const pourcent = v => `${String(v).replace('.', ',')}\u00a0%`
