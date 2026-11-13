@@ -19,7 +19,7 @@ export default function Accueil() {
   const { paris, now } = useGame()
   const maintenant = useMemo(() => new Date(now), [now])
   const t2 = useMemo(() => tendancesSecondTour(paris), [paris])
-  const favori = t2.vainqueurs[0]
+  const favoris = t2.favoris // le ou les vainqueurs les plus pronostiqués (plusieurs en cas d'égalité)
   const derniers = paris.slice(0, 4)
 
   return (
@@ -40,19 +40,25 @@ export default function Accueil() {
       </Carte>
 
       {paris.length > 0 && (
-        <Carte className={s.chiffres}>
-          <div className={s.chiffre}>
-            <span className={s.grand}>{paris.length}</span>
-            <span className={s.legende}>pronostic{paris.length > 1 ? 's' : ''}</span>
-          </div>
-          {favori && (
-            <div className={s.chiffre}>
-              <span className={s.favoriTete}><Visage nom={favori.nom} taille={40} /><span className={s.favori}>{favori.nom}</span></span>
+        <Carte className={s.chiffre}>
+          <span className={s.grand}>{paris.length}</span>
+          <span className={s.legende}>pronostic{paris.length > 1 ? 's' : ''} déposé{paris.length > 1 ? 's' : ''}</span>
+        </Carte>
+      )}
+
+      {/* À part du total : tous les pronostics ne vont pas jusqu'au 2nd tour */}
+      {favoris.length > 0 && (
+        <Carte className={s.chiffre}>
+          <span className={s.surtitre}>{favoris.length > 1 ? 'Vainqueurs les plus pronostiqués, à égalité' : 'Vainqueur le plus pronostiqué'}</span>
+          {favoris.map(f => (
+            <div key={f.nom} className={s.favoriBloc}>
+              <span className={s.favoriTete}><Visage nom={f.nom} taille={40} /><span className={s.favori}>{f.nom}</span></span>
               <span className={s.legende}>
-                donné vainqueur par {favori.personnes.length} personne{favori.personnes.length > 1 ? 's' : ''} sur {t2.personnes}{favori.moy != null ? `, avec ${pourcent(favori.moy)} en moyenne` : ''}
+                Donné vainqueur par {f.personnes.length} personne{f.personnes.length > 1 ? 's' : ''} sur {t2.personnes}
+                {f.moy != null ? `, avec ${pourcent(f.moy)} en moyenne` : ''}
               </span>
             </div>
-          )}
+          ))}
         </Carte>
       )}
 
