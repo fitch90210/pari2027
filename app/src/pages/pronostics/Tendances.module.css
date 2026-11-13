@@ -18,6 +18,10 @@
 .point { position: absolute; transform: translate(-50%, -50%); }
 .graduations { display: flex; justify-content: space-between; margin: 0 10px; font: 400 10px/12px var(--font); color: var(--text-3); font-variant-numeric: tabular-nums; }
 
-.barre { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
-.barrePleine { height: 100%; background: var(--text); }
 .avatars { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* 2nd tour : le favori, en grand */
+.favori { display: flex; flex-direction: column; gap: var(--sp-2); }
+.favoriNom { font: 600 22px/28px var(--font); letter-spacing: -0.5px; color: var(--accent-text); }
+.favoriScore { font: var(--type-display); letter-spacing: var(--track-display); color: var(--text); font-variant-numeric: tabular-nums; }
+.favoriUnite { font: 500 20px/1 var(--font); letter-spacing: 0; color: var(--text-2); }

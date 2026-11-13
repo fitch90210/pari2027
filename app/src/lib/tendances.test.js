@@ -27,13 +27,14 @@ describe('tendances', () => {
     expect(t.candidats[0].valeurs.map(v => v.nom)).toEqual(['Hugo', 'léa'])
   })
 
-  it('2nd tour : duels, vainqueurs et score du vainqueur', () => {
+  it('2nd tour : vainqueurs, score moyen de ceux qui les voient gagner, favoris à égalité', () => {
     const t = tendancesSecondTour(paris)
     expect(t.personnes).toBe(2)
-    expect(t.duels.map(d => d.duo)).toEqual([['A', 'C'], ['B', 'C']])
-    expect(t.vainqueurs.map(v => v.nom)).toEqual(['A', 'B'])
-    expect(t.scoreVainqueur).toMatchObject({ n: 2, min: 55, max: 58, moy: 56.5 })
-    expect(tendancesSecondTour([]).scoreVainqueur).toBeNull()
+    expect(t.vainqueurs).toMatchObject([{ nom: 'A', moy: 55 }, { nom: 'B', moy: 58 }])
+    expect(t.favoris.map(v => v.nom)).toEqual(['A', 'B'])
+    const seul = tendancesSecondTour([...paris, p(5, 'Zoé', '2026-10-01T10:00:00Z', { m3: ['A', 'C'], m4: 'A', m5: 60 })])
+    expect(seul.favoris).toMatchObject([{ nom: 'A', moy: 57.5 }])
+    expect(tendancesSecondTour([]).favoris).toEqual([])
   })
 
   it('placement des points : valeurs voisines sur des couloirs différents', () => {

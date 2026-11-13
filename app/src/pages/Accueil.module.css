@@ -2,7 +2,8 @@
 .nom { display: flex; align-items: center; gap: var(--sp-2); font: 600 15px/1 var(--font); letter-spacing: -0.2px; }
 .point { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
 
-.banniere { display: flex; flex-direction: column; gap: var(--sp-3); }
+/* Double classe : l'emporte sur la marge intérieure par défaut de la carte */
+.banniere.banniere { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-6) var(--sp-5); }
 .surtitre { font: var(--type-caption); color: var(--text-2); }
 .titre { margin: 0; font: var(--type-title-1); font-size: 28px; letter-spacing: var(--track-title-1); color: var(--text); }
 .texte { margin: 0; font: var(--type-body); color: var(--text-2); }
@@ -25,20 +26,8 @@
 .rubriqueTitre { margin: 0; font: 500 13px/18px var(--font); color: var(--text-2); }
 .lienDiscret { font: 500 13px/18px var(--font); color: var(--text); text-decoration: none; }
 
-.numero {
-  flex-shrink: 0;
-  width: 28px; height: 28px;
-  border-radius: var(--r-full);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font: 600 13px/1 var(--font);
-  font-variant-numeric: tabular-nums;
-  color: var(--text);
-}
-
 @media (min-width: 768px) {
   .marque { display: none; }
-  .banniere { padding: var(--sp-2) 0; }
+  .banniere.banniere { padding: var(--sp-8); }
   .titre { font-size: 36px; line-height: 42px; letter-spacing: -1px; }
 }

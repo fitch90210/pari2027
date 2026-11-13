@@ -44,28 +44,21 @@ export function tendancesPremierTour(paris) {
   return { personnes: avis.length, candidats }
 }
 
-// 2nd tour : duels les plus pronostiqués, vainqueurs, score du vainqueur.
+// 2nd tour : les vainqueurs pronostiqués, du plus cité au moins cité, avec le score moyen que leur
+// donnent ceux qui les voient gagner. `favoris` : le ou les plus cités (à égalité, tous).
 export function tendancesSecondTour(paris) {
   const avis = derniersAvis(paris, secondTour)
-  const duels = new Map()
-  const vainqueurs = new Map()
-  const scores = []
+  const parVainqueur = new Map()
   for (const { pari, nom, valeur: t } of avis) {
-    const duo = [t.vainqueur, t.vaincu].sort((a, b) => a.localeCompare(b, 'fr'))
-    const cle = duo.join(' | ')
-    if (!duels.has(cle)) duels.set(cle, { duo, personnes: [] })
-    duels.get(cle).personnes.push({ pari_id: pari.id, nom, vainqueur: t.vainqueur })
-    if (!vainqueurs.has(t.vainqueur)) vainqueurs.set(t.vainqueur, [])
-    vainqueurs.get(t.vainqueur).push({ pari_id: pari.id, nom })
-    if (t.scoreVainqueur != null && !Number.isNaN(t.scoreVainqueur)) scores.push({ pari_id: pari.id, nom: `${nom} · ${t.vainqueur}`, v: t.scoreVainqueur })
+    if (!parVainqueur.has(t.vainqueur)) parVainqueur.set(t.vainqueur, [])
+    parVainqueur.get(t.vainqueur).push({ pari_id: pari.id, nom, v: t.scoreVainqueur })
   }
-  return {
-    personnes: avis.length,
-    duels: [...duels.values()].sort((a, b) => b.personnes.length - a.personnes.length || a.duo.join().localeCompare(b.duo.join(), 'fr')),
-    vainqueurs: [...vainqueurs.entries()].map(([nom, personnes]) => ({ nom, personnes }))
-      .sort((a, b) => b.personnes.length - a.personnes.length || a.nom.localeCompare(b.nom, 'fr')),
-    scoreVainqueur: scores.length ? { valeurs: scores.sort((a, b) => b.v - a.v), ...resumeChiffres(scores) } : null,
-  }
+  const vainqueurs = [...parVainqueur.entries()].map(([nom, personnes]) => {
+    const scores = personnes.filter(p => p.v != null)
+    return { nom, personnes, moy: scores.length ? arrondi(scores.reduce((a, p) => a + p.v, 0) / scores.length) : null }
+  }).sort((a, b) => b.personnes.length - a.personnes.length || a.nom.localeCompare(b.nom, 'fr'))
+  const max = vainqueurs[0]?.personnes.length ?? 0
+  return { personnes: avis.length, vainqueurs, favoris: vainqueurs.filter(v => v.personnes.length === max) }
 }
 
 // Place des points sur une échelle de `min` à `max` (en %), sur 1 à 3 « couloirs » pour que les avatars

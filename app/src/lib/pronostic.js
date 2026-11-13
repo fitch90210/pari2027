@@ -24,18 +24,20 @@ export function premierTour(pari) {
 }
 
 // 2nd tour : { vainqueur, vaincu, scoreVainqueur, scoreVaincu }, ou null si le pronostic n'en a pas.
-// Le score est celui saisi (certains anciens paris donnent moins de 50 % au vainqueur : affiché tel quel).
+// Le vainqueur est toujours celui qui a plus de 50 % : certains anciens paris avaient inversé vainqueur
+// et score (ex. vainqueur A à 32,9 %), on les lit donc comme « l'autre finaliste gagne avec 67,1 % ».
 export function secondTour(pari) {
   const finalistes = (pari?.m3 ?? []).filter(Boolean)
   if (!pari?.m4 || finalistes.length < 2 || !finalistes.includes(pari.m4)) return null
-  const vaincu = finalistes.find(f => f !== pari.m4)
-  const sv = pari.m5 == null ? null : parseFloat(pari.m5)
-  return {
-    vainqueur: pari.m4,
-    vaincu,
-    scoreVainqueur: sv,
-    scoreVaincu: sv == null ? null : arrondi(100 - sv),
+  let vainqueur = pari.m4
+  let vaincu = finalistes.find(f => f !== pari.m4)
+  let sv = pari.m5 == null ? null : parseFloat(pari.m5)
+  if (Number.isNaN(sv)) sv = null
+  if (sv != null && sv < 50) {
+    [vainqueur, vaincu] = [vaincu, vainqueur]
+    sv = arrondi(100 - sv)
   }
+  return { vainqueur, vaincu, scoreVainqueur: sv, scoreVaincu: sv == null ? null : arrondi(100 - sv) }
 }
 
 // Résumé sur une ligne : le 2nd tour s'il existe, sinon le haut du 1er tour.

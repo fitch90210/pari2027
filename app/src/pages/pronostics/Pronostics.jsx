@@ -1,59 +1,17 @@
 import { useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useGame } from '../../store/GameContext'
-import { depuis, dateComplete } from '../../lib/ui'
-import { pourcent } from '../../lib/parcours'
-import { pseudoDe, premierTour, secondTour } from '../../lib/pronostic'
+import { premierTour, secondTour } from '../../lib/pronostic'
 import Ecran from '../../ui/Ecran'
 import Carte from '../../ui/Carte'
-import Avatar from '../../ui/Avatar'
 import Bouton from '../../ui/Bouton'
 import Segmente from '../../ui/Segmente'
 import EtatVide from '../../ui/EtatVide'
 import Tendances from './Tendances'
+import { Entete, DetailPremierTour, DetailSecondTour } from './Detail'
 import s from './Pronostics.module.css'
 
 const PAR_PAGE = 20
-
-function Entete({ pari, maintenant }) {
-  return (
-    <div className={s.entete}>
-      <Avatar nom={pseudoDe(pari)} taille={28} />
-      <span className={s.pseudo}>{pseudoDe(pari)}</span>
-      <time className={s.date} dateTime={pari.created_at} title={dateComplete(pari.created_at)}>{depuis(pari.created_at, maintenant)}</time>
-    </div>
-  )
-}
-
-function DetailPremierTour({ candidats }) {
-  return (
-    <ul className={s.candidats} aria-label="Candidats et pourcentages au 1er tour">
-      {candidats.map(c => (
-        <li key={c.nom} className={s.candidat}>
-          <span className={s.candidatNom}>{c.nom}</span>
-          {c.v != null && <span className={s.candidatScore}>{pourcent(c.v)}</span>}
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-function DetailSecondTour({ t }) {
-  return (
-    <div className={s.duel}>
-      <div className={s.camp}>
-        <span className={s.etiquette}>Vainqueur</span>
-        <span className={s.campNom}>{t.vainqueur}</span>
-        {t.scoreVainqueur != null && <span className={s.campScore}>{pourcent(t.scoreVainqueur)}</span>}
-      </div>
-      <div className={[s.camp, s.vaincu].join(' ')}>
-        <span className={s.etiquette}>Vaincu</span>
-        <span className={s.campNom}>{t.vaincu}</span>
-        {t.scoreVaincu != null && <span className={s.campScore}>{pourcent(t.scoreVaincu)}</span>}
-      </div>
-    </div>
-  )
-}
 
 // Tous les pronostics d'un tour, du plus récent au plus ancien.
 function Liste({ tour }) {
@@ -67,12 +25,12 @@ function Liste({ tour }) {
   if (lignes.length === 0) return null
   return (
     <section className={s.pile}>
-      <h2 className={s.sous}>Tous les pronostics du {tour === 1 ? '1er' : '2nd'} tour, du plus récent au plus ancien</h2>
+      <h2 className={s.sous}>{tour === 1 ? 'Tous les pronostics du 1er tour' : 'Tous les duels du 2nd tour'}, du plus récent au plus ancien</h2>
       <Carte liste>
         <ul className={s.liste}>
           {lignes.slice(0, nombre).map(({ pari, detail }) => (
             <li key={pari.id} className={s.pronostic}>
-              <Entete pari={pari} maintenant={maintenant} />
+              <Entete pari={pari} maintenant={maintenant} lien />
               {tour === 1 ? <DetailPremierTour candidats={detail} /> : <DetailSecondTour t={detail} />}
             </li>
           ))}

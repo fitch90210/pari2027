@@ -62,67 +62,33 @@ function PremierTour() {
   )
 }
 
+// 2nd tour : le vainqueur le plus pronostiqué (ou les favoris à égalité), avec le score moyen que lui
+// donnent ceux qui le voient gagner. La liste des duels suit, dans Pronostics.
 function SecondTour() {
   const { paris } = useGame()
   const t = useMemo(() => tendancesSecondTour(paris), [paris])
   if (t.personnes === 0) {
     return <Carte><EtatVide titre="Pas encore de pronostic" texte="Les pronostics du 2nd tour apparaîtront ici." /></Carte>
   }
-  const sv = t.scoreVainqueur
-  const minScore = sv ? Math.min(40, Math.floor(sv.min / 10) * 10) : 40
-  const maxScore = sv ? Math.max(70, Math.ceil(sv.max / 10) * 10) : 70
   return (
-    <div className={s.pile}>
-      <p className={s.sous}>Le dernier pronostic de {personnes(t.personnes)}.</p>
-
-      <section className={s.pile}>
-        <h2 className={s.sous}>Le vainqueur</h2>
-        <Carte liste>
-          {t.vainqueurs.map(v => (
-            <div key={v.nom} className={s.ligne}>
-              <div className={s.tete}>
-                <span className={s.noms}><span className={s.nom}>{v.nom}</span><span className={s.detail}>{v.personnes.length} sur {t.personnes}</span></span>
-                <span className={s.moyenne}>{Math.round((v.personnes.length / t.personnes) * 100)}<span className={s.unite}> %</span></span>
-              </div>
-              <div className={s.barre}><div className={s.barrePleine} style={{ width: `${(v.personnes.length / t.personnes) * 100}%` }} /></div>
-              <div className={s.avatars}>{v.personnes.map(p => <AvatarInfo key={p.pari_id} nom={p.nom} taille={24} />)}</div>
-            </div>
-          ))}
+    <section className={s.pile}>
+      <h2 className={s.sous}>{t.favoris.length > 1 ? 'Les favoris, à égalité' : 'Le favori'}</h2>
+      {t.favoris.map(v => (
+        <Carte key={v.nom} className={s.favori}>
+          <span className={s.favoriNom}>{v.nom}</span>
+          {v.moy != null && (
+            <span className={s.favoriScore}>{virgule(v.moy)}<span className={s.favoriUnite}> %</span></span>
+          )}
+          <span className={s.detail}>
+            Donné vainqueur par {personnes(v.personnes.length)} sur {t.personnes}
+            {v.moy != null ? ', avec ce score en moyenne' : ''}
+          </span>
+          <div className={s.avatars}>
+            {v.personnes.map(p => <AvatarInfo key={p.pari_id} nom={p.nom} valeur={p.v != null ? pourcent(p.v) : undefined} taille={24} />)}
+          </div>
         </Carte>
-      </section>
-
-      <section className={s.pile}>
-        <h2 className={s.sous}>Les duels</h2>
-        <Carte liste>
-          {t.duels.map(d => (
-            <div key={d.duo.join()} className={s.ligne}>
-              <div className={s.tete}>
-                <span className={s.noms}><span className={s.nom}>{d.duo.join(' contre ')}</span></span>
-                <span className={s.detail}>{personnes(d.personnes.length)}</span>
-              </div>
-              <div className={s.avatars}>
-                {d.personnes.map(p => <AvatarInfo key={p.pari_id} nom={p.nom} valeur={`${p.vainqueur} gagne`} taille={24} />)}
-              </div>
-            </div>
-          ))}
-        </Carte>
-      </section>
-
-      {sv && (
-        <section className={s.pile}>
-          <h2 className={s.sous}>Score du vainqueur</h2>
-          <Carte liste>
-            <div className={s.ligne}>
-              <div className={s.tete}>
-                <span className={s.noms}><span className={s.nom}>En moyenne</span><span className={s.detail}>de {virgule(sv.min)} à {virgule(sv.max)} % · {sv.n} pronostics</span></span>
-                <span className={s.moyenne}>{virgule(sv.moy)}<span className={s.unite}> %</span></span>
-              </div>
-              <Echelle valeurs={sv.valeurs} moy={sv.moy} min={minScore} max={maxScore} />
-            </div>
-          </Carte>
-        </section>
-      )}
-    </div>
+      ))}
+    </section>
   )
 }
 

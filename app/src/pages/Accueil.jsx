@@ -12,12 +12,6 @@ import Pied from '../ui/Pied'
 import { Liste, Ligne } from '../ui/Liste'
 import s from './Accueil.module.css'
 
-const ETAPES = [
-  { titre: 'Le 1er tour', texte: 'Choisis les candidats et donne à chacun son pourcentage.' },
-  { titre: 'Le 2nd tour', texte: 'Tes deux premiers s\'affrontent : qui gagne, et avec quel score ?' },
-  { titre: 'Un pseudo, c\'est tout', texte: 'Pas de compte. Ton pronostic rejoint ceux des autres, visibles par tous.' },
-]
-
 export default function Accueil() {
   const { paris, now } = useGame()
   const maintenant = useMemo(() => new Date(now), [now])
@@ -51,23 +45,12 @@ export default function Accueil() {
             <div className={s.chiffre}>
               <span className={s.favori}>{favori.nom}</span>
               <span className={s.legende}>
-                donné vainqueur par {favori.personnes.length} personne{favori.personnes.length > 1 ? 's' : ''} sur {t2.personnes}
+                donné vainqueur par {favori.personnes.length} personne{favori.personnes.length > 1 ? 's' : ''} sur {t2.personnes}{favori.moy != null ? `, avec ${String(favori.moy).replace('.', ',')} % en moyenne` : ''}
               </span>
             </div>
           )}
         </Carte>
       )}
-
-      <section className={s.rubrique}>
-        <div className={s.rubriqueEntete}><h2 className={s.rubriqueTitre}>Comment ça marche</h2></div>
-        <Carte liste>
-          <Liste>
-            {ETAPES.map((e, i) => (
-              <Ligne key={e.titre} debut={<span className={s.numero}>{i + 1}</span>} titre={e.titre} sousTitre={e.texte} multiligne />
-            ))}
-          </Liste>
-        </Carte>
-      </section>
 
       <section className={s.rubrique}>
         <div className={s.rubriqueEntete}>
@@ -81,7 +64,7 @@ export default function Accueil() {
                 {derniers.map(p => (
                   <Ligne
                     key={p.id}
-                    to="/pronostics"
+                    to={`/pronostics/${p.id}`}
                     debut={<Avatar nom={pseudoDe(p)} taille={28} />}
                     titre={pseudoDe(p)}
                     sousTitre={resumePronostic(p)}
