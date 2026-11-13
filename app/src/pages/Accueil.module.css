@@ -9,21 +9,16 @@
 .actions { display: flex; gap: var(--sp-2); margin-top: var(--sp-1); }
 .actions > * { flex: 1; }
 
-.bonus { display: flex; flex-direction: column; gap: var(--sp-3); }
-.bonusLigne { display: flex; align-items: center; gap: 14px; }
-.chiffre {
+.chiffres { display: flex; flex-direction: column; gap: var(--sp-4); }
+.chiffre { display: flex; flex-direction: column; gap: 2px; }
+.grand {
   font: var(--type-display);
   letter-spacing: var(--track-display);
-  color: var(--accent-text);
+  color: var(--text);
   font-variant-numeric: tabular-nums;
 }
-.chiffreNul { color: var(--text-3); }
-.bonusTextes { display: flex; flex-direction: column; gap: 2px; }
-.bonusTitre { font: 500 15px/20px var(--font); color: var(--text); }
-.bonusSous { font: var(--type-footnote); color: var(--text-2); }
-.frise { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; }
-.mois { height: 4px; border-radius: 2px; background: var(--track); }
-.moisActif { background: var(--accent); }
+.favori { font: 600 22px/28px var(--font); letter-spacing: -0.5px; color: var(--accent-text); }
+.legende { font: var(--type-footnote); color: var(--text-2); }
 
 .rubrique { display: flex; flex-direction: column; gap: var(--sp-2); }
 .rubriqueEntete { display: flex; justify-content: space-between; align-items: baseline; padding: 0 2px; }

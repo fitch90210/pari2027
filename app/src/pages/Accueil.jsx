@@ -1,88 +1,60 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useGame } from '../store/GameContext'
-import { bonusAnticipation } from '../lib/scoring'
-import { resultatsComplets } from '../lib/pari'
-import { joursAvant, prochaineBaisse, depuis, jourDuScrutin } from '../lib/ui'
+import { depuis } from '../lib/ui'
+import { pseudoDe, resumePronostic } from '../lib/pronostic'
+import { tendancesSecondTour } from '../lib/tendances'
 import Ecran from '../ui/Ecran'
 import Carte from '../ui/Carte'
 import Bouton from '../ui/Bouton'
-import Pastille from '../ui/Pastille'
 import Avatar from '../ui/Avatar'
 import Pied from '../ui/Pied'
 import { Liste, Ligne } from '../ui/Liste'
 import s from './Accueil.module.css'
 
 const ETAPES = [
-  { titre: 'Tu fais cinq pronostics', texte: 'Candidats, scores du 1er tour, finalistes, vainqueur, score final.' },
-  { titre: 'Chaque pari est scoré', texte: 'Parie autant que tu veux : plus tôt tu paries, plus ton pari rapporte.' },
-  { titre: 'Tout est visible', texte: 'Les paris de chacun sont publics, tout le temps.' },
+  { titre: 'Le 1er tour', texte: 'Choisis les candidats et donne à chacun son pourcentage.' },
+  { titre: 'Le 2nd tour', texte: 'Tes deux premiers s\'affrontent : qui gagne, et avec quel score ?' },
+  { titre: 'Un pseudo, c\'est tout', texte: 'Pas de compte. Ton pronostic rejoint ceux des autres, visibles par tous.' },
 ]
 
-const jourCourt = d => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', timeZone: 'Europe/Paris' })
-
 export default function Accueil() {
-  const { players, paris, periodes, periodeEnCours, results, now } = useGame()
+  const { paris, now } = useGame()
   const maintenant = useMemo(() => new Date(now), [now])
-
-  const premierTour = periodes.find(p => p.id === 3)?.ends_at
-  const bonus = bonusAnticipation(maintenant.toISOString(), periodes)
-  const baisse = prochaineBaisse(periodes, maintenant)
-  const scrutin = jourDuScrutin(periodes)
-  const ferme = !periodeEnCours
-  const termine = resultatsComplets(results)
-
-  const nomDe = id => players.find(p => p.id === id)?.name ?? 'Un joueur'
-  const derniers = [...paris].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 4)
+  const t2 = useMemo(() => tendancesSecondTour(paris), [paris])
+  const favori = t2.vainqueurs[0]
+  const derniers = paris.slice(0, 4)
 
   return (
     <Ecran>
       <div className={s.marque}>
         <span className={s.nom}><span className={s.point} aria-hidden="true" />Pari 2027</span>
-        {periodeEnCours && premierTour && <Pastille>Période {periodeEnCours.id} · J-{joursAvant(premierTour, maintenant)}</Pastille>}
       </div>
 
       <Carte surface className={s.banniere}>
-        {scrutin && <span className={s.surtitre}>Présidentielle 2027 · 1er tour le {scrutin}</span>}
-        <h1 className={s.titre}>{termine ? 'Le verdict est tombé' : 'Qui gagnera la présidentielle ?'}</h1>
-        <p className={s.texte}>
-          {termine
-            ? 'Les résultats sont connus. Regarde le classement, ou refais le match : que serait-il arrivé si tu avais parié ?'
-            : ferme
-              ? 'Le jeu est fermé : plus aucun pari n\'est possible. Les classements sont figés.'
-              : 'Cinq pronostics, un classement entre amis. Chaque pari compte, et plus tu paries tôt, plus il rapporte.'}
-        </p>
+        <span className={s.surtitre}>Présidentielle 2027</span>
+        <h1 className={s.titre}>Qui sera élu en 2027 ?</h1>
+        <p className={s.texte}>Donne ton pronostic pour les deux tours, et regarde ce que les autres pronostiquent.</p>
         <div className={s.actions}>
-          {termine
-            ? <>
-                <Bouton to="/classements">Classement</Bouton>
-                <Bouton variante="secondaire" to="/demo">Et si tu avais parié ?</Bouton>
-              </>
-            : <>
-                {!ferme && <Bouton to="/parier">Parier</Bouton>}
-                <Bouton variante={ferme ? 'principal' : 'secondaire'} to="/regles">Les règles</Bouton>
-              </>}
+          <Bouton to="/pronostiquer">Pronostiquer</Bouton>
+          <Bouton variante="secondaire" to="/pronostics">Les pronostics</Bouton>
         </div>
       </Carte>
 
-      {!termine && !ferme && (
-        <Carte className={s.bonus}>
-          <div className={s.bonusLigne}>
-            <span className={[s.chiffre, bonus === 0 && s.chiffreNul].filter(Boolean).join(' ')}>+{bonus}</span>
-            <span className={s.bonusTextes}>
-              <span className={s.bonusTitre}>
-                {bonus > 0 ? 'points d\'avance si tu paries aujourd\'hui' : 'Plus de bonus d\'anticipation'}
-              </span>
-              <span className={s.bonusSous}>
-                {baisse ? `Plus que +${bonus - 1} à partir du ${jourCourt(baisse)}` : 'Le bonus est épuisé : il ne reste que le barème.'}
-              </span>
-            </span>
+      {paris.length > 0 && (
+        <Carte className={s.chiffres}>
+          <div className={s.chiffre}>
+            <span className={s.grand}>{paris.length}</span>
+            <span className={s.legende}>pronostic{paris.length > 1 ? 's' : ''}</span>
           </div>
-          <div className={s.frise} aria-hidden="true">
-            {Array.from({ length: 12 }, (_, i) => (
-              <span key={i} className={[s.mois, i >= 12 - Math.min(bonus, 12) && s.moisActif].filter(Boolean).join(' ')} />
-            ))}
-          </div>
+          {favori && (
+            <div className={s.chiffre}>
+              <span className={s.favori}>{favori.nom}</span>
+              <span className={s.legende}>
+                donné vainqueur par {favori.personnes.length} personne{favori.personnes.length > 1 ? 's' : ''} sur {t2.personnes}
+              </span>
+            </div>
+          )}
         </Carte>
       )}
 
@@ -99,20 +71,20 @@ export default function Accueil() {
 
       <section className={s.rubrique}>
         <div className={s.rubriqueEntete}>
-          <h2 className={s.rubriqueTitre}>Derniers paris</h2>
-          <Link to="/paris" className={s.lienDiscret}>Tout voir</Link>
+          <h2 className={s.rubriqueTitre}>Derniers pronostics</h2>
+          <Link to="/pronostics" className={s.lienDiscret}>Tout voir</Link>
         </div>
         <Carte liste>
           {derniers.length === 0
-            ? <Liste><Ligne titre="Aucun pari pour l'instant" sousTitre="Sois le premier à parier." /></Liste>
+            ? <Liste><Ligne titre="Aucun pronostic pour l'instant" sousTitre="Sois le premier." /></Liste>
             : <Liste>
                 {derniers.map(p => (
                   <Ligne
                     key={p.id}
-                    to={`/joueurs/${p.player_id}`}
-                    debut={<Avatar nom={nomDe(p.player_id)} taille={28} />}
-                    titre={nomDe(p.player_id)}
-                    sousTitre={p.m4 ? `Vainqueur : ${p.m4}` : 'Pari posé'}
+                    to="/pronostics"
+                    debut={<Avatar nom={pseudoDe(p)} taille={28} />}
+                    titre={pseudoDe(p)}
+                    sousTitre={resumePronostic(p)}
                     fin={depuis(p.created_at, maintenant)}
                   />
                 ))}

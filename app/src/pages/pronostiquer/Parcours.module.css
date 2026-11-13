@@ -13,19 +13,35 @@
 .jaugePleine { height: 100%; background: var(--text); transition: width var(--dur-base) var(--ease-out); }
 .jaugeDepasse { background: var(--accent); }
 
-.scores { display: flex; flex-direction: column; gap: var(--sp-4); padding: var(--sp-4) 14px; }
-.egal { align-self: flex-start; }
-
+.affiche { display: flex; flex-direction: column; gap: 2px; }
+.etiquette { font: var(--type-caption); color: var(--text-2); }
 .vainqueur { font: 600 20px/26px var(--font); letter-spacing: -0.4px; }
+.question { margin: var(--sp-2) 0 0; padding: 0 2px; font: 500 13px/18px var(--font); color: var(--text-2); }
+
+/* Choix du vainqueur : deux grandes options */
+.choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
+.option {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-input);
+  border-radius: var(--r-lg);
+  background: var(--raised);
+  color: var(--text);
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+.option:hover { border-color: var(--text-2); }
+.option:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.optionChoisie { border: 2px solid var(--text); padding: 11px 13px; }
+.optionNom { font: 600 16px/21px var(--font); }
+.optionAide { font: var(--type-footnote); color: var(--text-2); }
+.optionChoisie .optionAide { color: var(--accent-text); font-weight: 600; }
 
 /* Récapitulatif */
-.valeur { color: var(--text-2); }
 .erreur { margin: 0; padding: var(--sp-3); border: 1px solid var(--accent); border-radius: var(--r-md); background: var(--accent-soft); color: var(--accent-text); font: var(--type-callout); }
-.infos { display: flex; flex-direction: column; gap: var(--sp-1); }
-.infoTitre { font: 500 15px/20px var(--font); }
-.infoTexte { font: var(--type-footnote); color: var(--text-2); }
-.accent { color: var(--accent-text); font-weight: 600; }
-.joueur { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
 
 /* Confirmation */
 .confirme { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); padding: var(--sp-10) var(--sp-4) var(--sp-6); text-align: center; }
@@ -37,7 +53,3 @@
 }
 .confirmeTitre { margin: 0; font: var(--type-title-2); letter-spacing: var(--track-title-2); }
 @keyframes pop { from { transform: scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
-
-.lien { all: unset; text-decoration: underline; cursor: pointer; }
-.lien:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.lienDiscret { align-self: flex-start; margin-top: var(--sp-1); font: var(--type-footnote); color: var(--text-2); }

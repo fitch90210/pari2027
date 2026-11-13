@@ -1,25 +1,25 @@
-// Tendances du groupe : l'avis actuel de chaque joueur, pronostic par pronostic.
-// Pour chaque pronostic, on retient le pari le plus récent du joueur qui le renseigne
-// (un pari de période 4 ne contient pas de scores : l'avis sur les scores reste celui d'avant).
-
-const renseigne = (cle, v) => {
-  if (cle === 'm1') return !!v?.length
-  if (cle === 'm2') return !!v && Object.keys(v).length > 0
-  if (cle === 'm3') return !!v?.filter(Boolean).length
-  if (cle === 'm4') return !!v
-  return v != null
-}
+// Tendances : ce que pronostiquent les gens, agrégé.
+// Une personne = un pseudo (insensible à la casse) ; on retient son dernier pronostic qui renseigne le tour,
+// pour qu'un changement d'avis ne compte pas double. La liste, elle, montre tous les pronostics.
+import { clePseudo, pseudoDe, premierTour, secondTour } from './pronostic'
 
 const parDate = (a, b) => new Date(a.created_at) - new Date(b.created_at) || a.id - b.id
 const arrondi = x => Math.round(x * 10) / 10
 
-// Map player_id → { pari, valeur } : le dernier pari qui renseigne `cle`.
-export function dernierAvis(paris, cle) {
+// Le dernier pronostic de chaque pseudo pour lequel `lire(pari)` renvoie quelque chose.
+// Renvoie [{ pari, nom, valeur }].
+export function derniersAvis(paris, lire) {
   const avis = new Map()
   for (const pari of [...paris].sort(parDate)) {
-    if (renseigne(cle, pari[cle])) avis.set(pari.player_id, { pari, valeur: pari[cle] })
+    const valeur = lire(pari)
+    if (valeur != null) avis.set(clePseudo(pari.pseudo), { pari, nom: pseudoDe(pari), valeur })
   }
-  return avis
+  return [...avis.values()]
+}
+
+const scoresPremierTour = pari => {
+  const l = premierTour(pari).filter(x => x.v != null)
+  return l.length ? l : null
 }
 
 function resumeChiffres(valeurs) {
@@ -27,61 +27,48 @@ function resumeChiffres(valeurs) {
   return { n: vs.length, min: Math.min(...vs), max: Math.max(...vs), moy: arrondi(vs.reduce((a, b) => a + b, 0) / vs.length) }
 }
 
-// Scores du 1er tour : par candidat, qui a mis combien. Trié par poids dans le groupe (somme des scores :
-// un favori cité par tous passe devant un outsider cité une fois, et un candidat oublié par la plupart descend).
-export function tendancesScores(paris) {
+// 1er tour : par candidat, les pourcentages attribués. Trié par poids (somme des pourcentages) :
+// un favori cité par tous passe devant un outsider cité une fois.
+export function tendancesPremierTour(paris) {
+  const avis = derniersAvis(paris, scoresPremierTour)
   const parCandidat = new Map()
-  for (const [player_id, { pari, valeur }] of dernierAvis(paris, 'm2')) {
-    for (const [nom, brut] of Object.entries(valeur)) {
-      const v = parseFloat(brut)
-      if (Number.isNaN(v) || v <= 0) continue
+  for (const { pari, nom: pseudo, valeur } of avis) {
+    for (const { nom, v } of valeur) {
       if (!parCandidat.has(nom)) parCandidat.set(nom, [])
-      parCandidat.get(nom).push({ player_id, pari_id: pari.id, v })
+      parCandidat.get(nom).push({ pari_id: pari.id, nom: pseudo, v })
     }
   }
-  return [...parCandidat.entries()]
+  const candidats = [...parCandidat.entries()]
     .map(([nom, valeurs]) => ({ nom, valeurs: valeurs.sort((a, b) => b.v - a.v), ...resumeChiffres(valeurs), somme: valeurs.reduce((t, x) => t + x.v, 0) }))
     .sort((a, b) => b.somme - a.somme || b.n - a.n || a.nom.localeCompare(b.nom, 'fr'))
+  return { personnes: avis.length, candidats }
 }
 
-// Duels de finalistes, du plus parié au moins parié.
-export function tendancesDuels(paris) {
+// 2nd tour : duels les plus pronostiqués, vainqueurs, score du vainqueur.
+export function tendancesSecondTour(paris) {
+  const avis = derniersAvis(paris, secondTour)
   const duels = new Map()
-  for (const [player_id, { valeur }] of dernierAvis(paris, 'm3')) {
-    const duo = valeur.filter(Boolean)
-    if (duo.length < 2) continue
-    const cle = [...duo].sort((a, b) => a.localeCompare(b, 'fr')).join(' | ')
-    if (!duels.has(cle)) duels.set(cle, { duo: cle.split(' | '), joueurs: [] })
-    duels.get(cle).joueurs.push(player_id)
+  const vainqueurs = new Map()
+  const scores = []
+  for (const { pari, nom, valeur: t } of avis) {
+    const duo = [t.vainqueur, t.vaincu].sort((a, b) => a.localeCompare(b, 'fr'))
+    const cle = duo.join(' | ')
+    if (!duels.has(cle)) duels.set(cle, { duo, personnes: [] })
+    duels.get(cle).personnes.push({ pari_id: pari.id, nom, vainqueur: t.vainqueur })
+    if (!vainqueurs.has(t.vainqueur)) vainqueurs.set(t.vainqueur, [])
+    vainqueurs.get(t.vainqueur).push({ pari_id: pari.id, nom })
+    if (t.scoreVainqueur != null && !Number.isNaN(t.scoreVainqueur)) scores.push({ pari_id: pari.id, nom: `${nom} · ${t.vainqueur}`, v: t.scoreVainqueur })
   }
-  return [...duels.values()].sort((a, b) => b.joueurs.length - a.joueurs.length)
+  return {
+    personnes: avis.length,
+    duels: [...duels.values()].sort((a, b) => b.personnes.length - a.personnes.length || a.duo.join().localeCompare(b.duo.join(), 'fr')),
+    vainqueurs: [...vainqueurs.entries()].map(([nom, personnes]) => ({ nom, personnes }))
+      .sort((a, b) => b.personnes.length - a.personnes.length || a.nom.localeCompare(b.nom, 'fr')),
+    scoreVainqueur: scores.length ? { valeurs: scores.sort((a, b) => b.v - a.v), ...resumeChiffres(scores) } : null,
+  }
 }
 
-// Vainqueurs pronostiqués, du plus parié au moins parié.
-export function tendancesVainqueurs(paris) {
-  const gagnants = new Map()
-  for (const [player_id, { valeur }] of dernierAvis(paris, 'm4')) {
-    if (!gagnants.has(valeur)) gagnants.set(valeur, [])
-    gagnants.get(valeur).push(player_id)
-  }
-  return [...gagnants.entries()].map(([nom, joueurs]) => ({ nom, joueurs }))
-    .sort((a, b) => b.joueurs.length - a.joueurs.length || a.nom.localeCompare(b.nom, 'fr'))
-}
-
-// Score du vainqueur au 2nd tour : chacun, plus moyenne et fourchette (null si personne).
-export function tendancesScoreFinal(paris) {
-  const valeurs = []
-  for (const [player_id, { valeur }] of dernierAvis(paris, 'm5')) {
-    const v = parseFloat(valeur)
-    if (!Number.isNaN(v)) valeurs.push({ player_id, v })
-  }
-  if (valeurs.length === 0) return null
-  return { valeurs: valeurs.sort((a, b) => b.v - a.v), ...resumeChiffres(valeurs) }
-}
-
-export const nombreDeJoueurs = (paris, cle) => dernierAvis(paris, cle).size
-
-// Place des points sur une échelle de 0 à `max` (en %), sur 1 à 3 « couloirs » pour que les avatars
+// Place des points sur une échelle de `min` à `max` (en %), sur 1 à 3 « couloirs » pour que les avatars
 // de valeurs voisines ne se superposent pas.
 export function placerPoints(valeurs, max, min = 0, ecart = 5) {
   const etendue = max - min || 1

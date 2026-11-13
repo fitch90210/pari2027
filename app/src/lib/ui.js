@@ -1,5 +1,3 @@
-import { bonusAnticipation } from './scoring'
-
 // Petites aides d'affichage de la nouvelle UI (pas de logique de jeu ici).
 
 // Initiales d'un nom : « Camille » → « C », « Jean-Luc Mélenchon » → « JM ».
@@ -23,18 +21,6 @@ export function joursAvant(iso, now = new Date()) {
   return ms <= 0 ? 0 : Math.ceil(ms / 86_400_000)
 }
 
-// Prochain jour où le bonus d'anticipation baisse d'un point (null s'il est déjà à 0).
-// Cherche jour après jour (au plus 32) : plus simple et plus sûr que de dériver la date.
-export function prochaineBaisse(periodes, now = new Date()) {
-  const courant = bonusAnticipation(now.toISOString(), periodes)
-  if (courant === 0) return null
-  for (let j = 1; j <= 32; j++) {
-    const d = new Date(now.getTime() + j * 86_400_000)
-    if (bonusAnticipation(d.toISOString(), periodes) < courant) return d
-  }
-  return null
-}
-
 // « À l'instant », « 2 h », « Hier », « 3 nov. » : âge d'un pari pour les listes.
 export function depuis(iso, now = new Date()) {
   const min = Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000)
@@ -45,8 +31,9 @@ export function depuis(iso, now = new Date()) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', timeZone: 'Europe/Paris' })
 }
 
-// « 11 avril » : jour du 1er tour, d'après la fin de la période 3 (veille du scrutin à minuit).
-export function jourDuScrutin(periodes) {
-  const fin = periodes.find(p => p.id === 3)?.ends_at
-  return fin ? new Date(fin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', timeZone: 'Europe/Paris' }) : null
+// « 13 novembre 2026 à 14:05 » : date complète d'un pronostic (infobulle, lecteurs d'écran).
+export function dateComplete(iso) {
+  return new Date(iso).toLocaleString('fr-FR', {
+    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris',
+  })
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useGame } from '../../store/GameContext'
-import { classementGeneral } from '../../lib/scoring'
 import {
   parseListe, lireScores, finalistesDepuisScores, totalSaisi, totalJuste, resultatSecondTour, scoreAInitial,
 } from '../../lib/scrutin'
@@ -40,14 +39,14 @@ function Etape({ n, titre, etat, aide, children }) {
   )
 }
 
-// Étape 1 : la liste officielle des candidats (à saisir avant la fin de la période 2).
+// Étape 1 : la liste officielle des candidats.
 function ListeOfficielle({ officiels, onSave }) {
   const [brut, setBrut] = useState(officiels.join('\n'))
   const e = useEnvoi()
   return (
     <Etape n={1} titre="Candidats du 1er tour"
-      etat={officiels.length > 0 ? <Pastille accent>{officiels.length} candidats</Pastille> : <Pastille>Avant la période 3</Pastille>}
-      aide="Saisis la liste officielle des candidats, un par ligne. Tant qu'elle est vide, personne ne peut parier en période 3 : saisis-la avant la fin de la période 2.">
+      etat={officiels.length > 0 ? <Pastille accent>{officiels.length} candidats</Pastille> : <Pastille>À venir</Pastille>}
+      aide="Saisis la liste officielle des candidats, un par ligne, dès qu'elle est publiée. Elle sert à saisir les résultats du 1er tour.">
       <form className={s.formulaire} onSubmit={ev => { ev.preventDefault(); e.lancer(() => onSave(parseListe(brut))) }}>
         <Champ zone label="Candidats (un par ligne)" valeur={brut} onChange={v => { setBrut(v); e.setOk(false) }} placeholder={'Marine Le Pen\nJean-Luc Mélenchon\n…'} />
         <Retour ok={e.ok} erreur={e.erreur} />
@@ -110,9 +109,8 @@ function ResultatsPremierTour({ officiels, results, onSave }) {
   )
 }
 
-// Étape 3 : score du 1er finaliste au 2nd tour. Le vainqueur et le complément sont calculés ; aperçu du classement.
+// Étape 3 : score du 1er finaliste au 2nd tour. Le vainqueur et le complément sont calculés.
 function ResultatsSecondTour({ results, onSave }) {
-  const { paris, periodes, players } = useGame()
   const finalistes = results?.finalists ?? []
   const [scoreA, setScoreA] = useState(() => scoreAInitial(results))
   const e = useEnvoi()
@@ -122,13 +120,11 @@ function ResultatsSecondTour({ results, onSave }) {
     return <Etape n={3} titre="Résultats du 2nd tour" etat={<Pastille>Après le 2nd tour</Pastille>} aide="Les finalistes sont connus après la saisie du 1er tour (étape 2)." />
   }
   const r = resultatSecondTour(finalistes, scoreA)
-  const apercu = r ? classementGeneral(paris, periodes, { ...results, winner: r.winner, winnerScore: r.winnerScore }).slice(0, 3) : []
-  const nomDe = id => players.find(p => p.id === id)?.name ?? '?'
 
   return (
     <Etape n={3} titre="Résultats du 2nd tour"
       etat={fait ? <Pastille accent>{results.winner} · {virgule(results.winnerScore)} %</Pastille> : <Pastille>Après le 2nd tour</Pastille>}
-      aide="Saisis le score réel du premier finaliste. Le vainqueur et le score de l'autre sont calculés. L'enregistrement déclenche le classement final.">
+      aide="Saisis le score réel du premier finaliste. Le vainqueur et le score de l'autre sont calculés.">
       <form className={s.formulaire} onSubmit={ev => { ev.preventDefault(); if (!r) { e.setErreur('Score invalide.'); return } e.lancer(() => onSave({ ...results, winner: r.winner, winnerScore: r.winnerScore })) }}>
         <div className={s.scoreLigne}>
           <span className={s.scoreNom}>{finalistes[0]}</span>
@@ -145,12 +141,6 @@ function ResultatsSecondTour({ results, onSave }) {
             <span className={s.calculValeur}>{r.winner} · {virgule(r.winnerScore)} %</span>
           </div>
         )}
-        {apercu.length > 0 && (
-          <div className={s.calcul}>
-            <span className={s.calculTitre}>Aperçu du classement avec ce résultat</span>
-            {apercu.map(l => <span key={l.pari.id} className={s.scoreNom}>{l.rank}. {nomDe(l.player_id)} · {l.scores.total} pts</span>)}
-          </div>
-        )}
         <Retour ok={e.ok} erreur={e.erreur} />
         <Bouton type="submit" pleineLargeur disabled={e.envoi || !r}>{e.envoi ? 'Enregistrement…' : 'Enregistrer le 2nd tour'}</Bouton>
       </form>
@@ -162,7 +152,7 @@ export default function Scrutin() {
   const { officialCandidatesR1, results, saveOfficialCandidatesR1, saveResults } = useGame()
   return (
     <div className={s.pile}>
-      <p className={s.texte}>Dans l'ordre du calendrier électoral : la liste officielle, puis les résultats de chaque tour.</p>
+      <p className={s.texte}>Dans l'ordre du calendrier électoral : la liste officielle, puis les résultats de chaque tour. Pour l'instant, ils sont seulement enregistrés : ils ne changent rien sur le site.</p>
       <ListeOfficielle officiels={officialCandidatesR1} onSave={saveOfficialCandidatesR1} />
       <ResultatsPremierTour key={officialCandidatesR1.join('|')} officiels={officialCandidatesR1} results={results} onSave={saveResults} />
       <ResultatsSecondTour key={(results?.finalists ?? []).join('|')} results={results} onSave={saveResults} />

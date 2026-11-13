@@ -5,7 +5,7 @@ import s from './Pied.module.css'
 export default function Pied() {
   return (
     <footer className={s.pied}>
-      <span>Pari 2027, un jeu entre amis</span>
+      <span>Pari 2027 · les pronostics de la présidentielle</span>
       <Link to="/admin">Admin</Link>
     </footer>
   )

@@ -1,6 +1,0 @@
-.pile { display: flex; flex-direction: column; gap: var(--sp-4); }
-.texte { margin: 0; padding: 0 2px; font: var(--type-callout); color: var(--text-2); }
-.note { margin: 0; padding: 0 2px; font: var(--type-footnote); color: var(--text-3); text-align: center; }
-.formulaire { display: flex; flex-direction: column; gap: var(--sp-3); }
-.actions { display: flex; flex-direction: column; gap: var(--sp-2); }
-.erreur { margin: 0; padding: var(--sp-3); border: 1px solid var(--accent); border-radius: var(--r-md); background: var(--accent-soft); color: var(--accent-text); font: var(--type-callout); }

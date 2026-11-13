@@ -1,64 +1,47 @@
-import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
-import { periodeCourante } from '../lib/periodes'
 
 const GameContext = createContext(null)
 
-const SAVE_ERRORS = {
-  bad_code: 'Code incorrect : reconnecte-toi.',
-  no_code: 'Ce joueur n\'a pas encore de code. Demande-le à l\'admin.',
-  locked: 'Trop d\'essais : réessaie dans 15 minutes.',
-  closed: 'Le jeu est fermé : plus aucun pari n\'est possible.',
-  not_found: 'Pari introuvable.',
-  expired: 'Ce pari n\'est plus modifiable (plus de 24 h).',
-  period_closed: 'La période de ce pari est terminée : pose un nouveau pari.',
-}
+const CLE_PSEUDO = 'pari2027-pseudo'
+
+// Colonnes lues : les pronostics n'ont plus ni joueur ni période (pivot du 13/11).
+const COLONNES = 'id, pseudo, m1, m2, m3, m4, m5, created_at'
 
 export function GameProvider({ children }) {
-  const [players, setPlayers] = useState([])
-  const [results, setResults] = useState(null)
-  // Les paris datés et les périodes (bornes saisies par l'admin)
-  const [periodes, setPeriodes] = useState([])
   const [paris, setParis] = useState([])
-  // Horloge du navigateur, pour l'affichage seulement (le serveur décide)
+  const [results, setResults] = useState(null)
+  // Liste officielle des candidats du 1er tour (saisie par l'admin, pour les résultats)
+  const [officialCandidatesR1, setOfficialCandidatesR1] = useState([])
+  // Horloge du navigateur, pour les « il y a 3 min »
   const [now, setNow] = useState(() => Date.now())
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 60000)
     return () => clearInterval(t)
   }, [])
-  const periodeEnCours = useMemo(() => periodeCourante(periodes, new Date(now)), [periodes, now])
-  // Candidats officiels saisis par l'admin
-  // officialCandidatesR1 : liste des candidats du 1er tour (saisie avant la période 3)
-  // officialFinalists    : les 2 finalistes (dérivés des scores du 1er tour)
-  const [officialCandidatesR1, setOfficialCandidatesR1] = useState([])
-  const [officialFinalists, setOfficialFinalists] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
-  // ── Chargement initial ──────────────────────────────────────
+  // ── Chargement ──────────────────────────────────────────────
+  const lireParis = async () => {
+    const { data, error } = await supabase.from('paris').select(COLONNES).order('created_at', { ascending: false })
+    if (error) throw error
+    setParis(data)
+    setNow(Date.now())
+  }
+
   const loadAll = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const [stateRes, playersRes, periodesRes, parisRes] = await Promise.all([
-        supabase.from('game_state').select('*').single(),
-        supabase.from('players').select('*').order('created_at'),
-        supabase.from('periodes').select('*').order('id'),
-        supabase.from('paris').select('*').order('created_at'),
+      const [stateRes] = await Promise.all([
+        supabase.from('game_state').select('results, official_candidates_r1').single(),
+        lireParis(),
       ])
       if (stateRes.error) throw stateRes.error
-      if (playersRes.error) throw playersRes.error
-      if (periodesRes.error) throw periodesRes.error
-      if (parisRes.error) throw parisRes.error
-
       setResults(stateRes.data.results)
       setOfficialCandidatesR1(stateRes.data.official_candidates_r1 ?? [])
-      // Les finalistes sont dérivés des scores R1, stockés dans results.finalists
-      setOfficialFinalists(stateRes.data.results?.finalists ?? [])
-      setPlayers(playersRes.data)
-      setPeriodes(periodesRes.data)
-      setParis(parisRes.data)
-
     } catch (e) {
       setError(e.message)
     } finally {
@@ -68,72 +51,24 @@ export function GameProvider({ children }) {
 
   useEffect(() => { loadAll() }, [loadAll])
 
-  // ── Codes joueurs (mémorisés sur l'appareil) ───────────────
-  const codeKey = (playerId) => `pari2027-code-${playerId}`
-  const getPlayerCode = (playerId) => {
-    try { return localStorage.getItem(codeKey(playerId)) } catch { return null }
+  // ── Pseudo (mémorisé sur l'appareil, simple confort) ────────
+  const pseudoMemorise = () => {
+    try { return localStorage.getItem(CLE_PSEUDO) ?? '' } catch { return '' }
   }
-  const rememberPlayerCode = (playerId, code) => {
-    try { localStorage.setItem(codeKey(playerId), code) } catch { /* stockage indisponible */ }
-  }
-  const forgetPlayerCode = (playerId) => {
-    try { localStorage.removeItem(codeKey(playerId)) } catch { /* stockage indisponible */ }
+  const memoriserPseudo = pseudo => {
+    try { localStorage.setItem(CLE_PSEUDO, pseudo) } catch { /* stockage indisponible */ }
   }
 
-  // Retourne 'ok', 'bad_code', 'locked' ou 'no_code'
-  const verifyPlayerCode = async (playerId, code) => {
-    const { data, error } = await supabase.rpc('verify_player_code', { p_player_id: playerId, p_code: code })
-    if (error) throw error
-    if (data === 'ok') rememberPlayerCode(playerId, code)
-    return data
-  }
-
-  // ── Joueurs ─────────────────────────────────────────────────
-  const addPlayer = async (name, code) => {
-    const trimmed = name.trim()
-    if (!trimmed) throw new Error('Nom vide')
-    const { data, error } = await supabase.rpc('create_player', { p_name: trimmed, p_code: code })
-    if (error) throw error
-    rememberPlayerCode(data.id, code)
-    setPlayers(prev => [...prev, data])
-    return data
-  }
-
-  // ── Paris ───────────────────────────────────────────────────
-  const reloadParis = async () => {
-    const { data, error } = await supabase.from('paris').select('*').order('created_at')
-    if (error) throw error
-    setParis(data)
-    setNow(Date.now())
-  }
-
-  const checkPariStatus = (playerId, status) => {
-    if (status === 'ok') return
-    if (status === 'bad_code' || status === 'no_code') forgetPlayerCode(playerId)
-    const err = new Error(SAVE_ERRORS[status] ?? 'Erreur de sauvegarde')
-    err.code = status
-    throw err
-  }
-
-  // values : { m1, m2, m3, m4, m5 }. La période est décidée par le serveur.
-  const createPari = async (playerId, values) => {
-    const { data, error } = await supabase.rpc('create_pari', {
-      p_player_id: playerId, p_code: getPlayerCode(playerId),
-      p_m1: values.m1, p_m2: values.m2, p_m3: values.m3, p_m4: values.m4, p_m5: values.m5,
+  // ── Pronostics ──────────────────────────────────────────────
+  // valeurs : { m2, m3, m4, m5 } (voir lib/parcours.js). Renvoie l'id du pronostic.
+  const createPronostic = async (pseudo, valeurs) => {
+    const { data, error } = await supabase.rpc('create_pronostic', {
+      p_pseudo: pseudo.trim(), p_m2: valeurs.m2, p_m3: valeurs.m3, p_m4: valeurs.m4, p_m5: valeurs.m5,
     })
-    if (error) throw error
-    checkPariStatus(playerId, data)
-    await reloadParis()
-  }
-
-  const updatePari = async (pariId, playerId, values) => {
-    const { data, error } = await supabase.rpc('update_pari', {
-      p_pari_id: pariId, p_player_id: playerId, p_code: getPlayerCode(playerId),
-      p_m1: values.m1, p_m2: values.m2, p_m3: values.m3, p_m4: values.m4, p_m5: values.m5,
-    })
-    if (error) throw error
-    checkPariStatus(playerId, data)
-    await reloadParis()
+    if (error) throw new Error(error.message)
+    memoriserPseudo(pseudo.trim())
+    await lireParis()
+    return data
   }
 
   // ── Admin (mot de passe vérifié côté serveur) ───────────────
@@ -148,7 +83,7 @@ export function GameProvider({ children }) {
 
   const adminRpc = async (fn, args) => {
     const { data, error } = await supabase.rpc(fn, { p_pin: adminPin, ...args })
-    if (error) throw error
+    if (error) throw new Error(error.message)
     return data
   }
 
@@ -157,48 +92,26 @@ export function GameProvider({ children }) {
     setOfficialCandidatesR1(candidates)
   }
 
-  // periodes : [{ id, label, ends_at }] ×4, dates de fin croissantes
-  const savePeriodes = async (liste) => {
-    await adminRpc('admin_save_periodes', { p_periodes: liste })
-    const { data, error } = await supabase.from('periodes').select('*').order('id')
-    if (error) throw error
-    setPeriodes(data)
-  }
-
   const saveResults = async (resultsData) => {
     await adminRpc('admin_save_results', { p_results: resultsData })
     setResults(resultsData)
-    setOfficialFinalists(resultsData?.finalists ?? [])
   }
 
-  // Retourne { player, code } : le code généré est à transmettre au joueur
-  const adminCreatePlayer = async (name) => {
-    const res = await adminRpc('admin_create_player', { p_name: name.trim() })
-    setPlayers(prev => [...prev, res.player])
-    return res
+  // Masquer / réafficher un pronostic (il reste en base)
+  const setMasque = async (id, masque) => {
+    await adminRpc('admin_set_masque', { p_id: id, p_masque: masque })
+    await lireParis()
   }
 
-  const adminResetPlayerCode = (playerId) =>
-    adminRpc('admin_reset_player_code', { p_player_id: playerId })
-
-  const removePlayer = async (playerId) => {
-    await adminRpc('admin_remove_player', { p_player_id: playerId })
-    setPlayers(prev => prev.filter(p => p.id !== playerId))
-    setParis(prev => prev.filter(p => p.player_id !== playerId))
-  }
+  const listerMasques = () => adminRpc('admin_paris_masques', {})
 
   return (
     <GameContext.Provider value={{
-      players, results,
-      periodes, paris, periodeEnCours, now, createPari, updatePari,
-      officialCandidatesR1, officialFinalists,
-      loading, error,
-      addPlayer,
-      getPlayerCode, verifyPlayerCode, forgetPlayerCode,
+      paris, results, officialCandidatesR1, now,
+      loading, error, reload: loadAll,
+      pseudoMemorise, createPronostic,
       isAdmin: adminPin != null, adminLogin,
-      saveOfficialCandidatesR1, savePeriodes, saveResults,
-      adminCreatePlayer, adminResetPlayerCode, removePlayer,
-      reload: loadAll,
+      saveOfficialCandidatesR1, saveResults, setMasque, listerMasques,
     }}>
       {children}
     </GameContext.Provider>

@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "pari2027", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "app", "run", "dev", "--", "--port", "5174"], "port": 5174 }
+    { "name": "pari2027", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "app", "run", "dev", "--", "--port", "5174"], "port": 5174 },
+    { "name": "pari2027-maquette", "runtimeExecutable": "env", "runtimeArgs": ["VITE_SUPABASE_URL=http://127.0.0.1:54399", "VITE_SUPABASE_ANON_KEY=maquette", "npm", "--prefix", "app", "run", "dev", "--", "--port", "5175"], "port": 5175 }
   ]
 }

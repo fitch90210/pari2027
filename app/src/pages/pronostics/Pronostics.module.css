@@ -1,0 +1,34 @@
+.pile { display: flex; flex-direction: column; gap: var(--sp-3); }
+.sous { margin: 0; padding: 0 2px; font: 500 13px/18px var(--font); color: var(--text-2); }
+.note { margin: 0; padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); font: var(--type-callout); color: var(--text-2); }
+.note strong { color: var(--text); font-weight: 600; }
+
+.liste { list-style: none; margin: 0; padding: 0; }
+.pronostic { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-top: 1px solid var(--border); }
+.pronostic:first-child { border-top: 0; }
+
+.entete { display: flex; align-items: center; gap: 10px; }
+.pseudo { flex: 1; min-width: 0; font: 600 15px/20px var(--font); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.date { font: 400 13px/18px var(--font); color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 1er tour : les candidats en pastilles, du plus haut au plus bas */
+.candidats { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.candidat {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font: 400 13px/18px var(--font);
+}
+.candidatNom { color: var(--text); }
+.candidatScore { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* 2nd tour : vainqueur et vaincu côte à côte */
+.duel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
+.camp { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); }
+.vaincu { background: none; }
+.etiquette { font: var(--type-caption); color: var(--text-2); }
+.campNom { font: 500 15px/20px var(--font); color: var(--text); }
+.campScore { font: 600 22px/26px var(--font); letter-spacing: -0.6px; color: var(--text); font-variant-numeric: tabular-nums; }
+.vaincu .campNom, .vaincu .campScore { color: var(--text-2); }

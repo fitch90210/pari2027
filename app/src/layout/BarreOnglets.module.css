@@ -1,4 +1,4 @@
-/* Mobile : barre d'onglets en bas (HIG), 5 entrées, Parier au centre.
+/* Mobile : barre d'onglets en bas (HIG), 3 entrées, Pronostiquer au centre.
    Grand écran (≥ 768 px) : la même navigation devient une barre en haut. */
 
 .barre {
@@ -14,13 +14,13 @@
   border-top: 1px solid var(--border);
   font-family: var(--font);
 }
-.marque, .pastille { display: none; }
+.marque { display: none; }
 
 .onglets {
   list-style: none;
   margin: 0; padding: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   height: 100%;
 }
 
@@ -45,7 +45,7 @@
 .actif .icone { stroke-width: 2.2; }
 
 .parier {
-  width: 38px; height: 26px;
+  width: 38px; height: 24px;
   border-radius: var(--r-md);
   background: var(--btn);
   color: var(--btn-text);
@@ -85,11 +85,10 @@
   }
   .onglet .icone { display: none; }
   .actif { background: var(--surface); color: var(--text); }
-  /* Parier passe en bouton principal à droite */
+  /* Pronostiquer passe en bouton principal à droite */
   .itemParier { order: 10; margin-left: auto; }
   .ongletParier { background: var(--btn); color: var(--btn-text); padding: 0 var(--sp-4); }
   .ongletParier:hover { color: var(--btn-text); opacity: 0.88; }
   .parier { display: none; }
-  .pastille { display: inline-flex; margin-left: auto; }
   .onglets { flex: 1; }
 }

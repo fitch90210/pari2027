@@ -1,40 +1,16 @@
-// Logique pure du parcours « Parier » (étapes, répartition des pourcentages, finalistes).
-// Les valeurs du formulaire suivent le format de lib/pari.js : m2 et m5 sont des chaînes.
-
-const ORDRE = ['m1', 'm2', 'm3', 'm4', 'm5']
-
-// Étapes proposées : les pronostics encore ouverts dans la période, regroupés quand ils vont ensemble.
-// - 'm12' : candidats et score de chacun (on ajoute un candidat puis on règle son pourcentage, en une étape)
-// - 'm45' : vainqueur et son score
-// Dès la période 3, la liste des candidats est imposée : il ne reste que 'm2' (les scores).
-export function etapesOuvertes(periode) {
-  const ouverts = ORDRE.filter(k => periode?.scored?.includes(k))
-  const o = new Set(ouverts)
-  return ouverts.flatMap(k => {
-    if (k === 'm1') return o.has('m2') ? ['m12'] : [k]
-    if (k === 'm2') return o.has('m1') ? [] : [k]
-    if (k === 'm4') return o.has('m5') ? ['m45'] : [k]
-    if (k === 'm5') return o.has('m4') ? [] : [k]
-    return [k]
-  })
-}
-
-// Candidats parmi lesquels répartir les scores et choisir finalistes et vainqueur :
-// la liste officielle dès la période 3, sinon ceux du pronostic 1.
-export function candidatsDuPari(form, periode, officiels) {
-  return periode.id >= 3 ? officiels : form.m1
-}
+// Logique pure du parcours « Pronostiquer » : 1er tour (candidats et pourcentages), 2nd tour, envoi.
+// Formulaire : { m1: [noms, dans l'ordre d'ajout], m2: { nom: 'texte' }, m4: 'vainqueur', m5: 'texte' }.
 
 export const nombre = v => {
   const n = parseFloat(v)
   return Number.isNaN(n) ? 0 : n
 }
 
-export function totalScores(form, candidats) {
+export function totalScores(form, candidats = form.m1) {
   return candidats.reduce((somme, c) => somme + nombre(form.m2[c]), 0)
 }
 
-// Total à 100 % (0,15 de tolérance, comme le formulaire d'origine).
+// Total à 100 % (0,15 de tolérance, comme le serveur).
 export const totalOk = total => Math.abs(total - 100) < 0.15
 
 // Répartition égale par demi-points, la somme fait toujours exactement 100.
@@ -50,13 +26,28 @@ export function repartirEgalement(candidats) {
   }))
 }
 
-// Les deux candidats aux meilleurs scores, ou null s'il y en a moins de deux.
+// Les deux candidats aux meilleurs scores (à égalité, le premier ajouté passe devant), ou null.
 export function finalistesProbables(candidats, m2) {
   const classes = candidats
-    .map(c => ({ nom: c, score: parseFloat(m2[c]) }))
+    .map((nom, i) => ({ nom, i, score: parseFloat(m2[nom]) }))
     .filter(x => !Number.isNaN(x.score) && x.score > 0)
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.score - a.score || a.i - b.i)
   return classes.length < 2 ? null : [classes[0].nom, classes[1].nom]
+}
+
+// Le 1er tour est prêt quand au moins deux candidats ont un score et que le total fait 100 %.
+export function premierTourPret(form) {
+  return !!finalistesProbables(form.m1, form.m2) && totalOk(totalScores(form))
+}
+
+export const scoreVainqueurOk = v => v !== '' && nombre(v) > 50 && nombre(v) <= 100
+
+// Valeurs envoyées à create_pronostic : seuls les candidats crédités d'un score.
+export function valeursPourEnvoi(form) {
+  const m2 = Object.fromEntries(
+    form.m1.filter(c => nombre(form.m2[c]) > 0).map(c => [c, nombre(form.m2[c])])
+  )
+  return { m2, m3: finalistesProbables(form.m1, form.m2) ?? [], m4: form.m4, m5: nombre(form.m5) }
 }
 
 // « 32 » → « 32 % », « 32.5 » → « 32,5 % »

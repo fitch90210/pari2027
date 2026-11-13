@@ -24,14 +24,10 @@
 .retourOk { border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); }
 .retourErreur { border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent-text); }
 
-.code { font: 600 28px/1 var(--font); letter-spacing: 0.35em; font-variant-numeric: tabular-nums; }
-.codeCarte { display: flex; flex-direction: column; gap: var(--sp-2); }
-.danger { background: var(--accent); color: #fff; }
-.danger:hover:not(:disabled) { opacity: 0.88; }
-.actions { display: flex; flex-direction: column; gap: var(--sp-2); }
-
-.joueur { display: flex; flex-direction: column; gap: var(--sp-3); }
-.joueurNom { display: flex; align-items: center; gap: var(--sp-3); }
-.nomJoueur { font: 600 17px/22px var(--font); }
-.joueurActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
-.supprimer { color: var(--accent-text); }
+.listeModeree { list-style: none; margin: 0; padding: 0; }
+.modere { display: flex; align-items: center; gap: var(--sp-3); padding: 12px 14px; border-top: 1px solid var(--border); }
+.modere:first-child { border-top: 0; }
+.modereTextes { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.modereNom { font: 600 15px/20px var(--font); color: var(--text); }
+.modereDate { font-weight: 400; color: var(--text-3); }
+.modereResume { font: var(--type-footnote); color: var(--text-2); }

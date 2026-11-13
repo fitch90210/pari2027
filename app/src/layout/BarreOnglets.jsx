@@ -1,22 +1,15 @@
 import { NavLink, Link } from 'react-router-dom'
-import { useGame } from '../store/GameContext'
-import { joursAvant } from '../lib/ui'
 import Icone from '../ui/Icone'
-import Pastille from '../ui/Pastille'
 import s from './BarreOnglets.module.css'
 
+// Trois entrées : l'accueil, l'action (au centre sur mobile) et ce que les autres pronostiquent.
 const ONGLETS = [
   { to: '/', label: 'Accueil', icone: 'accueil', fin: true },
-  { to: '/paris', label: 'Paris', icone: 'paris' },
-  { to: '/parier', label: 'Parier', centre: true },
-  { to: '/classements', label: 'Classements', icone: 'classements' },
-  { to: '/regles', label: 'Règles', icone: 'regles' },
+  { to: '/pronostiquer', label: 'Pronostiquer', centre: true },
+  { to: '/pronostics', label: 'Pronostics', icone: 'paris' },
 ]
 
 export default function BarreOnglets() {
-  const { periodeEnCours, periodes } = useGame()
-  const premierTour = periodes.find(p => p.id === 3)?.ends_at
-
   return (
     <nav aria-label="Navigation principale" className={s.barre}>
       <Link to="/" className={s.marque}><span className={s.point} aria-hidden="true" />Pari 2027</Link>
@@ -35,9 +28,6 @@ export default function BarreOnglets() {
           </li>
         ))}
       </ul>
-      {periodeEnCours && premierTour && (
-        <span className={s.pastille}><Pastille>Période {periodeEnCours.id} · J-{joursAvant(premierTour)}</Pastille></span>
-      )}
     </nav>
   )
 }

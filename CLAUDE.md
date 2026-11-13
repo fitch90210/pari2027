@@ -6,31 +6,33 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 **Les paris enregistrés en base sont de vraies données, irremplaçables.** Jamais de `DELETE`, `TRUNCATE`, reset ou migration destructive sur la base de production. Avant toute migration : sauvegarde JSON des tables (voir « Sauvegarde » ci-dessous), migration additive, contrôle après coup.
 
-## État au 12 novembre 2026
+## État au 13 novembre 2026
 
-- **En ligne** : https://pari2027.vercel.app, **refonte fonctionnelle déployée** (lots 0 à 7 : parier à tout moment, sans phases). Migration v4 jouée en production et contrôlée : les 10 pronostics de phase 1 sont devenus 10 paris de période 1, identiques aux originaux.
-- **Données** : 11 joueurs, 10 paris (avril–mai 2026), tous en période 1. La table `pronostics` est conservée en archive. Sauvegardes dans `backups/` (dernière : `backups/2026-11-12_1108/`, faite juste avant la migration).
-- **Périodes** : bornes provisoires (fin P1 : 1er sept. 2026, P2 : 15 mars 2027, P3 : 11 avril 2027, P4 : 25 avril 2027), modifiables dans l'admin. La période en cours est la 2.
-- **Reste à faire** : (migration v5 jouée en prod le 12/11 : `save_pronostic` et `admin_set_session` n'existent plus) supprimer les variables Vercel « Preview » et la base de test *à la fin de la refonte UI*, prévenir le groupe (lot 8) — à la bascule de la refonte UI, car la règle change : bonus d'anticipation et classement général de paris (révision du 12/11 dans `docs/refonte-fonctionnelle.md`).
-- **Ensuite** : la refonte UI, **cadrée le 12/11** ([docs/refonte-ui.md](docs/refonte-ui.md), lots A à H, branche `refonte-ui`). Lot R fait sur la branche `refonte-ui` (non commité) : `bonusAnticipation` et `classementGeneral` dans `scoring.js`, 33 tests verts ; `classementPeriode` reste utilisé par Classements et Demo jusqu'à l'UI. Lots A et B faits le 12/11 sur la branche `refonte-ui` : direction « B Scrutin épuré » (Geist, tokens dans `app/src/styles/tokens.css`), composants de base dans `app/src/ui/`, coque et barre d'onglets dans `app/src/layout/`, routes et redirections dans `App.jsx` (page interne `/ui` = nuancier). L'ancien CSS reste, ses variables sont préfixées `--v1-` (retiré au lot H). Maquettes : https://claude.ai/artifact/FCHDF4hEs3pZLVwpLjnYeq. Lot C fait : accueil (`pages/Accueil.jsx`) et règles (`pages/Regles.jsx`), lien Admin discret en pied de page (`ui/Pied.jsx`). Lot D (parcours Parier, `pages/parier/`) et lot E (Paris : Tendances et Pari par pari, `pages/paris/` ; profils `pages/Profil.jsx` ; classement général `pages/Classement.jsx`) écrits. Lot E vérifié à l'écran sur les vraies données (lecture seule) ; le parcours Parier reste à tester sur la preview (base de test). Logique : `lib/tendances.js`, `lib/detailPari.js`, `lib/parcours.js`. Les anciennes règles CSS globales (titres, liens) sont limitées à `.page`. Lot F écrit : démo (`pages/Demo.jsx`, `lib/demo.js`) qui réutilise le parcours Parier (`demo` en prop de `Parcours`), mode résultats déjà sur l'accueil ; le flux démo n'est pas vu à l'écran (aucun résultat saisi sur les bases), à tester sur la preview après saisie de résultats de test. Anciens formulaires supprimés. Lot G écrit : admin en 3 onglets (`pages/admin/` : Calendrier, Scrutin, Joueurs), logique dans `lib/scrutin.js` ; seul l'écran de connexion est vu à l'écran (mot de passe admin non saisi), les onglets sont à tester sur la preview (base de test). Suppression d'un joueur : feuille de confirmation avec saisie du nom. Lot H fait : finitions et accessibilité, ancien CSS supprimé. Prochaine étape : tester sur la preview, puis bascule (voir « État et bascule » dans `docs/refonte-ui.md`) : merger `refonte-ui` dans `main` seulement sur accord explicite de l'utilisateur.
+- **En ligne** : https://pari2027.vercel.app, version « paris par périodes » (refonte fonctionnelle, lots 0 à 7). Données : 10 paris (avril–mai 2026), 11 joueurs. Sauvegardes dans `backups/` (dernière : `backups/2026-11-12_1108/`).
+- **Pivot « pronostics » décidé le 13/11** ([docs/pivot-pronostics.md](docs/pivot-pronostics.md)) : plus de périodes, de score, de codes, de profils, de classement ni de démo. On poste un pronostic (les deux tours) avec un simple pseudo, et on voit ce que les autres pronostiquent. Admin réduite aux résultats (sans effet pour l'instant) et à la modération (masquer un pronostic). Il remplace `refonte-fonctionnelle.md` pour le produit ; la DA de `refonte-ui.md` reste valable.
+- **Branche `refonte-ui`** : refonte UI (lots A à H) puis pivot écrits. Écrans : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `lib/parcours.js`, `lib/pronostic.js`, `lib/tendances.js` (tests Vitest). Vérifié à l'écran sur une maquette locale (faux Supabase servant une copie de la sauvegarde), pas encore sur une vraie base.
+- **Prochaines étapes** : 1) jouer `supabase_migration_v6_pronostics.sql` sur la base de **test**, puis tester la preview ; 2) à la bascule, sur accord explicite : sauvegarde, v6 en **production**, merge de `refonte-ui` dans `main`, contrôle en lecture ; 3) prévenir le groupe ; 4) plus tard : retirer les anciennes tables et fonctions (après sauvegarde), les variables Vercel « Preview » et la base de test. **Le front de la branche exige la v6** (colonne `pseudo`) : sans elle, il affiche « Connexion impossible ».
+- **Nom** : « Pari 2027 » provisoire, un nom plus sexy est à trouver.
 
 ## Documents
 
 | Fichier | Contenu |
 |---|---|
-| [docs/refonte-fonctionnelle.md](docs/refonte-fonctionnelle.md) | Cadrage validé : paris datés, modifiables 24 h, classements par période, mode démo |
+| [docs/pivot-pronostics.md](docs/pivot-pronostics.md) | **Produit actuel** (13/11) : pronostics avec pseudo, sans score ni période |
+| [docs/refonte-fonctionnelle.md](docs/refonte-fonctionnelle.md) | Ancien cadrage (remplacé par le pivot) : paris datés, classements par période |
 | [docs/refonte-plan-technique.md](docs/refonte-plan-technique.md) | Modèle de données, fonctions SQL, lots 0 à 8, risques |
 | [docs/refonte-ui.md](docs/refonte-ui.md) | Cadrage validé de la refonte UI : décisions, arborescence, parcours, lots A à H |
 | [specs_pari2027.docx](specs_pari2027.docx) | Specs d'origine (avril 2026). Le code a divergé : un seul classement qui additionne les phases, pas deux. |
-| `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql`, `supabase_migration_v4_paris.sql`, `supabase_migration_v5_nettoyage.sql` | Schéma et migrations, à jouer dans cet ordre. `supabase_test_v4.sql` : tests SQL de la v4, à jouer sur la base de test seulement (tout est annulé en fin de script). |
+| `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql`, `supabase_migration_v4_paris.sql`, `supabase_migration_v5_nettoyage.sql`, `supabase_migration_v6_pronostics.sql` | Schéma et migrations, à jouer dans cet ordre. `supabase_test_v4.sql` : tests SQL de la v4, à jouer sur la base de test seulement (tout est annulé en fin de script). |
 
 ## Architecture
 
-- **Frontend** : React 19 + Vite dans `app/`. Tout l'accès aux données passe par [app/src/store/GameContext.jsx](app/src/store/GameContext.jsx). Barème et classements par période dans [app/src/lib/scoring.js](app/src/lib/scoring.js) (tests Vitest : `npm --prefix app test`).
+- **Frontend** : React 19 + Vite dans `app/`. Tout l'accès aux données passe par [app/src/store/GameContext.jsx](app/src/store/GameContext.jsx). Logique pure dans `app/src/lib/` (tests Vitest : `npm --prefix app test`).
 - **Base** : Supabase. Le public n'a que la **lecture** sur `game_state`, `players`, `periodes`, `paris` (et `pronostics`, archive). Toute écriture passe par des fonctions SQL `SECURITY DEFINER` (migration v3) :
   - joueurs : `create_player`, `verify_player_code`, `create_pari`, `update_pari` (code à 4 chiffres, 5 échecs = blocage 15 min ; la période d'un pari est fixée par le serveur, un pari n'est modifiable que 24 h et tant que sa période est en cours) ;
   - admin : `admin_login`, `admin_save_periodes`, `admin_save_results`, `admin_save_official_candidates`, `admin_create_player`, `admin_reset_player_code`, `admin_remove_player`.
   - Secrets hachés (bcrypt) dans le schéma `private`, non exposé par l'API.
+  - Après la v6 (pivot) : `create_pronostic` (public, pseudo, sans code, validé côté serveur, anti-rafale), `admin_set_masque`, `admin_paris_masques` ; seuls les pronostics non masqués sont lisibles. Les fonctions ci-dessus restent en place jusqu'au nettoyage.
 - **Hébergement** : Vercel, projet `pari2027`, relié au dépôt GitHub `fitch90210/pari2027` (public), **Root Directory = `app`**. Un push sur `main` déploie en production.
 - **Keepalive** : [app/api/keepalive.js](app/api/keepalive.js) + cron quotidien (8h UTC) dans `app/vercel.json`, pour que Supabase gratuit ne se mette pas en pause.
 
@@ -47,7 +49,8 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **CLI Vercel** : `/Users/paulalbagli/.nvm/versions/node/v20.9.0/bin/vercel` (absente du PATH de la version de Node par défaut).
 - **SQL** : Claude n'a que la clé `anon`. Toute migration se fait en collant le SQL dans Supabase > SQL Editor ; l'alerte « destructive operations » sur des `DROP POLICY`/`REVOKE` est normale, choisir « Run and enable RLS ».
 - **Sauvegarde** : lire les 3 tables via l'API REST avec la clé `anon` et les écrire dans `backups/<date>/` (dernière : `backups/2026-11-11_2151/`).
-- **Lint** : 4 erreurs préexistantes (`set-state-in-effect`, `only-export-components`), non bloquantes pour le build.
+- **Lint** : 1 erreur préexistante (`only-export-components` dans `GameContext.jsx`), non bloquante.
+- **Maquette locale** : config `pari2027-maquette` de `.claude/launch.json` (port 5175) + faux Supabase sur le port 54399 (script à recréer : sert `paris`/`game_state` depuis une sauvegarde, simule `create_pronostic` et l'admin).
 
 ## Fichiers locaux non versionnés
 

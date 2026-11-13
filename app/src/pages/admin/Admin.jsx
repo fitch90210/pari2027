@@ -5,9 +5,8 @@ import Carte from '../../ui/Carte'
 import Bouton from '../../ui/Bouton'
 import Champ from '../../ui/Champ'
 import Segmente from '../../ui/Segmente'
-import Calendrier from './Calendrier'
 import Scrutin from './Scrutin'
-import JoueursAdmin from './JoueursAdmin'
+import Moderation from './Moderation'
 import s from './Admin.module.css'
 
 function Connexion({ onLogin }) {
@@ -37,22 +36,19 @@ function Connexion({ onLogin }) {
   )
 }
 
-// Admin : trois onglets, dans l'ordre où on s'en sert. Hors navigation (lien discret en pied d'accueil).
+// Admin : les résultats réels et la modération. Hors navigation (lien discret en pied d'accueil).
 export default function Admin() {
-  const { isAdmin, adminLogin, periodes, periodeEnCours, savePeriodes } = useGame()
-  const [onglet, setOnglet] = useState('calendrier')
+  const { isAdmin, adminLogin } = useGame()
+  const [onglet, setOnglet] = useState('resultats')
 
   if (!isAdmin) return <Connexion onLogin={adminLogin} />
 
   return (
     <Ecran titre="Administration">
       <Segmente label="Section" valeur={onglet} onChange={setOnglet}
-        options={[{ valeur: 'calendrier', libelle: 'Calendrier' }, { valeur: 'scrutin', libelle: 'Scrutin' }, { valeur: 'joueurs', libelle: 'Joueurs' }]} />
-      {onglet === 'calendrier' && (
-        <Calendrier key={periodes.map(p => p.ends_at + p.label).join('|')} periodes={periodes} periodeEnCours={periodeEnCours} onSave={savePeriodes} />
-      )}
-      {onglet === 'scrutin' && <Scrutin />}
-      {onglet === 'joueurs' && <JoueursAdmin />}
+        options={[{ valeur: 'resultats', libelle: 'Résultats' }, { valeur: 'moderation', libelle: 'Modération' }]} />
+      {onglet === 'resultats' && <Scrutin />}
+      {onglet === 'moderation' && <Moderation />}
     </Ecran>
   )
 }

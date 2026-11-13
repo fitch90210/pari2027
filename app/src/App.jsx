@@ -5,19 +5,12 @@ import Ecran from './ui/Ecran'
 import Carte from './ui/Carte'
 import EtatVide from './ui/EtatVide'
 import Accueil from './pages/Accueil'
-import Regles from './pages/Regles'
-import Parier from './pages/parier/Parier'
-import Classement from './pages/Classement'
+import Pronostics from './pages/pronostics/Pronostics'
+import Pronostiquer from './pages/pronostiquer/Pronostiquer'
 import Admin from './pages/admin/Admin'
-import Paris from './pages/paris/Paris'
-import Profil from './pages/Profil'
-import Demo from './pages/Demo'
 import Nuancier from './pages/Nuancier'
-import { Introuvable, VersProfil } from './pages/Provisoire'
+import Introuvable from './pages/Introuvable'
 
-// Routes de la refonte UI. Pendant la transition, plusieurs routes affichent encore
-// les anciennes pages ; chaque lot les remplace (C : accueil et règles, D : parier,
-// E : paris, profils et classements, F : démo, G : admin).
 function AppInner() {
   const { loading, error } = useGame()
 
@@ -39,20 +32,21 @@ function AppInner() {
     <Coque>
       <Routes>
         <Route path="/" element={<Accueil />} />
-        <Route path="/paris" element={<Paris />} />
-        <Route path="/parier" element={<Parier />} />
-        <Route path="/parier/:pariId" element={<Parier />} />
-        <Route path="/classements" element={<Classement />} />
-        <Route path="/regles" element={<Regles />} />
-        <Route path="/joueurs/:id" element={<Profil />} />
-        <Route path="/demo" element={<Demo />} />
+        <Route path="/pronostics" element={<Pronostics />} />
+        <Route path="/pronostiquer" element={<Pronostiquer />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/ui" element={<Nuancier />} />
 
         {/* Anciennes adresses, encore partagées dans le groupe */}
-        <Route path="/pronostics" element={<Navigate to="/paris" replace />} />
-        <Route path="/pronostics/:playerId" element={<VersProfil />} />
-        <Route path="/voir" element={<Navigate to="/paris" replace />} />
+        <Route path="/paris" element={<Navigate to="/pronostics" replace />} />
+        <Route path="/voir" element={<Navigate to="/pronostics" replace />} />
+        <Route path="/pronostics/:ancien" element={<Navigate to="/pronostics" replace />} />
+        <Route path="/joueurs/:ancien" element={<Navigate to="/pronostics" replace />} />
+        <Route path="/classements" element={<Navigate to="/pronostics" replace />} />
+        <Route path="/parier" element={<Navigate to="/pronostiquer" replace />} />
+        <Route path="/parier/:ancien" element={<Navigate to="/pronostiquer" replace />} />
+        <Route path="/regles" element={<Navigate to="/" replace />} />
+        <Route path="/demo" element={<Navigate to="/" replace />} />
 
         <Route path="*" element={<Introuvable />} />
       </Routes>
