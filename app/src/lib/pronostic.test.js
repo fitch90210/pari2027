@@ -32,7 +32,7 @@ describe('lecture d\'un pronostic', () => {
   })
 
   it('résumé sur une ligne', () => {
-    expect(resumePronostic({ m3: ['A', 'B'], m4: 'B', m5: 52.5 })).toBe('B gagne avec 52,5 %')
+    expect(resumePronostic({ m3: ['A', 'B'], m4: 'B', m5: 52.5 })).toBe('B gagne avec 52,5\u00a0%')
     expect(resumePronostic({ m1: ['A', 'B', 'C', 'D'], m2: {} })).toBe('1er tour : A, B, C')
   })
 })

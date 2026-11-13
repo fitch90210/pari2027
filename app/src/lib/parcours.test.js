@@ -49,7 +49,7 @@ describe('parcours Pronostiquer', () => {
   })
 
   it('pourcentage à la française', () => {
-    expect(pourcent(32)).toBe('32 %')
-    expect(pourcent('32.5')).toBe('32,5 %')
+    expect(pourcent(32)).toBe('32\u00a0%')
+    expect(pourcent('32.5')).toBe('32,5\u00a0%')
   })
 })

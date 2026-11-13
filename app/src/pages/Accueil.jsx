@@ -4,6 +4,7 @@ import { useGame } from '../store/GameContext'
 import { depuis } from '../lib/ui'
 import { pseudoDe, resumePronostic } from '../lib/pronostic'
 import { tendancesSecondTour } from '../lib/tendances'
+import { pourcent } from '../lib/parcours'
 import Ecran from '../ui/Ecran'
 import Carte from '../ui/Carte'
 import Bouton from '../ui/Bouton'
@@ -45,7 +46,7 @@ export default function Accueil() {
             <div className={s.chiffre}>
               <span className={s.favori}>{favori.nom}</span>
               <span className={s.legende}>
-                donné vainqueur par {favori.personnes.length} personne{favori.personnes.length > 1 ? 's' : ''} sur {t2.personnes}{favori.moy != null ? `, avec ${String(favori.moy).replace('.', ',')} % en moyenne` : ''}
+                donné vainqueur par {favori.personnes.length} personne{favori.personnes.length > 1 ? 's' : ''} sur {t2.personnes}{favori.moy != null ? `, avec ${pourcent(favori.moy)} en moyenne` : ''}
               </span>
             </div>
           )}

@@ -50,5 +50,5 @@ export function valeursPourEnvoi(form) {
   return { m2, m3: finalistesProbables(form.m1, form.m2) ?? [], m4: form.m4, m5: nombre(form.m5) }
 }
 
-// « 32 » → « 32 % », « 32.5 » → « 32,5 % »
-export const pourcent = v => `${String(v).replace('.', ',')} %`
+// « 32 » → « 32 % », « 32.5 » → « 32,5 % » (espace insécable : le % ne passe jamais seul à la ligne)
+export const pourcent = v => `${String(v).replace('.', ',')}\u00a0%`
