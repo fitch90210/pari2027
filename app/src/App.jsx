@@ -7,12 +7,13 @@ import EtatVide from './ui/EtatVide'
 import Accueil from './pages/Accueil'
 import Regles from './pages/Regles'
 import Parier from './pages/parier/Parier'
-import Classements from './pages/Classements'
+import Classement from './pages/Classement'
 import Admin from './pages/Admin'
-import Voir from './pages/Voir'
+import Paris from './pages/paris/Paris'
+import Profil from './pages/Profil'
 import Demo from './pages/Demo'
 import Nuancier from './pages/Nuancier'
-import { ProfilBientot, Introuvable, VersProfil } from './pages/Provisoire'
+import { Introuvable, VersProfil } from './pages/Provisoire'
 
 // Routes de la refonte UI. Pendant la transition, plusieurs routes affichent encore
 // les anciennes pages ; chaque lot les remplace (C : accueil et règles, D : parier,
@@ -38,12 +39,12 @@ function AppInner() {
     <Coque>
       <Routes>
         <Route path="/" element={<Accueil />} />
-        <Route path="/paris" element={<Voir />} />
+        <Route path="/paris" element={<Paris />} />
         <Route path="/parier" element={<Parier />} />
         <Route path="/parier/:pariId" element={<Parier />} />
-        <Route path="/classements" element={<Classements />} />
+        <Route path="/classements" element={<Classement />} />
         <Route path="/regles" element={<Regles />} />
-        <Route path="/joueurs/:id" element={<ProfilBientot />} />
+        <Route path="/joueurs/:id" element={<Profil />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/ui" element={<Nuancier />} />

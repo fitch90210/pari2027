@@ -15,7 +15,7 @@ export function Ligne({ debut, titre, sousTitre, fin, to, onClick, multiligne = 
       {debut}
       <span className={s.contenu}>
         <span className={s.textes}>
-          <span className={s.titre}>{titre}</span>
+          <span className={[s.titre, multiligne && s.multiligne].filter(Boolean).join(' ')}>{titre}</span>
           {sousTitre && <span className={[s.sousTitre, multiligne && s.multiligne].filter(Boolean).join(' ')}>{sousTitre}</span>}
         </span>
         {fin != null && <span className={s.fin}>{fin}</span>}

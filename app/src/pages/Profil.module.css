@@ -1,0 +1,18 @@
+.pile { display: flex; flex-direction: column; gap: var(--sp-4); }
+.tete { display: flex; align-items: center; gap: var(--sp-3); padding: 0 2px; }
+.nom { margin: 0; font: var(--type-title-1); letter-spacing: var(--track-title-1); }
+.stats { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.titreSection { margin: 0; padding: 0 2px; font: 500 13px/18px var(--font); color: var(--text-2); }
+.rail { list-style: none; margin: 0; padding: 0; position: relative; display: flex; flex-direction: column; gap: var(--sp-3); }
+.etape { position: relative; padding-left: 22px; }
+.etape::before { content: ''; position: absolute; left: 4px; top: 0; bottom: calc(-1 * var(--sp-3)); width: 1px; background: var(--border); }
+.etape:last-child::before { bottom: 50%; }
+.dot { position: absolute; left: 0; top: 18px; width: 9px; height: 9px; border-radius: 50%; background: var(--bg); border: 2px solid var(--text-3); }
+.etapeRecente .dot { background: var(--text); border-color: var(--text); }
+.carteBouton { all: unset; display: block; width: 100%; box-sizing: border-box; cursor: pointer; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 12px 14px; background: var(--bg); }
+.carteBouton:hover { background: var(--surface); }
+.carteBouton:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ligneHaut { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2); }
+.date { font: 500 15px/20px var(--font); }
+.resume { margin-top: 2px; font: var(--type-footnote); color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bonus { font: 600 13px/1 var(--font); color: var(--accent-text); font-variant-numeric: tabular-nums; white-space: nowrap; }
