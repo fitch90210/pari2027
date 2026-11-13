@@ -43,6 +43,8 @@ Migration `supabase_migration_v6_pronostics.sql` (additive) :
 Les anciennes tables et fonctions (`players`, `periodes`, `pronostics`, `create_pari`, codes…) ne sont
 pas touchées : elles seront retirées plus tard, après la bascule, avec une sauvegarde.
 
-Données existantes : 10 paris. 8 sont complets ; 2 n'ont que des candidats, sans scores ni 2nd tour :
-ils restent visibles dans la liste du 1er tour. 4 paris donnent au vainqueur moins de 50 % (l'ancienne
-interface ne bornait rien) : on les affiche tels quels, le vaincu prenant le complément.
+Données existantes : 10 paris. 8 sont complets ; 2 (Gautier, Tom) n'ont que des candidats, sans scores ni 2nd tour :
+ils restent visibles dans la liste du 1er tour. Pour 5 paris, l'ancienne interface avait enregistré un score
+sous 50 % pour le vainqueur : le vainqueur choisi est le bon, son score est 100 - la valeur saisie. L'affichage
+applique cette règle (`lib/pronostic.js`) et la migration v7 corrige la donnée dans `paris` (l'archive
+`pronostics` garde les valeurs d'origine).

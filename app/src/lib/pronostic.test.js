@@ -22,9 +22,10 @@ describe('lecture d\'un pronostic', () => {
   it('2nd tour : vainqueur, vaincu et complément', () => {
     expect(secondTour({ m3: ['A', 'B'], m4: 'B', m5: 52.4 }))
       .toEqual({ vainqueur: 'B', vaincu: 'A', scoreVainqueur: 52.4, scoreVaincu: 47.6 })
-    // Ancien pari inversé (vainqueur à moins de 50 %) : c'est l'autre finaliste qui gagne
+    // Ancien pari dont le score est sous 50 % : le vainqueur reste celui du pronostic, avec 100 - score
     expect(secondTour({ m3: ['A', 'B'], m4: 'A', m5: '32.9' }))
-      .toEqual({ vainqueur: 'B', vaincu: 'A', scoreVainqueur: 67.1, scoreVaincu: 32.9 })
+      .toEqual({ vainqueur: 'A', vaincu: 'B', scoreVainqueur: 67.1, scoreVaincu: 32.9 })
+    expect(secondTour({ m3: ['A', 'B'], m4: 'A', m5: 49.8 })).toMatchObject({ vainqueur: 'A', scoreVainqueur: 50.2, scoreVaincu: 49.8 })
     expect(secondTour({ m3: ['A', 'B'], m4: 'A', m5: 50 })).toMatchObject({ vainqueur: 'A', scoreVainqueur: 50 })
     expect(secondTour({ m3: ['A', 'B'], m4: 'A', m5: null })).toMatchObject({ scoreVainqueur: null, scoreVaincu: null })
     expect(secondTour({ m3: [], m4: '', m5: null })).toBeNull()
