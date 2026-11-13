@@ -8,6 +8,10 @@ import s from './Feuille.module.css'
 export default function Feuille({ ouverte, onFermer, titre, children }) {
   const titreId = useId()
   const ref = useRef(null)
+  // Le parent passe souvent une fonction recréée à chaque rendu : on la garde en référence pour que
+  // l'effet ne se relance pas (il volerait le focus du champ en cours de saisie).
+  const fermer = useRef(onFermer)
+  useEffect(() => { fermer.current = onFermer })
 
   useEffect(() => {
     if (!ouverte) return
@@ -15,14 +19,14 @@ export default function Feuille({ ouverte, onFermer, titre, children }) {
     const scroll = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     ref.current?.focus()
-    const clavier = e => { if (e.key === 'Escape') onFermer?.() }
+    const clavier = e => { if (e.key === 'Escape') fermer.current?.() }
     document.addEventListener('keydown', clavier)
     return () => {
       document.body.style.overflow = scroll
       document.removeEventListener('keydown', clavier)
       avant?.focus?.()
     }
-  }, [ouverte, onFermer])
+  }, [ouverte])
 
   if (!ouverte) return null
   return createPortal(

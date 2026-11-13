@@ -16,3 +16,4 @@
 .code { text-align: center; letter-spacing: 0.5em; font-size: 22px; font-weight: 600; }
 .erreur { margin: 0; font: var(--type-footnote); color: var(--accent-text); }
 .aide { margin: 0; font: var(--type-footnote); color: var(--text-3); }
+.zone { height: auto; padding: var(--sp-3); line-height: 1.5; resize: vertical; font-family: var(--font); }
