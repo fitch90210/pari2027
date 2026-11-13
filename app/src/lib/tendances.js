@@ -61,15 +61,15 @@ export function tendancesSecondTour(paris) {
   return { personnes: avis.length, vainqueurs, favoris: vainqueurs.filter(v => v.personnes.length === max) }
 }
 
-// Place des points sur une échelle de `min` à `max` (en %), sur 1 à 3 « couloirs » pour que les avatars
-// de valeurs voisines ne se superposent pas.
-export function placerPoints(valeurs, max, min = 0, ecart = 5) {
+// Place des points sur une échelle de `min` à `max` (en %), sur 1 à `couloirs` « couloirs » pour que les avatars
+// de valeurs voisines (moins de `ecart` % de la largeur) ne se superposent pas.
+export function placerPoints(valeurs, max, min = 0, ecart = 5, couloirs = 3) {
   const etendue = max - min || 1
   const dernierParCouloir = []
   return [...valeurs].sort((a, b) => a.v - b.v).map(p => {
     const x = Math.min(100, Math.max(0, ((p.v - min) / etendue) * 100))
     let couloir = 0
-    while (couloir < 2 && dernierParCouloir[couloir] != null && x - dernierParCouloir[couloir] < ecart) couloir++
+    while (couloir < couloirs - 1 && dernierParCouloir[couloir] != null && x - dernierParCouloir[couloir] < ecart) couloir++
     dernierParCouloir[couloir] = x
     return { ...p, x, couloir }
   })

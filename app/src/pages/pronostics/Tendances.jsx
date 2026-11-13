@@ -13,16 +13,24 @@ const cote = x => (x < 18 ? 'gauche' : x > 82 ? 'droite' : undefined)
 const personnes = n => `${n} personne${n > 1 ? 's' : ''}`
 
 // Échelle de `min` à `max` % : un avatar par pronostic (bulle avec le pseudo et la valeur), un trait pour la moyenne.
+// Les avatars voisins se répartissent sur 5 couloirs, alternativement au-dessus et au-dessous de la piste.
+const COULOIRS = 5
+const DECALAGE = [0, -1, 1, -2, 2]
+const PAS_COULOIR = 22
+
 function Echelle({ valeurs, moy, min = 0, max }) {
-  const points = useMemo(() => placerPoints(valeurs, max, min), [valeurs, max, min])
+  const points = useMemo(() => placerPoints(valeurs, max, min, 7, COULOIRS), [valeurs, max, min])
+  const utilises = Math.max(...points.map(p => p.couloir), 0)
+  const demi = Math.max(...DECALAGE.slice(0, utilises + 1).map(Math.abs))
+  const hauteur = (2 * demi + 1) * PAS_COULOIR + 14
   const pas = (max - min) / 4
   return (
     <>
-      <div className={s.echelle} role="group" aria-label={`Moyenne ${virgule(moy)} %, ${valeurs.length} pronostics`}>
+      <div className={s.echelle} style={{ height: hauteur }} role="group" aria-label={`Moyenne ${virgule(moy)} %, ${valeurs.length} pronostics`}>
         <div className={s.piste} />
         <div className={s.trait} style={{ left: `${((moy - min) / (max - min)) * 100}%` }} />
         {points.map(p => (
-          <span key={p.pari_id} className={s.point} style={{ left: `${p.x}%`, top: `${14 + p.couloir * 18}px` }}>
+          <span key={p.pari_id} className={s.point} style={{ left: `${p.x}%`, top: `calc(50% + ${DECALAGE[p.couloir] * PAS_COULOIR}px)` }}>
             <AvatarInfo nom={p.nom} valeur={pourcent(p.v)} cote={cote(p.x)} />
           </span>
         ))}
