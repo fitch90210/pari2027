@@ -59,11 +59,15 @@
     padding: 0 var(--sp-6);
     border-top: 0;
     border-bottom: 1px solid var(--border);
-    display: flex;
+    /* Trois zones : la marque à gauche, les onglets au centre exact de la page, l'action à droite */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr);
     align-items: center;
-    gap: var(--sp-6);
+    column-gap: var(--sp-1);
   }
   .marque {
+    grid-column: 1;
+    justify-self: start;
     display: flex;
     align-items: center;
     gap: var(--sp-2);
@@ -73,7 +77,11 @@
     letter-spacing: -0.2px;
   }
   .point { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
-  .onglets { display: flex; gap: var(--sp-1); height: auto; }
+  /* La liste s'efface : ses éléments se placent directement dans la grille */
+  .onglets { display: contents; }
+  .onglets > li { grid-row: 1; }
+  .onglets > li:first-child { grid-column: 2; }
+  .onglets > li:last-child { grid-column: 3; }
   .onglet {
     flex-direction: row;
     gap: var(--sp-2);
@@ -86,9 +94,8 @@
   .onglet .icone { display: none; }
   .actif { background: var(--surface); color: var(--text); }
   /* Pronostiquer passe en bouton principal à droite */
-  .itemParier { order: 10; margin-left: auto; }
+  .onglets > .itemParier { grid-column: 4; justify-self: end; }
   .ongletParier { background: var(--btn); color: var(--btn-text); padding: 0 var(--sp-4); }
   .ongletParier:hover { color: var(--btn-text); opacity: 0.88; }
   .parier { display: none; }
-  .onglets { flex: 1; }
 }
