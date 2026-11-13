@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 import Icone from './Icone'
 import Etapes from './Etapes'
+import { titreOnglet } from '../lib/marque'
 import s from './CadreEtape.module.css'
 
 // Cadre d'une étape : « Retour » (ou « Annuler » à la première), titre de parcours, « n / total »,
 // filet de progression, contenu, et pied collant pour l'action principale (HIG : une seule action principale).
 export default function CadreEtape({ titreParcours = 'Nouveau pronostic', courante, total, onRetour, retourLibelle, titre, aide, pied, children }) {
-  useEffect(() => { document.title = `${titre ?? titreParcours} · Pari 2027` }, [titre, titreParcours])
+  useEffect(() => { document.title = titreOnglet(titre ?? titreParcours) }, [titre, titreParcours])
   return (
     <div className={s.cadre}>
       <div className={s.haut}>

@@ -1,5 +1,6 @@
-.marque { display: flex; justify-content: space-between; align-items: center; min-height: 32px; padding: 0 2px; }
-.nom { display: flex; align-items: center; gap: var(--sp-2); font: 600 15px/1 var(--font); letter-spacing: -0.2px; }
+.marque { display: flex; flex-direction: column; gap: 2px; padding: 0 2px; }
+.nom { display: flex; align-items: center; gap: var(--sp-2); font: 600 22px/26px var(--font-titre); letter-spacing: -0.3px; }
+.sousTitre { padding-left: 18px; font: var(--type-footnote); color: var(--text-2); }
 .point { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
 
 /* Double classe : l'emporte sur la marge intérieure par défaut de la carte */

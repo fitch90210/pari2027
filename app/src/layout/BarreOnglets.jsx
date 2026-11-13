@@ -1,5 +1,6 @@
 import { NavLink, Link } from 'react-router-dom'
 import Icone from '../ui/Icone'
+import { NOM } from '../lib/marque'
 import s from './BarreOnglets.module.css'
 
 // Trois entrées : l'accueil, l'action (au centre sur mobile) et ce que les autres pronostiquent.
@@ -12,7 +13,7 @@ const ONGLETS = [
 export default function BarreOnglets() {
   return (
     <nav aria-label="Navigation principale" className={s.barre}>
-      <Link to="/" className={s.marque}><span className={s.point} aria-hidden="true" />Pari 2027</Link>
+      <Link to="/" className={s.marque}><span className={s.point} aria-hidden="true" />{NOM}</Link>
       <ul className={s.onglets}>
         {ONGLETS.map(o => (
           <li key={o.to} className={o.centre ? s.itemParier : undefined}>

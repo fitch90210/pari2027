@@ -73,8 +73,9 @@
     gap: var(--sp-2);
     color: var(--text);
     text-decoration: none;
-    font: 600 15px/1 var(--font);
+    font: 600 18px/1 var(--font-titre);
     letter-spacing: -0.2px;
+    white-space: nowrap;
   }
   .point { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
   /* La liste s'efface : ses éléments se placent directement dans la grille */

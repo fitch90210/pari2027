@@ -12,6 +12,7 @@ import Avatar from '../ui/Avatar'
 import Visage from '../ui/Visage'
 import Pied from '../ui/Pied'
 import { Liste, Ligne } from '../ui/Liste'
+import { NOM, SOUS_TITRE } from '../lib/marque'
 import s from './Accueil.module.css'
 
 export default function Accueil() {
@@ -24,7 +25,8 @@ export default function Accueil() {
   return (
     <Ecran>
       <div className={s.marque}>
-        <span className={s.nom}><span className={s.point} aria-hidden="true" />Pari 2027</span>
+        <span className={s.nom}><span className={s.point} aria-hidden="true" />{NOM}</span>
+        <span className={s.sousTitre}>{SOUS_TITRE}</span>
       </div>
 
       <Carte surface className={s.banniere}>
