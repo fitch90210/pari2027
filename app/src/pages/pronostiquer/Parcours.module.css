@@ -3,10 +3,11 @@
 
 /* Jauge du total des scores */
 .total { display: flex; flex-direction: column; gap: var(--sp-2); }
-.totalLigne { display: flex; justify-content: space-between; align-items: baseline; }
+.totalLigne { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-3); }
+.totalLigne > span:first-child { white-space: nowrap; }
 .totalValeur { font: 600 28px/1 var(--font); letter-spacing: -1px; font-variant-numeric: tabular-nums; }
 .totalSur { font: var(--type-footnote); color: var(--text-2); margin-left: var(--sp-1); }
-.reste { font: 500 13px/18px var(--font); color: var(--text-2); }
+.reste { font: 500 13px/18px var(--font); color: var(--text-2); text-align: right; }
 .resteAccent { color: var(--accent-text); }
 .resteOk { color: var(--text); }
 .jauge { height: 4px; border-radius: 2px; background: var(--track); overflow: hidden; }
