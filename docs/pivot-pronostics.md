@@ -18,7 +18,7 @@ que les autres pronostiquent.** Ce document remplace, pour le produit, `refonte-
 | Modération | L'admin peut **masquer** un pronostic (il reste en base, n'est plus lisible publiquement) et le réafficher. |
 | Score | Plus de score ni de classement. Une brique de scoring pourra être ajoutée quand les candidats officiels seront connus. |
 | Admin | Réduite à : saisie des résultats réels (sans effet pour l'instant) et masquage des pronostics. Plus de périodes ni de gestion de joueurs. |
-| Nom | « Pari 2027 » pour l'instant (un nom plus sexy est à trouver). Dans l'interface on parle de **pronostics**. |
+| Nom | **« Au doigt mouillé »**, sous-titre « Pronostics pour la présidentielle 2027 » (choisi le 13/11 après trois séries de propositions). Dans l'interface on parle de **pronostics**. |
 
 ## Écrans
 

@@ -1,4 +1,4 @@
-# Pari 2027 — guide de reprise
+# Au doigt mouillé (ex-Pari 2027) — guide de reprise
 
 Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complète : [README.md](README.md).
 
@@ -12,7 +12,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **Pivot « pronostics » décidé le 13/11** ([docs/pivot-pronostics.md](docs/pivot-pronostics.md)) : plus de périodes, de score, de codes, de profils, de classement ni de démo. On poste un pronostic (les deux tours) avec un simple pseudo, et on voit ce que les autres pronostiquent. Admin réduite aux résultats (sans effet pour l'instant) et à la modération (masquer un pronostic). Il remplace `refonte-fonctionnelle.md` pour le produit ; la DA de `refonte-ui.md` reste valable.
 - **Branche `refonte-ui`** : refonte UI (lots A à H) puis pivot écrits. Écrans : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `lib/parcours.js`, `lib/pronostic.js`, `lib/tendances.js` (tests Vitest). Vérifié à l'écran sur une maquette locale (faux Supabase servant une copie de la sauvegarde), pas encore sur une vraie base.
 - **Prochaines étapes** : 1) jouer `supabase_migration_v6_pronostics.sql` sur la base de **test**, puis tester la preview ; 2) à la bascule, sur accord explicite : sauvegarde, v6 en **production**, merge de `refonte-ui` dans `main`, contrôle en lecture ; 3) prévenir le groupe ; 4) plus tard : retirer les anciennes tables et fonctions (après sauvegarde), les variables Vercel « Preview » et la base de test. **Le front de la branche exige la v6** (colonne `pseudo`) : sans elle, il affiche « Connexion impossible ».
-- **Nom** : « Pari 2027 » provisoire, un nom plus sexy est à trouver.
+- **Nom** : « Au doigt mouillé », sous-titre « Pronostics pour la présidentielle 2027 » (choisi le 13/11, défini dans `app/src/lib/marque.js`). L'adresse reste pari2027.vercel.app ; une adresse au nouveau nom serait un réglage Vercel séparé. Titres en Newsreader, texte en Geist.
 
 ## Documents
 
