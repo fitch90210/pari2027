@@ -78,6 +78,7 @@ export default function Accueil() {
                     debut={<Avatar nom={pseudoDe(p)} taille={28} />}
                     titre={pseudoDe(p)}
                     sousTitre={resumePronostic(p)}
+                    multiligne
                     fin={depuis(p.created_at, maintenant)}
                   />
                 ))}
