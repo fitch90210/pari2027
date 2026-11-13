@@ -150,3 +150,17 @@ Source de vérité : [app/src/styles/tokens.css](../app/src/styles/tokens.css), 
 - Chaque lot : dev local (port 5174, `.claude/launch.json`) puis URL de preview Vercel (base de test, codes dans `secrets/codes_test.txt`) : parcours 1 à 6 joués de bout en bout, en mobile (375 px) et desktop, en clair et sombre.
 - Avant bascule : vérifier les redirections des anciennes routes, le mode résultats (simulé sur la base de test), et qu'aucun écran ne contient de style en ligne.
 - Après bascule : contrôle en prod en lecture seule (aucun pari créé), les 10 paris de P1 visibles et identiques.
+
+## État et bascule (13/11/2026)
+
+Lots R, A à H faits sur la branche `refonte-ui`. Lot H : ancien CSS supprimé (`index.css`, variables `--v1-`), reset propre dans `styles/base.css`, contrastes AA mesurés dans les deux thèmes (deux tokens corrigés : `--text-3` clair, nouveau `--border-input` à 3:1), titre de page par écran, lien d'évitement, cibles tactiles de 44 px sur écran tactile, mouvement coupé si `prefers-reduced-motion`, code mort retiré (Confetti, CandidateAvatar, photos).
+
+**Avant la bascule, à tester sur la preview Vercel (base de test, codes dans `secrets/codes_test.txt`) :**
+1. Parier : nouveau joueur, joueur existant, correction d'un pari de moins de 24 h, périodes 3 et 4 (modifier les bornes dans l'admin).
+2. Admin : connexion, calendrier, liste officielle, résultats des deux tours, suppression d'un joueur de test.
+3. Avec des résultats de test saisis : classement avec podium, démo, accueil en mode résultats.
+4. Anciennes adresses : `/pronostics`, `/voir`, `/pronostics/<id>`.
+
+**Bascule :** merger `refonte-ui` dans `main` (déploie en production ; aucune migration, la base ne change pas). Puis contrôle en lecture seule : les 10 paris de la période 1 sont visibles et identiques.
+
+**Après :** prévenir le groupe (nouvelle règle : bonus d'anticipation, classement général de paris), puis supprimer les variables Vercel « Preview » et le projet Supabase de test.

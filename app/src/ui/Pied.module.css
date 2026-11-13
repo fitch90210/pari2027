@@ -7,5 +7,5 @@
   font-family: var(--font);
   color: var(--text-3);
 }
-.pied a { color: var(--text-3); text-decoration: none; }
+.pied a { color: var(--text-3); text-decoration: none; display: inline-flex; align-items: center; min-height: var(--hit); padding: 0 var(--sp-2); }
 .pied a:hover { color: var(--text); }

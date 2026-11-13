@@ -32,10 +32,12 @@
 .option:disabled { color: var(--text-3); cursor: not-allowed; background: none; }
 .case {
   flex-shrink: 0; width: 20px; height: 20px;
-  border: 1.5px solid var(--border-strong); border-radius: 6px;
+  border: 1.5px solid var(--border-input); border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   color: var(--btn-text);
 }
 .cochee { background: var(--btn); border-color: var(--btn); }
 .libre { color: var(--text-2); }
 .rien { padding: var(--sp-4); text-align: center; font: var(--type-callout); color: var(--text-3); }
+
+@media (pointer: coarse) { .puce { height: var(--hit); } }

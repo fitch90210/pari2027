@@ -1,0 +1,42 @@
+/* Base de la nouvelle UI : reset minimal, fond et texte issus des tokens. Remplace l'ancien index.css. */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: var(--type-body);
+  font-family: var(--font);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root { min-height: 100dvh; }
+
+button, input, textarea, select { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+img, svg { display: block; max-width: 100%; }
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Lien d'évitement : visible seulement au clavier */
+.evitement {
+  position: fixed; left: var(--sp-3); top: -64px; z-index: 300;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--btn); color: var(--btn-text);
+  font: var(--type-headline); text-decoration: none;
+  transition: top var(--dur-fast) var(--ease-out);
+}
+.evitement:focus { top: var(--sp-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

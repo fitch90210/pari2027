@@ -1,9 +1,12 @@
+import { useEffect } from 'react'
 import s from './Ecran.module.css'
 
 // Gabarit d'un écran de la nouvelle UI : grand titre (HIG « large title »), surtitre, contenu en colonne.
 export default function Ecran({ titre, surtitre, children }) {
+  // Titre de l'onglet du navigateur (et annonce du changement d'écran par les lecteurs d'écran)
+  useEffect(() => { document.title = titre ? `${titre} · Pari 2027` : 'Pari 2027' }, [titre])
   return (
-    <main className={s.ecran}>
+    <main id="contenu" tabIndex={-1} className={s.ecran}>
       <div className={s.colonne}>
         {(titre || surtitre) && (
           <header className={s.entete}>

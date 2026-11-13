@@ -22,7 +22,7 @@
 .principal:hover:not(:disabled) { opacity: 0.88; }
 .principal:disabled { background: var(--surface); border-color: var(--border); color: var(--text-3); }
 
-.secondaire { background: var(--bg); border-color: var(--border); color: var(--text); font-weight: 500; }
+.secondaire { background: var(--bg); border-color: var(--border-input); color: var(--text); font-weight: 500; }
 .secondaire:hover:not(:disabled) { background: var(--surface); }
 
 .discret { background: transparent; color: var(--text-2); font-weight: 500; padding: 0 var(--sp-2); }

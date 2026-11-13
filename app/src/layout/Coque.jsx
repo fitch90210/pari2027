@@ -8,6 +8,7 @@ export default function Coque({ children }) {
   const enParcours = useLocation().pathname.startsWith('/parier')
   return (
     <>
+      <a href="#contenu" className="evitement">Aller au contenu</a>
       <div className={s.contenu}>{children}</div>
       <div className={enParcours ? s.masquerMobile : undefined}><BarreOnglets /></div>
     </>

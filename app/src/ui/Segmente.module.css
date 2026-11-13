@@ -27,3 +27,5 @@
   color: var(--text);
   font-weight: 600;
 }
+
+@media (pointer: coarse) { .segmente { height: var(--hit); } }

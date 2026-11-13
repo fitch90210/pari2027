@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import Icone from './Icone'
 import Etapes from './Etapes'
 import s from './CadreEtape.module.css'
@@ -5,6 +6,7 @@ import s from './CadreEtape.module.css'
 // Cadre d'une étape : « Retour » (ou « Annuler » à la première), titre de parcours, « n / total »,
 // filet de progression, contenu, et pied collant pour l'action principale (HIG : une seule action principale).
 export default function CadreEtape({ titreParcours = 'Nouveau pari', courante, total, onRetour, retourLibelle, titre, aide, pied, children }) {
+  useEffect(() => { document.title = `${titre ?? titreParcours} · Pari 2027` }, [titre, titreParcours])
   return (
     <div className={s.cadre}>
       <div className={s.haut}>
@@ -16,11 +18,11 @@ export default function CadreEtape({ titreParcours = 'Nouveau pari', courante, t
         <span className={s.droite}>{courante} / {total}</span>
       </div>
       <Etapes courante={courante} total={total} />
-      <div className={s.corps}>
+      <main id="contenu" className={s.corps}>
         {titre && <h1 className={s.titre}>{titre}</h1>}
         {aide && <p className={s.aide}>{aide}</p>}
         {children}
-      </div>
+      </main>
       {pied && <div className={s.pied}><div className={s.piedInterieur}>{pied}</div></div>}
     </div>
   )
