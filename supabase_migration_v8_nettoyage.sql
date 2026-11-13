@@ -12,77 +12,79 @@
 --   tables      : public.players, public.periodes, public.pronostics, private.player_secrets
 --   fonctions   : create_player, verify_player_code, create_pari, update_pari,
 --                 admin_create_player, admin_reset_player_code, admin_remove_player,
---                 admin_save_periodes (public), save_pronostic et admin_set_session (si encore là) ;
---                 random_code, check_player_code,
---                 periode_courante, clean_pari (private)
+--                 admin_save_periodes, save_pronostic et admin_set_session (si encore là)
+--                 (public) ; random_code, check_player_code, periode_courante, clean_pari (private)
 --   contraintes : paris -> players et paris -> periodes (clés étrangères)
 -- Ce qui reste : game_state, paris (colonnes player_id, periode et legacy_pronostic_id
 --   conservées comme simples valeurs d'origine), private.admin_secret, assert_admin,
 --   create_pronostic, admin_login, admin_save_results, admin_save_official_candidates,
 --   admin_set_masque, admin_paris_masques.
 --
--- AUCUN « CASCADE » : si un objet retiré avait encore une dépendance inattendue, la
--- migration échoue et TOUT est annulé (transaction). Rejouable.
+-- UN SEUL BLOC : tout est exécuté comme une seule instruction, donc atomique : si un contrôle
+-- échoue, rien n'est appliqué (aucune table temporaire, aucun BEGIN/COMMIT à découper).
+-- AUCUN « CASCADE » : une dépendance inattendue fait échouer la migration au lieu d'effacer autre chose.
+-- Rejouable : tout est en « IF EXISTS ».
 -- ============================================================
 
-BEGIN;
-
--- ── État avant, pour le contrôle final ────────────────────────
-CREATE TEMP TABLE _avant ON COMMIT DROP AS
-  SELECT count(*)::int AS n_paris,
-         md5(string_agg(id::text || '|' || coalesce(pseudo, '') || '|' || m1::text || '|' || m2::text || '|' ||
-                        m3::text || '|' || m4 || '|' || coalesce(m5::text, '') || '|' || created_at::text || '|' || masque::text,
-                        ';' ORDER BY id)) AS empreinte
+DO $migration$
+DECLARE
+  c RECORD;
+  n_avant INTEGER;
+  empreinte_avant TEXT;
+  n_apres INTEGER;
+  empreinte_apres TEXT;
+  manquants TEXT;
+  restes TEXT;
+BEGIN
+  -- ── État de paris avant, pour le contrôle final ─────────────
+  SELECT count(*), md5(coalesce(string_agg(
+           id::text || '|' || coalesce(pseudo, '') || '|' || m1::text || '|' || m2::text || '|' ||
+           m3::text || '|' || m4 || '|' || coalesce(m5::text, '') || '|' || created_at::text || '|' || masque::text,
+           ';' ORDER BY id), ''))
+    INTO n_avant, empreinte_avant
     FROM public.paris;
 
--- ── 1. Les clés étrangères de paris vers les tables retirées ──
-DO $$
-DECLARE c RECORD;
-BEGIN
+  -- ── 1. Les clés étrangères de paris vers les tables retirées ─
   FOR c IN
     SELECT conname FROM pg_constraint
      WHERE conrelid = 'public.paris'::regclass AND contype = 'f'
   LOOP
     EXECUTE format('ALTER TABLE public.paris DROP CONSTRAINT %I', c.conname);
   END LOOP;
-END $$;
 
--- ── 2. Les fonctions de l'ancien modèle ───────────────────────
-DROP FUNCTION IF EXISTS public.create_player(TEXT, TEXT);
-DROP FUNCTION IF EXISTS public.verify_player_code(TEXT, TEXT);
-DROP FUNCTION IF EXISTS public.create_pari(TEXT, TEXT, JSONB, JSONB, JSONB, TEXT, NUMERIC);
-DROP FUNCTION IF EXISTS public.update_pari(BIGINT, TEXT, TEXT, JSONB, JSONB, JSONB, TEXT, NUMERIC);
-DROP FUNCTION IF EXISTS public.admin_create_player(TEXT, TEXT);
-DROP FUNCTION IF EXISTS public.admin_reset_player_code(TEXT, TEXT);
-DROP FUNCTION IF EXISTS public.admin_remove_player(TEXT, TEXT);
-DROP FUNCTION IF EXISTS public.admin_save_periodes(TEXT, JSONB);
--- Déjà retirées en production par la v5 ; la base de test ne l'avait pas jouée (sans effet si absentes)
-DROP FUNCTION IF EXISTS public.save_pronostic(TEXT, TEXT, INTEGER, JSONB, JSONB, JSONB, TEXT, NUMERIC);
-DROP FUNCTION IF EXISTS public.admin_set_session(TEXT, INTEGER);
-DROP FUNCTION IF EXISTS private.check_player_code(TEXT, TEXT);
-DROP FUNCTION IF EXISTS private.random_code();
-DROP FUNCTION IF EXISTS private.clean_pari(INTEGER, JSONB, JSONB, JSONB, TEXT, NUMERIC);
-DROP FUNCTION IF EXISTS private.periode_courante();
+  -- ── 2. Les fonctions de l'ancien modèle ─────────────────────
+  DROP FUNCTION IF EXISTS public.create_player(TEXT, TEXT);
+  DROP FUNCTION IF EXISTS public.verify_player_code(TEXT, TEXT);
+  DROP FUNCTION IF EXISTS public.create_pari(TEXT, TEXT, JSONB, JSONB, JSONB, TEXT, NUMERIC);
+  DROP FUNCTION IF EXISTS public.update_pari(BIGINT, TEXT, TEXT, JSONB, JSONB, JSONB, TEXT, NUMERIC);
+  DROP FUNCTION IF EXISTS public.admin_create_player(TEXT, TEXT);
+  DROP FUNCTION IF EXISTS public.admin_reset_player_code(TEXT, TEXT);
+  DROP FUNCTION IF EXISTS public.admin_remove_player(TEXT, TEXT);
+  DROP FUNCTION IF EXISTS public.admin_save_periodes(TEXT, JSONB);
+  -- Déjà retirées en production par la v5 ; la base de test ne l'avait pas jouée
+  DROP FUNCTION IF EXISTS public.save_pronostic(TEXT, TEXT, INTEGER, JSONB, JSONB, JSONB, TEXT, NUMERIC);
+  DROP FUNCTION IF EXISTS public.admin_set_session(TEXT, INTEGER);
+  DROP FUNCTION IF EXISTS private.check_player_code(TEXT, TEXT);
+  DROP FUNCTION IF EXISTS private.random_code();
+  DROP FUNCTION IF EXISTS private.clean_pari(INTEGER, JSONB, JSONB, JSONB, TEXT, NUMERIC);
+  DROP FUNCTION IF EXISTS private.periode_courante();
 
--- ── 3. Les tables de l'ancien modèle ──────────────────────────
-DROP TABLE IF EXISTS private.player_secrets;
-DROP TABLE IF EXISTS public.pronostics;
-DROP TABLE IF EXISTS public.players;
-DROP TABLE IF EXISTS public.periodes;
+  -- ── 3. Les tables de l'ancien modèle ────────────────────────
+  DROP TABLE IF EXISTS private.player_secrets;
+  DROP TABLE IF EXISTS public.pronostics;
+  DROP TABLE IF EXISTS public.players;
+  DROP TABLE IF EXISTS public.periodes;
 
--- ── 4. Contrôles : si un seul échoue, tout est annulé ─────────
-DO $$
-DECLARE a RECORD; b RECORD; manquants TEXT; restes TEXT;
-BEGIN
+  -- ── 4. Contrôles : si un seul échoue, tout est annulé ───────
   -- paris : même nombre de lignes, même contenu
-  SELECT * INTO a FROM _avant;
-  SELECT count(*)::int AS n_paris,
-         md5(string_agg(id::text || '|' || coalesce(pseudo, '') || '|' || m1::text || '|' || m2::text || '|' ||
-                        m3::text || '|' || m4 || '|' || coalesce(m5::text, '') || '|' || created_at::text || '|' || masque::text,
-                        ';' ORDER BY id)) AS empreinte
-    INTO b FROM public.paris;
-  IF a.n_paris <> b.n_paris OR a.empreinte IS DISTINCT FROM b.empreinte THEN
-    RAISE EXCEPTION 'Contrôle : la table paris a changé (avant % lignes, après %)', a.n_paris, b.n_paris;
+  SELECT count(*), md5(coalesce(string_agg(
+           id::text || '|' || coalesce(pseudo, '') || '|' || m1::text || '|' || m2::text || '|' ||
+           m3::text || '|' || m4 || '|' || coalesce(m5::text, '') || '|' || created_at::text || '|' || masque::text,
+           ';' ORDER BY id), ''))
+    INTO n_apres, empreinte_apres
+    FROM public.paris;
+  IF n_avant <> n_apres OR empreinte_avant IS DISTINCT FROM empreinte_apres THEN
+    RAISE EXCEPTION 'Contrôle : la table paris a changé (avant % lignes, après %)', n_avant, n_apres;
   END IF;
 
   -- ce que le site utilise est toujours là
@@ -100,8 +102,8 @@ BEGIN
 
   -- l'ancien modèle a disparu
   SELECT string_agg(o, ', ') INTO restes FROM (
-    SELECT n.nspname || '.' || c.relname AS o FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-     WHERE c.relname IN ('players', 'periodes', 'pronostics', 'player_secrets') AND n.nspname IN ('public', 'private')
+    SELECT n.nspname || '.' || r.relname AS o FROM pg_class r JOIN pg_namespace n ON n.oid = r.relnamespace
+     WHERE r.relname IN ('players', 'periodes', 'pronostics', 'player_secrets') AND n.nspname IN ('public', 'private')
     UNION ALL
     SELECT n.nspname || '.' || p.proname FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
      WHERE p.proname IN ('create_player', 'verify_player_code', 'create_pari', 'update_pari', 'admin_create_player',
@@ -110,20 +112,18 @@ BEGIN
        AND n.nspname IN ('public', 'private')) t;
   IF restes IS NOT NULL THEN RAISE EXCEPTION 'Contrôle : il reste : %', restes; END IF;
 
-  -- la table paris est toujours en lecture publique seule (non masqués)
+  -- la table paris est toujours protégée par la sécurité par lignes (lecture publique seule)
   IF NOT EXISTS (SELECT 1 FROM pg_class WHERE oid = 'public.paris'::regclass AND relrowsecurity) THEN
     RAISE EXCEPTION 'Contrôle : la sécurité par lignes de paris est désactivée';
   END IF;
 
-  RAISE NOTICE 'Contrôle OK : % pari(s) inchangés, ancien modèle retiré', b.n_paris;
-END $$;
+  RAISE NOTICE 'Contrôle OK : % pari(s) inchangés, ancien modèle retiré', n_apres;
+END
+$migration$;
 
 NOTIFY pgrst, 'reload schema';
 
-COMMIT;
-
--- Résultat attendu : 1re requête = 10 lignes (ou davantage si de nouveaux pronostics ont été postés),
--- 2e requête = uniquement game_state et paris.
+-- Résultat attendu : 1re requête = vos paris (10 en production), 2e requête = uniquement game_state et paris.
 SELECT id, pseudo, masque, created_at FROM public.paris ORDER BY created_at;
 SELECT table_schema, table_name FROM information_schema.tables
  WHERE table_schema IN ('public', 'private') ORDER BY 1, 2;
