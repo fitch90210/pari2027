@@ -77,7 +77,7 @@
     letter-spacing: -0.2px;
     white-space: nowrap;
   }
-  .point { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
+  .embleme { font: 400 17px/1 system-ui, sans-serif; }
   /* La liste s'efface : ses éléments se placent directement dans la grille */
   .onglets { display: contents; }
   .onglets > li { grid-row: 1; }

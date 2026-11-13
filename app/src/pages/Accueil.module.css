@@ -1,7 +1,7 @@
 .marque { display: flex; flex-direction: column; gap: 2px; padding: 0 2px; }
 .nom { display: flex; align-items: center; gap: var(--sp-2); font: 600 22px/26px var(--font-titre); letter-spacing: -0.3px; }
-.sousTitre { padding-left: 18px; font: var(--type-footnote); color: var(--text-2); }
-.point { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
+.sousTitre { padding-left: 2px; font: var(--type-footnote); color: var(--text-2); }
+.embleme { font: 400 20px/1 system-ui, sans-serif; }
 
 /* Double classe : l'emporte sur la marge intérieure par défaut de la carte */
 .banniere.banniere { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-6) var(--sp-5); }
