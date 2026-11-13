@@ -15,7 +15,6 @@
 .titre {
   margin: 0;
   font: var(--type-title-1);
-  font-family: var(--font);
   letter-spacing: var(--track-title-1);
   color: var(--text);
 }

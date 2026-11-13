@@ -45,13 +45,14 @@
      Inter écartée (trop utilisée ailleurs). Geist Mono pour les petites
      données techniques (dates, numéros) si besoin. */
   --font: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-titre: 'Newsreader', 'Iowan Old Style', Georgia, serif;  /* titres d'écran et d'étape (choix du 13/11) */
   --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
   --font-numeric: tabular-nums;  /* chiffres alignés pour scores et pourcentages */
 
   /* taille / interligne / graisse / approche */
   --type-display:  600 56px/0.9 var(--font);   --track-display: -2.5px;  /* « +4 » */
-  --type-title-1:  600 28px/34px var(--font);  --track-title-1: -0.7px;  /* grand titre d'écran */
-  --type-title-2:  600 24px/30px var(--font);  --track-title-2: -0.5px;  /* titre d'étape */
+  --type-title-1:  600 34px/38px var(--font-titre);  --track-title-1: -0.6px;  /* grand titre d'écran */
+  --type-title-2:  600 28px/32px var(--font-titre);  --track-title-2: -0.4px;  /* titre d'étape */
   --type-number:   600 22px/26px var(--font);  --track-number:  -0.6px;  /* moyennes, scores */
   --type-headline: 600 15px/20px var(--font);  /* titre de barre, bouton */
   --type-body:     400 15px/22px var(--font);

@@ -5,7 +5,7 @@
 /* Double classe : l'emporte sur la marge intérieure par défaut de la carte */
 .banniere.banniere { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-6) var(--sp-5); }
 .surtitre { font: var(--type-caption); color: var(--text-2); }
-.titre { margin: 0; font: var(--type-title-1); font-size: 28px; letter-spacing: var(--track-title-1); color: var(--text); }
+.titre { margin: 0; font: var(--type-title-1); font-size: 32px; line-height: 36px; letter-spacing: var(--track-title-1); color: var(--text); }
 .texte { margin: 0; font: var(--type-body); color: var(--text-2); }
 .actions { display: flex; gap: var(--sp-2); margin-top: var(--sp-1); }
 .actions > * { flex: 1; }
@@ -30,5 +30,5 @@
 @media (min-width: 768px) {
   .marque { display: none; }
   .banniere.banniere { padding: var(--sp-8); }
-  .titre { font-size: 36px; line-height: 42px; letter-spacing: -1px; }
+  .titre { font-size: 44px; line-height: 48px; letter-spacing: -0.8px; }
 }
