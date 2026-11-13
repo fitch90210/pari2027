@@ -13,7 +13,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **Écrans** : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostics/:id`, `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `app/src/lib/` (`parcours.js`, `pronostic.js`, `tendances.js`, `photos.js`, `marque.js`). DA : « Scrutin épuré », titres en Newsreader, texte en Geist, emblème ☝️.
 - **Nom** : « Au doigt mouillé », sous-titre « Pronostics pour la présidentielle 2027 » (défini dans `app/src/lib/marque.js`).
 - **Base de production** : seulement `game_state`, `paris` et `private.admin_secret`. Les anciennes tables (`players`, `periodes`, `pronostics`, `private.player_secrets`) et fonctions (codes, périodes, `create_pari`…) ont été supprimées par la v8 ; leur contenu n'existe plus que dans `backups/2026-11-13_1400/` (à conserver).
-- **Reste à faire** : 1) (utilisateur) supprimer les deux variables Vercel « Preview » si ce n'est pas fait ; 2) brique de scoring quand les candidats officiels seront connus. **Ne pas reproposer** le message au groupe ni la redirection de `pari2027.vercel.app` (abandonnés par l'utilisateur).
+- **Reste à faire** : brique de scoring quand les candidats officiels seront connus (rien d'autre). **Ne pas reproposer** le message au groupe ni la redirection de `pari2027.vercel.app` (abandonnés par l'utilisateur).
 
 ## Documents
 
@@ -38,7 +38,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 ## Environnement de test
 
 - **Il n'y en a plus** : le projet Supabase de test a été supprimé le 13/11. Les tests se font en local (`npm --prefix app run dev`, branché sur la base de production : **lecture seule**, ne poster aucun pronostic) ou avec la maquette locale ci-dessous.
-- **Vercel** : `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` sont définies pour **Production** (vraie base). Des variables **Preview** (qui pointaient la base de test supprimée) existent peut-être encore : l'utilisateur doit les supprimer dans Settings → Environment Variables ; tant qu'elles restent, les previews de branche affichent « Connexion impossible ».
+- **Vercel** : seules `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` pour **Production** existent (les variables Preview ont été supprimées le 13/11). Une branche autre que `main` donne donc une preview sans accès à la base (« Connexion impossible ») : pour la tester, ajouter des variables Preview vers une base de test à recréer.
 
 ## Opérations
 
