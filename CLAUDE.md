@@ -8,11 +8,11 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 ## État au 13 novembre 2026
 
-- **En ligne** : https://pari2027.vercel.app, version « paris par périodes » (refonte fonctionnelle, lots 0 à 7). Données : 10 paris (avril–mai 2026), 11 joueurs. Sauvegardes dans `backups/` (dernière : `backups/2026-11-13_1342/`, faite avant la bascule vers le pivot).
-- **Pivot « pronostics » décidé le 13/11** ([docs/pivot-pronostics.md](docs/pivot-pronostics.md)) : plus de périodes, de score, de codes, de profils, de classement ni de démo. On poste un pronostic (les deux tours) avec un simple pseudo, et on voit ce que les autres pronostiquent. Admin réduite aux résultats (sans effet pour l'instant) et à la modération (masquer un pronostic). Il remplace `refonte-fonctionnelle.md` pour le produit ; la DA de `refonte-ui.md` reste valable.
-- **Branche `refonte-ui`** : refonte UI (lots A à H) puis pivot écrits. Écrans : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `lib/parcours.js`, `lib/pronostic.js`, `lib/tendances.js` (tests Vitest). Vérifié à l'écran sur une maquette locale (faux Supabase servant une copie de la sauvegarde), pas encore sur une vraie base.
-- **Prochaines étapes** : 1) jouer `supabase_migration_v6_pronostics.sql` sur la base de **test**, puis tester la preview ; 2) à la bascule, sur accord explicite : sauvegarde, v6 en **production**, merge de `refonte-ui` dans `main`, contrôle en lecture ; 3) prévenir le groupe ; 4) plus tard : retirer les anciennes tables et fonctions (après sauvegarde), les variables Vercel « Preview » et la base de test. **Le front de la branche exige la v6** (colonne `pseudo`) : sans elle, il affiche « Connexion impossible ».
-- **Nom** : « Au doigt mouillé », sous-titre « Pronostics pour la présidentielle 2027 » (choisi le 13/11, défini dans `app/src/lib/marque.js`). L'adresse reste pari2027.vercel.app ; une adresse au nouveau nom serait un réglage Vercel séparé. Titres en Newsreader, texte en Geist.
+- **En ligne** : https://pari2027.vercel.app, version « Au doigt mouillé » (pivot pronostics), **bascule faite le 13/11** : sauvegarde `backups/2026-11-13_1342/`, migration v6 jouée en production, `refonte-ui` fusionnée dans `main`, contrôle en lecture OK (10 pronostics, favori et moyenne identiques au calcul depuis la sauvegarde).
+- **Produit** ([docs/pivot-pronostics.md](docs/pivot-pronostics.md)) : on poste un pronostic (les deux tours) avec un simple pseudo, sans compte ni code, et on voit ce que les autres pronostiquent. Plus de périodes, de score, de profils, de classement ni de démo. Admin réduite aux résultats (sans effet pour l'instant) et à la modération (masquer un pronostic). `refonte-fonctionnelle.md` est l'ancien cadrage.
+- **Écrans** : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostics/:id`, `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `app/src/lib/` (`parcours.js`, `pronostic.js`, `tendances.js`, `photos.js`, `marque.js`). DA : « Scrutin épuré », titres en Newsreader, texte en Geist, emblème ☝️.
+- **Nom** : « Au doigt mouillé », sous-titre « Pronostics pour la présidentielle 2027 » (défini dans `app/src/lib/marque.js`).
+- **Reste à faire** : 1) renommer le projet Vercel (Settings → General) pour obtenir `audoigtmouille.vercel.app`, puis vérifier dans Settings → Domains que `pari2027.vercel.app` redirige bien ; 2) prévenir le groupe ; 3) plus tard, après sauvegarde : retirer les anciennes tables et fonctions (`players`, `periodes`, `pronostics`, `create_pari`, codes…), les variables Vercel « Preview » et la base de test ; 4) brique de scoring quand les candidats officiels seront connus.
 
 ## Documents
 
@@ -40,7 +40,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 - **Base Supabase de test** : `https://yrgbugbasrilwxkqmhnm.supabase.co`, amorcée avec `secrets/test_bootstrap.local.sql` (schéma, migrations, copie de la sauvegarde du 11/11). Ses codes sont différents de ceux de la prod : `secrets/codes_test.txt`.
 - **Vercel** : `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` sont définies pour **Preview** (base de test) et **Production** (vraie base). Tout push sur une autre branche que `main` donne une URL de preview branchée sur la base de test.
-- À supprimer après la refonte UI : le projet Supabase de test et les variables Preview.
+- À supprimer une fois le nettoyage fait : le projet Supabase de test et les variables Preview.
 
 ## Opérations
 
