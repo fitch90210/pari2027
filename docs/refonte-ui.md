@@ -164,3 +164,5 @@ Lots R, A à H faits sur la branche `refonte-ui`. Lot H : ancien CSS supprimé (
 **Bascule :** merger `refonte-ui` dans `main` (déploie en production ; aucune migration, la base ne change pas). Puis contrôle en lecture seule : les 10 paris de la période 1 sont visibles et identiques.
 
 **Après :** prévenir le groupe (nouvelle règle : bonus d'anticipation, classement général de paris), puis supprimer les variables Vercel « Preview » et le projet Supabase de test.
+
+**Retours du 13/11 (preview) :** `/paris` n'a plus qu'un sélecteur (1er tour · 2nd tour · Pari par pari) ; les valeurs de chaque joueur ne sont plus listées sous la frise mais dans une bulle au survol, au focus ou au toucher de l'avatar. Le parcours Parier regroupe « candidat + score » (on ajoute un candidat puis on règle son pourcentage sur la ligne qui apparaît) et « vainqueur + score » en une étape chacun ; la consultation d'un pari les regroupe de la même façon. Admin > Joueurs : « Nouveau code » et « Supprimer » sont des boutons visibles sur chaque joueur (la confirmation reste une feuille, avec saisie du nom pour supprimer).

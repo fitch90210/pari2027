@@ -40,7 +40,10 @@ function Resultat({ r, periodes, results, onAutre }) {
             <div key={l.cle} className={detail.ligne}>
               <span className={detail.corps}>
                 <span className={detail.titre}>{l.titre}</span>
-                <span className={[detail.valeur, !l.valeur && detail.vide].filter(Boolean).join(' ')}>{l.valeur ?? 'Non renseigné'}</span>
+                {l.items
+                  ? <ul className={detail.items}>{l.items.map(i => (
+                      <li key={i.nom} className={detail.item}><span>{i.nom}</span><span className={[detail.pct, !i.valeur && detail.vide].filter(Boolean).join(' ')}>{i.valeur ?? '—'}</span></li>))}</ul>
+                  : <span className={[detail.valeur, !l.valeur && detail.vide].filter(Boolean).join(' ')}>{l.valeur ?? 'Non renseigné'}</span>}
               </span>
               <span className={[detail.points, l.points > 0 && detail.gagne].filter(Boolean).join(' ')}>+{l.points}</span>
             </div>

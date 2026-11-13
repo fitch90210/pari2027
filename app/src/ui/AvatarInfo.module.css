@@ -1,0 +1,33 @@
+.info {
+  position: relative;
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: var(--r-full);
+  cursor: default;
+}
+.info:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.info:hover, .info:focus { z-index: 30; }
+
+/* Bulle : au survol, au focus clavier et au toucher (le toucher donne le focus au bouton) */
+.bulle {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  background: var(--btn);
+  color: var(--btn-text);
+  font: 500 12px/16px var(--font);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.gauche .bulle { left: 0; transform: none; }
+.droite .bulle { left: auto; right: 0; transform: none; }
+.info:hover .bulle, .info:focus .bulle { opacity: 1; }
+.valeur { font-weight: 700; font-variant-numeric: tabular-nums; }

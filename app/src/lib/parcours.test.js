@@ -4,10 +4,10 @@ import { etapesOuvertes, candidatsDuPari, totalScores, totalOk, repartirEgalemen
 const ALL = ['m1', 'm2', 'm3', 'm4', 'm5']
 
 describe('parcours Parier', () => {
-  it('étapes ouvertes selon la période, dans l\'ordre', () => {
-    expect(etapesOuvertes({ scored: ALL })).toEqual(ALL)
-    expect(etapesOuvertes({ scored: ['m5', 'm2', 'm3', 'm4'] })).toEqual(['m2', 'm3', 'm4', 'm5'])
-    expect(etapesOuvertes({ scored: ['m4', 'm5'] })).toEqual(['m4', 'm5'])
+  it('étapes ouvertes selon la période : candidat + score et vainqueur + score vont ensemble', () => {
+    expect(etapesOuvertes({ scored: ALL })).toEqual(['m12', 'm3', 'm45'])
+    expect(etapesOuvertes({ scored: ['m5', 'm2', 'm3', 'm4'] })).toEqual(['m2', 'm3', 'm45'])
+    expect(etapesOuvertes({ scored: ['m4', 'm5'] })).toEqual(['m45'])
     expect(etapesOuvertes(undefined)).toEqual([])
   })
 

@@ -17,17 +17,29 @@ describe('détail d\'un pari', () => {
   })
   it('sans résultats : pas de points, mais le bonus acquis', () => {
     const d = detailPari(pari, periodes[0], null, periodes)
-    expect(d.lignes).toHaveLength(5)
+    expect(d.lignes.map(l => l.cle)).toEqual(['m12', 'm3', 'm45'])
     expect(d.total).toBeNull()
     expect(d.bonus).toBe(4)
   })
   it('avec résultats : points par pronostic et total = barème + bonus', () => {
     const d = detailPari(pari, periodes[0], results, periodes)
-    expect(d.bareme).toBe(d.lignes.reduce((s, l) => s + l.points, 0))
+    expect(d.bareme).toBe(d.lignes.reduce((t, l) => t + l.points, 0))
     expect(d.total).toBe(d.bareme + 4)
   })
-  it('seuls les pronostics ouverts de la période', () => {
-    expect(detailPari(pari, periodes[1], null, periodes).lignes.map(l => l.cle)).toEqual(['m2', 'm3', 'm4', 'm5'])
+  it('seuls les pronostics ouverts de la période, regroupés', () => {
+    expect(detailPari(pari, periodes[1], null, periodes).lignes.map(l => l.cle)).toEqual(['m2', 'm3', 'm45'])
+  })
+
+  it('candidats et scores en une seule ligne : du plus haut score au plus bas, sans score ensuite', () => {
+    const d = detailPari({ ...pari, m1: ['A', 'B', 'D'], m2: { B: 25.5, A: 30 } }, periodes[0], null, periodes)
+    expect(d.lignes[0].items).toEqual([{ nom: 'A', valeur: '30 %' }, { nom: 'B', valeur: '25,5 %' }, { nom: 'D', valeur: null }])
+  })
+
+  it('vainqueur et score en une seule ligne, points cumulés', () => {
+    const d = detailPari(pari, periodes[0], results, periodes)
+    const l = d.lignes.find(x => x.cle === 'm45')
+    expect(l.valeur).toBe('A · 52 %')
+    expect(l.points).toBe(8) // vainqueur (6) + score à 2 points près (2)
   })
 })
 

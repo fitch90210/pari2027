@@ -5,7 +5,6 @@ import Bouton from '../../ui/Bouton'
 import Champ from '../../ui/Champ'
 import Avatar from '../../ui/Avatar'
 import Feuille from '../../ui/Feuille'
-import { Liste, Ligne } from '../../ui/Liste'
 import Retour from './Retour'
 import s from './Admin.module.css'
 
@@ -17,7 +16,7 @@ export default function JoueursAdmin() {
   const [creation, setCreation] = useState(false)
   const [erreur, setErreur] = useState('')
   const [code, setCode] = useState(null) // { nom, code } : à transmettre, jamais réaffiché
-  const [action, setAction] = useState(null) // { type: 'code' | 'supprimer', joueur }
+  const [action, setAction] = useState(null) // { type: 'code' | 'supprimer', joueur } : confirmation en cours
   const [saisie, setSaisie] = useState('')
   const [encours, setEncours] = useState(false)
   const [erreurAction, setErreurAction] = useState('')
@@ -65,18 +64,21 @@ export default function JoueursAdmin() {
 
       <section className={s.pile}>
         <h2 className={s.titreSection}>{players.length} joueur{players.length > 1 ? 's' : ''}</h2>
-        <Carte liste>
-          {players.length === 0
-            ? <Liste><Ligne titre="Aucun joueur" /></Liste>
-            : (
-              <Liste>
-                {[...players].sort((a, b) => a.name.localeCompare(b.name, 'fr')).map(p => (
-                  <Ligne key={p.id} debut={<Avatar nom={p.name} taille={32} />} titre={p.name}
-                    sousTitre="Code, suppression" onClick={() => setAction({ type: 'menu', joueur: p })} />
-                ))}
-              </Liste>
-            )}
-        </Carte>
+        {players.length === 0 && <Carte><p className={s.texte}>Aucun joueur.</p></Carte>}
+        {[...players].sort((a, b) => a.name.localeCompare(b.name, 'fr')).map(p => (
+          <Carte key={p.id}>
+            <div className={s.joueur}>
+              <div className={s.joueurNom}>
+                <Avatar nom={p.name} taille={32} />
+                <span className={s.nomJoueur}>{p.name}</span>
+              </div>
+              <div className={s.joueurActions}>
+                <Bouton variante="secondaire" onClick={() => setAction({ type: 'code', joueur: p })}>Nouveau code</Bouton>
+                <Bouton variante="secondaire" className={s.supprimer} onClick={() => setAction({ type: 'supprimer', joueur: p })}>Supprimer</Bouton>
+              </div>
+            </div>
+          </Carte>
+        ))}
       </section>
 
       <Carte>
@@ -86,13 +88,6 @@ export default function JoueursAdmin() {
         </form>
         <Retour erreur={erreur} />
       </Carte>
-
-      <Feuille ouverte={action?.type === 'menu'} onFermer={fermer} titre={action?.joueur?.name}>
-        <div className={s.actions}>
-          <Bouton variante="secondaire" pleineLargeur onClick={() => setAction({ type: 'code', joueur: action.joueur })}>Générer un nouveau code</Bouton>
-          <Bouton variante="secondaire" pleineLargeur onClick={() => setAction({ type: 'supprimer', joueur: action.joueur })}>Supprimer ce joueur</Bouton>
-        </div>
-      </Feuille>
 
       <Feuille ouverte={action?.type === 'code' || suppression} onFermer={fermer}
         titre={suppression ? `Supprimer ${action.joueur.name} ?` : `Nouveau code pour ${action?.joueur?.name ?? ''}`}>

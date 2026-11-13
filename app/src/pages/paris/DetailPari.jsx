@@ -36,7 +36,15 @@ export default function DetailPari({ pari }) {
           <div key={l.cle} className={s.ligne}>
             <span className={s.corps}>
               <span className={s.titre}>{l.titre}</span>
-              <span className={[s.valeur, !l.valeur && s.vide].filter(Boolean).join(' ')}>{l.valeur ?? 'Non renseigné'}</span>
+              {l.items
+                ? (l.items.length === 0
+                  ? <span className={`${s.valeur} ${s.vide}`}>Non renseigné</span>
+                  : <ul className={s.items}>{l.items.map(i => (
+                      <li key={i.nom} className={s.item}>
+                        <span>{i.nom}</span>
+                        <span className={[s.pct, !i.valeur && s.vide].filter(Boolean).join(' ')}>{i.valeur ?? '—'}</span>
+                      </li>))}</ul>)
+                : <span className={[s.valeur, !l.valeur && s.vide].filter(Boolean).join(' ')}>{l.valeur ?? 'Non renseigné'}</span>}
             </span>
             {l.points != null && <span className={[s.points, l.points > 0 && s.gagne].filter(Boolean).join(' ')}>+{l.points}</span>}
           </div>

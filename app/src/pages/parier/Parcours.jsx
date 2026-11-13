@@ -15,12 +15,15 @@ import Curseur from '../../ui/Curseur'
 import EtatVide from '../../ui/EtatVide'
 import CadreEtape from '../../ui/CadreEtape'
 import ChoixCandidats from '../../ui/ChoixCandidats'
+import CandidatsScores from './CandidatsScores'
 import { Liste, Ligne } from '../../ui/Liste'
 import s from './Parcours.module.css'
 
 const FENETRE_MS = 24 * 3600 * 1000
 
 const TITRES = {
+  m12: { titre: 'Candidats et scores du 1er tour', aide: 'Ajoute un candidat, puis règle son score. Le total doit faire 100 %. +2 pts par candidat correct (+3 si le bon nombre), +2 pts par score à 2 points près.' },
+  m45: { titre: 'Vainqueur et son score', aide: 'Choisis le vainqueur, puis donne son score au second tour. +6 pts pour le vainqueur, +2 pts si le score est à 2 points près.' },
   m1: { titre: 'Candidats au 1er tour', aide: 'Qui sera sur la ligne de départ ? +2 pts par candidat correct, +3 pts si tu as le bon nombre.' },
   m2: { titre: 'Scores du 1er tour', aide: 'Répartis 100 % entre tes candidats. À 2 points près du résultat : +2 pts.' },
   m3: { titre: 'Les deux finalistes', aide: 'Qui sera qualifié pour le second tour ? +8 pts si les deux sont corrects, +3 pts si un seul.' },
@@ -34,6 +37,13 @@ const jourHeure = ms => new Date(ms).toLocaleString('fr-FR', {
 
 // Résumé d'une valeur de pari, pour le récapitulatif
 function resume(k, form, candidats) {
+  if (k === 'm12') {
+    return form.m1.length ? form.m1.map(c => (nombre(form.m2[c]) > 0 ? `${c} ${pourcent(form.m2[c])}` : c)).join(' · ') : null
+  }
+  if (k === 'm45') {
+    if (!form.m4) return null
+    return form.m5 !== '' ? `${form.m4} · ${pourcent(form.m5)}` : form.m4
+  }
   if (k === 'm1') return form.m1.length ? `${form.m1.length} : ${form.m1.join(', ')}` : null
   if (k === 'm2') {
     const l = candidats.filter(c => nombre(form.m2[c]) > 0).map(c => `${c} ${pourcent(form.m2[c])}`)
@@ -106,7 +116,7 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur, demo }) {
 
   const aller = i => { setErreur(null); setIndex(i) }
   const suivant = () => {
-    if (courante === 'm2' && etapes.includes('m3') && form.m3.filter(Boolean).length === 0) {
+    if ((courante === 'm2' || courante === 'm12') && etapes.includes('m3') && form.m3.filter(Boolean).length === 0) {
       const f = finalistesProbables(candidats, form.m2)
       if (f) maj({ m3: f })
     }
@@ -190,33 +200,12 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur, demo }) {
   const t = TITRES[courante]
   let corps, vide, pied
 
-  if (courante === 'm1') {
-    vide = form.m1.length === 0
-    corps = <ChoixCandidats options={CANDIDATE_SUGGESTIONS} valeur={form.m1} onChange={m1 => maj({ m1 })} />
-  } else if (courante === 'm2') {
+  // Pied commun aux étapes de scores : total sur 100 % et bouton qui s'adapte
+  const piedScores = () => {
     const somme = totalScores(form, candidats)
     const ok = totalOk(somme)
-    vide = somme === 0
     const reste = Math.round((100 - somme) * 10) / 10
-    corps = candidats.length === 0
-      ? <Carte><EtatVide titre="Aucun candidat" texte="Reviens à l'étape précédente pour choisir au moins deux candidats." /></Carte>
-      : (
-        <>
-          <Carte liste className={s.scores}>
-            {candidats.map(c => (
-              <Curseur key={c} label={c} max={60} pas={0.5}
-                valeur={nombre(form.m2[c])} format={pourcent}
-                onChange={v => {
-                  const m2 = { ...form.m2 }
-                  if (v === 0) delete m2[c]; else m2[c] = String(v)
-                  maj({ m2 })
-                }} />
-            ))}
-          </Carte>
-          <Bouton variante="secondaire" className={s.egal} onClick={() => maj({ m2: repartirEgalement(candidats) })}>Répartir à égalité</Bouton>
-        </>
-      )
-    pied = (
+    return (
       <>
         <div className={s.total}>
           <div className={s.totalLigne}>
@@ -234,6 +223,33 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur, demo }) {
         </Bouton>
       </>
     )
+  }
+
+  if (courante === 'm12') {
+    vide = form.m1.length === 0
+    corps = <CandidatsScores options={CANDIDATE_SUGGESTIONS} valeur={{ m1: form.m1, m2: form.m2 }} onChange={maj} />
+    pied = piedScores()
+  } else if (courante === 'm2') {
+    vide = totalScores(form, candidats) === 0
+    corps = candidats.length === 0
+      ? <Carte><EtatVide titre="Aucun candidat" texte="La liste des candidats n'est pas disponible." /></Carte>
+      : (
+        <>
+          <Carte liste className={s.scores}>
+            {candidats.map(c => (
+              <Curseur key={c} label={c} max={60} pas={0.5}
+                valeur={nombre(form.m2[c])} format={pourcent}
+                onChange={v => {
+                  const m2 = { ...form.m2 }
+                  if (v === 0) delete m2[c]; else m2[c] = String(v)
+                  maj({ m2 })
+                }} />
+            ))}
+          </Carte>
+          <Bouton variante="secondaire" className={s.egal} onClick={() => maj({ m2: repartirEgalement(candidats) })}>Répartir à égalité</Bouton>
+        </>
+      )
+    pied = piedScores()
   } else if (courante === 'm3') {
     const options = candidats.length ? candidats : CANDIDATE_SUGGESTIONS
     const choisis = form.m3.filter(Boolean)
@@ -248,6 +264,26 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur, demo }) {
     vide = !form.m4
     corps = <ChoixCandidats options={options} valeur={form.m4 ? [form.m4] : []} max={1}
       libre={periode.id < 3 && finalistes.length === 0} onChange={([v]) => maj({ m4: v ?? '' })} />
+  } else if (courante === 'm45') {
+    const finalistes = form.m3.filter(Boolean)
+    const options = finalistes.length ? finalistes
+      : officialFinalists.length === 2 ? officialFinalists
+      : officiels.length ? officiels : CANDIDATE_SUGGESTIONS
+    vide = !form.m4
+    corps = (
+      <>
+        <ChoixCandidats options={options} valeur={form.m4 ? [form.m4] : []} max={1}
+          libre={periode.id < 3 && finalistes.length === 0}
+          onChange={([v]) => maj(v ? { m4: v } : { m4: '', m5: '' })} />
+        {form.m4 && (
+          <Carte className={s.pile}>
+            <Curseur label={`Score de ${form.m4} au second tour`} min={40} max={80} pas={0.5}
+              valeur={form.m5 === '' ? 55 : nombre(form.m5)} format={pourcent} onChange={v => maj({ m5: String(v) })} />
+            <p className={s.texte}>{form.m5 === '' ? 'Déplace le curseur pour donner son score, ou continue sans.' : 'Tu peux encore ajuster.'}</p>
+          </Carte>
+        )}
+      </>
+    )
   } else if (courante === 'm5') {
     vide = form.m5 === ''
     corps = (

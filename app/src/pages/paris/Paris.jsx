@@ -17,8 +17,8 @@ import s from './Paris.module.css'
 export default function Paris() {
   const { players, paris, now } = useGame()
   const pariPose = !!useLocation().state?.pariPose
-  const [vue, setVue] = useState(pariPose ? 'paris' : 'tendances')
-  const [tour, setTour] = useState(1)
+  // Un seul sélecteur : les deux tours en tendances, ou les paris un par un
+  const [vue, setVue] = useState(pariPose ? 'paris' : 't1')
   const [ouvert, setOuvert] = useState(null)
 
   const nomDe = id => players.find(p => p.id === id)?.name ?? 'Un joueur'
@@ -30,15 +30,9 @@ export default function Paris() {
       {pariPose && <p className={s.note}><strong>Ton pari est enregistré.</strong> Il est en tête de la liste « Pari par pari ».</p>}
 
       <Segmente label="Vue" valeur={vue} onChange={setVue}
-        options={[{ valeur: 'tendances', libelle: 'Tendances' }, { valeur: 'paris', libelle: 'Pari par pari' }]} />
+        options={[{ valeur: 't1', libelle: '1er tour' }, { valeur: 't2', libelle: '2nd tour' }, { valeur: 'paris', libelle: 'Pari par pari' }]} />
 
-      {vue === 'tendances' && (
-        <div className={s.pile}>
-          <Segmente label="Tour" valeur={tour} onChange={setTour}
-            options={[{ valeur: 1, libelle: '1er tour' }, { valeur: 2, libelle: '2nd tour' }]} />
-          <Tendances tour={tour} />
-        </div>
-      )}
+      {vue !== 'paris' && <Tendances tour={vue === 't1' ? 1 : 2} />}
 
       {vue === 'paris' && (
         recents.length === 0

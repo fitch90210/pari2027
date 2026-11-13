@@ -1,28 +1,28 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
 import { useGame } from '../../store/GameContext'
 import { pourcent } from '../../lib/parcours'
 import {
   tendancesScores, tendancesDuels, tendancesVainqueurs, tendancesScoreFinal, nombreDeJoueurs, placerPoints,
 } from '../../lib/tendances'
 import Carte from '../../ui/Carte'
-import Avatar from '../../ui/Avatar'
+import AvatarInfo from '../../ui/AvatarInfo'
 import EtatVide from '../../ui/EtatVide'
-import { Liste, Ligne } from '../../ui/Liste'
 import s from './Tendances.module.css'
 
 const virgule = x => String(x).replace('.', ',')
+const cote = x => (x < 18 ? 'gauche' : x > 82 ? 'droite' : undefined)
 
-function Echelle({ valeurs, moy, max, nomDe }) {
+// Échelle de 0 à `max` % : un avatar par pari (bulle avec le nom et la valeur), un trait pour la moyenne.
+function Echelle({ valeurs, moy, max, nomDe, format = pourcent }) {
   const points = useMemo(() => placerPoints(valeurs, max), [valeurs, max])
   return (
     <>
-      <div className={s.echelle} role="img" aria-label={`Moyenne ${virgule(moy)} %, ${valeurs.length} paris`}>
+      <div className={s.echelle} role="group" aria-label={`Moyenne ${virgule(moy)} %, ${valeurs.length} paris`}>
         <div className={s.piste} />
         <div className={s.trait} style={{ left: `${(moy / max) * 100}%` }} />
         {points.map(p => (
           <span key={p.player_id} className={s.point} style={{ left: `${p.x}%`, top: `${14 + p.couloir * 18}px` }}>
-            <Avatar nom={nomDe(p.player_id)} taille={18} />
+            <AvatarInfo nom={nomDe(p.player_id)} valeur={format(p.v)} cote={cote(p.x)} />
           </span>
         ))}
       </div>
@@ -33,39 +33,27 @@ function Echelle({ valeurs, moy, max, nomDe }) {
   )
 }
 
-function LigneCandidat({ c, rang, total, max, nomDe, ouvert, onBascule }) {
+function LigneCandidat({ c, rang, total, max, nomDe }) {
   return (
     <div className={s.ligne}>
-      <button type="button" className={s.tete} onClick={onBascule} aria-expanded={ouvert}>
+      <div className={s.tete}>
         <span className={s.rang}>{rang}</span>
         <span className={s.noms}>
           <span className={s.nom}>{c.nom}</span>
           <span className={s.detail}>{c.n}/{total} · de {virgule(c.min)} à {virgule(c.max)} %</span>
         </span>
         <span className={s.moyenne}>{virgule(c.moy)}<span className={s.unite}> %</span></span>
-      </button>
+      </div>
       <Echelle valeurs={c.valeurs} moy={c.moy} max={max} nomDe={nomDe} />
-      {ouvert && (
-        <div className={s.joueurs}>
-          {c.valeurs.map(v => (
-            <Link key={v.player_id} to={`/joueurs/${v.player_id}`} className={s.joueur}>
-              <Avatar nom={nomDe(v.player_id)} taille={22} />
-              <span className={s.joueurNom}>{nomDe(v.player_id)}</span>
-              <span className={s.joueurValeur}>{pourcent(v.v)}</span>
-            </Link>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
 
 // Lecture agrégée du groupe : l'avis actuel de chaque joueur, candidat par candidat (1er tour), puis le 2nd tour.
+// Les valeurs de chacun s'affichent au survol (ou au toucher) de son avatar.
 export default function Tendances({ tour }) {
   const { players, paris } = useGame()
   const nomDe = id => players.find(p => p.id === id)?.name ?? '?'
-  const [ouverts, setOuverts] = useState(() => new Set())
-  const bascule = nom => setOuverts(o => { const n = new Set(o); if (n.has(nom)) n.delete(nom); else n.add(nom); return n })
 
   const scores = useMemo(() => tendancesScores(paris), [paris])
   const duels = useMemo(() => tendancesDuels(paris), [paris])
@@ -78,12 +66,9 @@ export default function Tendances({ tour }) {
     const max = Math.max(40, Math.ceil(Math.max(...scores.map(c => c.max)) / 10) * 10)
     return (
       <div className={s.pile}>
-        <p className={s.sous}>L'avis actuel de {total} joueur{total > 1 ? 's' : ''}. Touche un candidat pour voir qui a mis quoi.</p>
+        <p className={s.sous}>L'avis actuel de {total} joueur{total > 1 ? 's' : ''}. Survole un avatar pour voir son score.</p>
         <Carte liste>
-          {scores.map((c, i) => (
-            <LigneCandidat key={c.nom} c={c} rang={i + 1} total={total} max={max} nomDe={nomDe}
-              ouvert={ouverts.has(c.nom) || (i === 0 && ouverts.size === 0)} onBascule={() => bascule(c.nom)} />
-          ))}
+          {scores.map((c, i) => <LigneCandidat key={c.nom} c={c} rang={i + 1} total={total} max={max} nomDe={nomDe} />)}
         </Carte>
       </div>
     )
@@ -99,12 +84,15 @@ export default function Tendances({ tour }) {
         <section className={s.pile}>
           <h2 className={s.sous}>Duels de finalistes les plus pariés</h2>
           <Carte liste>
-            <Liste>
-              {duels.slice(0, 5).map(d => (
-                <Ligne key={d.duo.join()} titre={d.duo.join(' – ')} fin={`${d.joueurs.length} joueur${d.joueurs.length > 1 ? 's' : ''}`}
-                  sousTitre={d.joueurs.map(nomDe).join(', ')} multiligne />
-              ))}
-            </Liste>
+            {duels.slice(0, 5).map(d => (
+              <div key={d.duo.join()} className={s.ligne}>
+                <div className={s.tete}>
+                  <span className={s.noms}><span className={s.nom}>{d.duo.join(' – ')}</span></span>
+                  <span className={s.detail}>{d.joueurs.length} joueur{d.joueurs.length > 1 ? 's' : ''}</span>
+                </div>
+                <div className={s.avatars}>{d.joueurs.map(id => <AvatarInfo key={id} nom={nomDe(id)} taille={24} />)}</div>
+              </div>
+            ))}
           </Carte>
         </section>
       )}
@@ -120,7 +108,7 @@ export default function Tendances({ tour }) {
                   <span className={s.moyenne}>{Math.round((v.joueurs.length / nVainqueur) * 100)}<span className={s.unite}> %</span></span>
                 </div>
                 <div className={s.barre}><div className={s.barrePleine} style={{ width: `${(v.joueurs.length / nVainqueur) * 100}%` }} /></div>
-                <div className={s.avatars}>{v.joueurs.map(id => <Link key={id} to={`/joueurs/${id}`} aria-label={nomDe(id)}><Avatar nom={nomDe(id)} taille={24} /></Link>)}</div>
+                <div className={s.avatars}>{v.joueurs.map(id => <AvatarInfo key={id} nom={nomDe(id)} taille={24} />)}</div>
               </div>
             ))}
           </Carte>
