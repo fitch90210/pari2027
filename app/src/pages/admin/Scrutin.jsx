@@ -121,6 +121,15 @@ function ResultatsSecondTour({ results, onSave }) {
   }
   const r = resultatSecondTour(finalistes, scoreA)
 
+  // Efface le vainqueur et son score ; les résultats du 1er tour (et donc les finalistes) restent.
+  const vider = () => {
+    if (!window.confirm('Vider les résultats du 2nd tour ? Le vainqueur et le score enregistrés seront effacés (le 1er tour reste).')) return
+    e.lancer(async () => {
+      await onSave({ ...results, winner: '', winnerScore: null })
+      setScoreA('')
+    })
+  }
+
   return (
     <Etape n={3} titre="Résultats du 2nd tour"
       etat={fait ? <Pastille accent>{results.winner} · {virgule(results.winnerScore)} %</Pastille> : <Pastille>Après le 2nd tour</Pastille>}
@@ -143,6 +152,9 @@ function ResultatsSecondTour({ results, onSave }) {
         )}
         <Retour ok={e.ok} erreur={e.erreur} />
         <Bouton type="submit" pleineLargeur disabled={e.envoi || !r}>{e.envoi ? 'Enregistrement…' : 'Enregistrer le 2nd tour'}</Bouton>
+        {fait && (
+          <Bouton type="button" variante="secondaire" pleineLargeur disabled={e.envoi} onClick={vider}>Vider le 2nd tour</Bouton>
+        )}
       </form>
     </Etape>
   )
