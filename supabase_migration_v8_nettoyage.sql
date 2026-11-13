@@ -12,7 +12,8 @@
 --   tables      : public.players, public.periodes, public.pronostics, private.player_secrets
 --   fonctions   : create_player, verify_player_code, create_pari, update_pari,
 --                 admin_create_player, admin_reset_player_code, admin_remove_player,
---                 admin_save_periodes (public) ; random_code, check_player_code,
+--                 admin_save_periodes (public), save_pronostic et admin_set_session (si encore là) ;
+--                 random_code, check_player_code,
 --                 periode_courante, clean_pari (private)
 --   contraintes : paris -> players et paris -> periodes (clés étrangères)
 -- Ce qui reste : game_state, paris (colonnes player_id, periode et legacy_pronostic_id
@@ -55,6 +56,9 @@ DROP FUNCTION IF EXISTS public.admin_create_player(TEXT, TEXT);
 DROP FUNCTION IF EXISTS public.admin_reset_player_code(TEXT, TEXT);
 DROP FUNCTION IF EXISTS public.admin_remove_player(TEXT, TEXT);
 DROP FUNCTION IF EXISTS public.admin_save_periodes(TEXT, JSONB);
+-- Déjà retirées en production par la v5 ; la base de test ne l'avait pas jouée (sans effet si absentes)
+DROP FUNCTION IF EXISTS public.save_pronostic(TEXT, TEXT, INTEGER, JSONB, JSONB, JSONB, TEXT, NUMERIC);
+DROP FUNCTION IF EXISTS public.admin_set_session(TEXT, INTEGER);
 DROP FUNCTION IF EXISTS private.check_player_code(TEXT, TEXT);
 DROP FUNCTION IF EXISTS private.random_code();
 DROP FUNCTION IF EXISTS private.clean_pari(INTEGER, JSONB, JSONB, JSONB, TEXT, NUMERIC);
