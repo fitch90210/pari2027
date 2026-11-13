@@ -1,111 +1,108 @@
 import { useState } from 'react'
 import { useGame } from '../store/GameContext'
-import PariForm from '../components/PariForm'
-import PariScoreDetail from '../components/PariScoreDetail'
-import { VIDE, resultatsComplets } from '../lib/pari'
-import { scorePari, classementPeriode } from '../lib/scoring'
+import { resultatsComplets } from '../lib/pari'
+import { jouerDemo } from '../lib/demo'
+import { detailPari } from '../lib/detailPari'
+import Ecran from '../ui/Ecran'
+import Carte from '../ui/Carte'
+import Bouton from '../ui/Bouton'
+import Segmente from '../ui/Segmente'
+import EtatVide from '../ui/EtatVide'
+import Parcours from './parier/Parcours'
+import detail from './paris/DetailPari.module.css'
+import s from './Demo.module.css'
 
-const DEMO_ID = '__demo__'
+const rangEnTexte = n => (n === 1 ? '1er' : `${n}e`)
 
-// Mode démo : une fois les résultats connus, n'importe qui peut parier « à rebours »
-// pour voir son score. Tout est calculé dans le navigateur : rien n'est enregistré.
+function Resultat({ r, periodes, results, onAutre }) {
+  const d = detailPari(r.pari, r.periode, results, periodes)
+  return (
+    <Ecran surtitre={`Mode démo · ${r.periode.label}`}>
+      <Carte>
+        <div className={s.resultat}>
+          <span className={s.score}>{d.total}<span className={s.scoreUnite}> pts</span></span>
+          {r.rang != null && (
+            <span className={s.rang}>
+              Tu te serais classé·e <strong>{rangEnTexte(r.rang)}</strong> sur {r.sur} au classement général.
+            </span>
+          )}
+          <span className={s.rang}>
+            Barème {d.bareme} pts + <span className={s.accent}>{d.bonus} pts</span> de bonus d'anticipation
+            (pari posé au début de la période).
+          </span>
+        </div>
+      </Carte>
+
+      <section className={s.pile}>
+        <h2 className={s.titreSection}>Détail, pronostic par pronostic</h2>
+        <div className={detail.lignes}>
+          {d.lignes.map(l => (
+            <div key={l.cle} className={detail.ligne}>
+              <span className={detail.corps}>
+                <span className={detail.titre}>{l.titre}</span>
+                <span className={[detail.valeur, !l.valeur && detail.vide].filter(Boolean).join(' ')}>{l.valeur ?? 'Non renseigné'}</span>
+              </span>
+              <span className={[detail.points, l.points > 0 && detail.gagne].filter(Boolean).join(' ')}>+{l.points}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className={s.actions}>
+        <Bouton grand pleineLargeur onClick={onAutre}>Refaire un essai</Bouton>
+        <Bouton variante="secondaire" pleineLargeur to="/classements">Voir le classement</Bouton>
+      </div>
+      <p className={s.note}>Rien n'a été enregistré : tu ne figures dans aucun classement.</p>
+    </Ecran>
+  )
+}
+
+// Mode démo : une fois les résultats connus, n'importe qui peut parier « à rebours » pour voir son score.
+// Même parcours que le vrai pari, mais tout est calculé dans le navigateur.
 export default function Demo() {
   const { periodes, paris, results } = useGame()
   const [periodeId, setPeriodeId] = useState(1)
-  const [resultat, setResultat] = useState(null)
-  const [essai, setEssai] = useState(0)
-
-  const periode = periodes.find(p => p.id === periodeId)
-
-  const header = (
-    <header style={{ paddingTop: 'var(--v1-sp-10)', paddingBottom: 'var(--v1-sp-6)', borderBottom: '3px solid var(--v1-text-primary)', marginBottom: 'var(--v1-sp-8)' }}>
-      <div style={{
-        fontFamily: 'var(--v1-font)', fontSize: '0.7rem', fontWeight: 700,
-        textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--v1-red)', marginBottom: 'var(--v1-sp-3)',
-      }}>
-        Pari 2027 · Mode démo
-      </div>
-      <h2 style={{ fontStyle: 'italic', marginBottom: 'var(--v1-sp-3)' }}>Et si tu avais parié ?</h2>
-      <p style={{ fontFamily: 'var(--v1-font)', fontSize: '0.875rem', color: 'var(--v1-text-secondary)', margin: 0 }}>
-        Remplis un pari comme si tu jouais dans une période, et vois le score que tu aurais obtenu.
-        Rien n'est enregistré et tu n'entres dans aucun classement.
-      </p>
-    </header>
-  )
+  const [essai, setEssai] = useState(null) // null = choix de la période ; sinon numéro de l'essai en cours
 
   if (!resultatsComplets(results)) {
     return (
-      <div className="page">
-        <div className="container" style={{ maxWidth: 700 }}>
-          {header}
-          <div className="card">
-            Le mode démo ouvre quand les résultats officiels des deux tours sont connus.
-          </div>
-        </div>
-      </div>
+      <Ecran titre="Et si tu avais parié ?">
+        <Carte><EtatVide titre="Bientôt" texte="Le mode démo ouvre quand les résultats officiels des deux tours sont connus." action={<Bouton to="/" variante="secondaire">Retour à l'accueil</Bouton>} /></Carte>
+      </Ecran>
     )
   }
 
-  const soumettre = (valeurs) => {
-    const pari = {
-      id: -1, player_id: DEMO_ID, periode: periode.id,
-      created_at: new Date().toISOString(), ...valeurs,
-    }
-    const scores = scorePari(pari, results, periode)
-    const classement = classementPeriode([...paris, pari], periode, results)
-    const moi = classement.find(e => e.player_id === DEMO_ID)
-    setResultat({ pari, periode, scores, rang: moi?.rank, sur: classement.length })
+  const periode = periodes.find(p => p.id === periodeId)
+
+  if (essai == null) {
+    return (
+      <Ecran titre="Et si tu avais parié ?" surtitre="Mode démo">
+        <p className={s.texte}>
+          Choisis un moment de la campagne et pose un pari comme si tu jouais à cette date. Tu verras le score que tu aurais obtenu
+          et la place que tu aurais prise.
+        </p>
+        <Segmente label="Période" valeur={periodeId} onChange={setPeriodeId}
+          options={periodes.map(p => ({ valeur: p.id, libelle: `P${p.id}` }))} />
+        <Carte>
+          <div className={s.resultat}>
+            <span className={s.rang}><strong>{periode.id}. {periode.label}</strong></span>
+            <span className={s.rang}>{periode.scored.length === 5 ? 'Les cinq pronostics sont ouverts.' : `${periode.scored.length} pronostics ouverts : seuls ceux-là sont proposés.`}</span>
+          </div>
+        </Carte>
+        <Bouton grand pleineLargeur onClick={() => setEssai(1)}>Commencer</Bouton>
+        <p className={s.note}>Rien n'est enregistré et tu n'entres dans aucun classement.</p>
+      </Ecran>
+    )
   }
 
-  const changerPeriode = (id) => { setPeriodeId(id); setResultat(null); setEssai(n => n + 1) }
-
   return (
-    <div className="page">
-      <div className="container" style={{ maxWidth: 700 }}>
-        {header}
-
-        <div style={{ display: 'flex', gap: 'var(--v1-sp-2)', flexWrap: 'wrap', marginBottom: 'var(--v1-sp-6)' }}>
-          {periodes.map(p => (
-            <button key={p.id} type="button"
-              className={`btn btn-sm ${p.id === periodeId ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => changerPeriode(p.id)}>
-              {p.id}. {p.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="card" style={{ marginBottom: 'var(--v1-sp-6)' }}>
-          <PariForm
-            key={`${periodeId}-${essai}`}
-            periode={periode}
-            initial={VIDE}
-            officiels={results.candidates}
-            finalistesOfficiels={results.finalists}
-            intro={`Règles de la période « ${periode.label} » : seuls les pronostics ouverts à ce moment-là sont proposés.`}
-            submitLabel="Voir mon score"
-            onSubmit={soumettre}
-          />
-        </div>
-
-        {resultat && (
-          <div className="card">
-            <div className="flex items-center justify-between mb-4" style={{ gap: 'var(--v1-sp-3)', flexWrap: 'wrap' }}>
-              <div>
-                <h3 style={{ marginBottom: 4 }}>{resultat.scores.total} pts</h3>
-                {resultat.rang != null && (
-                  <span className="text-muted text-sm">
-                    Tu te serais classé·e {resultat.rang === 1 ? '1er' : `${resultat.rang}e`} sur {resultat.sur} dans la période « {resultat.periode.label} ».
-                  </span>
-                )}
-              </div>
-              <button className="btn btn-secondary btn-sm" onClick={() => { setResultat(null); setEssai(n => n + 1) }}>
-                Recommencer
-              </button>
-            </div>
-            <PariScoreDetail pari={resultat.pari} periode={resultat.periode} scores={resultat.scores} results={results} />
-          </div>
-        )}
-      </div>
-    </div>
+    <Parcours
+      key={`${periodeId}-${essai}`}
+      demo={{
+        periode, officiels: results.candidates, finalistes: results.finalists,
+        onSoumettre: valeurs => jouerDemo(valeurs, periode, periodes, paris, results),
+        rendu: r => <Resultat r={r} periodes={periodes} results={results} onAutre={() => setEssai(null)} />,
+      }}
+    />
   )
 }

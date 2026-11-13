@@ -66,14 +66,18 @@ function Confirmation({ correction, maintenant, bonus, onFini }) {
 }
 
 // Parcours d'un pari (nouveau ou correction) : une étape par pronostic ouvert, un récapitulatif, une confirmation.
-export default function Parcours({ joueur, pariEdit, onChangerJoueur }) {
-  const { paris, periodes, periodeEnCours, officialCandidatesR1: officiels, officialFinalists, createPari, updatePari, now } = useGame()
+// `demo` (mode démo) : { periode, officiels, finalistes, onSoumettre(valeurs) → résultat, rendu(résultat) → écran }.
+// Même parcours, mais rien n'est enregistré et le joueur n'existe pas.
+export default function Parcours({ joueur, pariEdit, onChangerJoueur, demo }) {
+  const { paris, periodes, periodeEnCours, officialCandidatesR1: officielsJeu, officialFinalists: finalistesJeu, createPari, updatePari, now } = useGame()
 
-  const periode = pariEdit ? periodes.find(p => p.id === pariEdit.periode) : periodeEnCours
+  const officiels = demo ? demo.officiels : officielsJeu
+  const officialFinalists = demo ? demo.finalistes : finalistesJeu
+  const periode = demo ? demo.periode : pariEdit ? periodes.find(p => p.id === pariEdit.periode) : periodeEnCours
   const etapes = useMemo(() => etapesOuvertes(periode), [periode])
 
   const [form, setForm] = useState(() => {
-    if (!periode) return VIDE
+    if (!periode || demo) return VIDE
     if (pariEdit) return formDepuis(pariEdit, periode, officiels)
     const dernier = [...paris].filter(p => p.player_id === joueur.id)
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at) || b.id - a.id)[0]
@@ -124,6 +128,7 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur }) {
     if (!estRempli(valeurs)) { setErreur({ message: 'Remplis au moins un pronostic.' }); return }
     setEnvoi(true); setErreur(null)
     try {
+      if (demo) { setFait({ resultat: demo.onSoumettre(valeurs) }); return }
       if (pariEdit) await updatePari(pariEdit.id, joueur.id, valeurs)
       else await createPari(joueur.id, valeurs)
       setFait({ maintenant: Date.now(), bonus: pariEdit ? bonusAnticipation(pariEdit.created_at, periodes) : bonus })
@@ -132,16 +137,19 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur }) {
     } finally { setEnvoi(false) }
   }
 
+  if (fait && demo) return demo.rendu(fait.resultat)
   if (fait) return <Confirmation correction={!!pariEdit} maintenant={fait.maintenant} bonus={fait.bonus} />
 
   // ── Récapitulatif ──
   if (enRecap) {
-    const infoLigne = pariEdit
+    const infoLigne = demo
+      ? 'Rien n\'est enregistré : ce pari sert seulement à calculer ton score.'
+      : pariEdit
       ? `Tu peux corriger ce pari jusqu'au ${jourHeure(new Date(pariEdit.created_at).getTime() + FENETRE_MS)}.`
       : 'Ce pari sera daté d\'aujourd\'hui et modifiable pendant 24 h.'
     return (
       <CadreEtape courante={total} total={total} onRetour={retour} retourLibelle="Retour"
-        titreParcours={pariEdit ? 'Correction' : 'Nouveau pari'}
+        titreParcours={demo ? 'Mode démo' : pariEdit ? 'Correction' : 'Nouveau pari'}
         titre="Vérifie ton pari" aide="Touche une ligne pour la modifier."
         pied={<>
           {erreur && (
@@ -151,7 +159,7 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur }) {
             </p>
           )}
           <Bouton grand pleineLargeur onClick={valider} disabled={envoi}>
-            {envoi ? 'Enregistrement…' : pariEdit ? 'Enregistrer la correction' : 'Valider mon pari'}
+            {envoi ? 'Enregistrement…' : demo ? 'Voir mon score' : pariEdit ? 'Enregistrer la correction' : 'Valider mon pari'}
           </Bouton>
         </>}>
         <Carte liste>
@@ -164,12 +172,14 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur }) {
         </Carte>
         <Carte>
           <div className={s.infos}>
-            <span className={s.infoTitre}>Pari de {joueur.name}</span>
+            <span className={s.infoTitre}>{demo ? 'Pari de démonstration' : `Pari de ${joueur.name}`}</span>
             <span className={s.infoTexte}>{infoLigne}</span>
-            {!pariEdit && bonus > 0 && <span className={s.infoTexte}><span className={s.accent}>+{bonus} pts</span> de bonus d'anticipation aujourd'hui.</span>}
-            <button type="button" onClick={onChangerJoueur} className={[s.lien, s.lienDiscret].join(' ')}>
-              Ce n'est pas toi ? Changer de joueur
-            </button>
+            {!demo && !pariEdit && bonus > 0 && <span className={s.infoTexte}><span className={s.accent}>+{bonus} pts</span> de bonus d'anticipation aujourd'hui.</span>}
+            {!demo && (
+              <button type="button" onClick={onChangerJoueur} className={[s.lien, s.lienDiscret].join(' ')}>
+                Ce n'est pas toi ? Changer de joueur
+              </button>
+            )}
           </div>
         </Carte>
       </CadreEtape>
@@ -259,7 +269,7 @@ export default function Parcours({ joueur, pariEdit, onChangerJoueur }) {
   return (
     <CadreEtape courante={index + 1} total={total} onRetour={retour}
       retourLibelle={index === 0 && !depuisRecap ? 'Annuler' : 'Retour'}
-      titreParcours={pariEdit ? 'Correction' : 'Nouveau pari'}
+      titreParcours={demo ? 'Mode démo' : pariEdit ? 'Correction' : 'Nouveau pari'}
       titre={t.titre} aide={t.aide} pied={pied}>
       {corps}
     </CadreEtape>
