@@ -8,7 +8,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 
 ## État au 13 novembre 2026
 
-- **En ligne** : https://pari2027.vercel.app, version « Au doigt mouillé » (pivot pronostics), **bascule faite le 13/11** : sauvegarde `backups/2026-11-13_1342/`, migration v6 jouée en production, `refonte-ui` fusionnée dans `main`, contrôle en lecture OK (10 pronostics, favori et moyenne identiques au calcul depuis la sauvegarde).
+- **En ligne** : https://pari2027.vercel.app, version « Au doigt mouillé » (pivot pronostics), **bascule faite le 13/11** : sauvegarde `backups/2026-11-13_1342/`, migrations v6 et v7 (scores des gagnants corrigés dans `paris`) jouées en production, `refonte-ui` puis `correction-gagnants` fusionnées dans `main`, contrôle en lecture OK (10 pronostics, favori et moyenne identiques au calcul depuis la sauvegarde).
 - **Produit** ([docs/pivot-pronostics.md](docs/pivot-pronostics.md)) : on poste un pronostic (les deux tours) avec un simple pseudo, sans compte ni code, et on voit ce que les autres pronostiquent. Plus de périodes, de score, de profils, de classement ni de démo. Admin réduite aux résultats (sans effet pour l'instant) et à la modération (masquer un pronostic). `refonte-fonctionnelle.md` est l'ancien cadrage.
 - **Écrans** : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostics/:id`, `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `app/src/lib/` (`parcours.js`, `pronostic.js`, `tendances.js`, `photos.js`, `marque.js`). DA : « Scrutin épuré », titres en Newsreader, texte en Geist, emblème ☝️.
 - **Nom** : « Au doigt mouillé », sous-titre « Pronostics pour la présidentielle 2027 » (défini dans `app/src/lib/marque.js`).
@@ -23,7 +23,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 | [docs/refonte-plan-technique.md](docs/refonte-plan-technique.md) | Modèle de données, fonctions SQL, lots 0 à 8, risques |
 | [docs/refonte-ui.md](docs/refonte-ui.md) | Cadrage validé de la refonte UI : décisions, arborescence, parcours, lots A à H |
 | [specs_pari2027.docx](specs_pari2027.docx) | Specs d'origine (avril 2026). Le code a divergé : un seul classement qui additionne les phases, pas deux. |
-| `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql`, `supabase_migration_v4_paris.sql`, `supabase_migration_v5_nettoyage.sql`, `supabase_migration_v6_pronostics.sql` | Schéma et migrations, à jouer dans cet ordre. `supabase_test_v4.sql` : tests SQL de la v4, à jouer sur la base de test seulement (tout est annulé en fin de script). |
+| `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql`, `supabase_migration_v4_paris.sql`, `supabase_migration_v5_nettoyage.sql`, `supabase_migration_v6_pronostics.sql`, `supabase_migration_v7_scores_gagnants.sql` | Schéma et migrations, à jouer dans cet ordre. `supabase_test_v4.sql` : tests SQL de la v4, à jouer sur la base de test seulement (tout est annulé en fin de script). |
 
 ## Architecture
 
