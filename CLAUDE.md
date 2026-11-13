@@ -13,7 +13,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **Écrans** : accueil, `/pronostics` (1er/2nd tour : tendances puis liste), `/pronostics/:id`, `/pronostiquer` (3 étapes), `/admin` (Résultats, Modération). Logique dans `app/src/lib/` (`parcours.js`, `pronostic.js`, `tendances.js`, `photos.js`, `marque.js`). DA : « Scrutin épuré », titres en Newsreader, texte en Geist, emblème ☝️.
 - **Nom** : « Au doigt mouillé », sous-titre « Pronostics pour la présidentielle 2027 » (défini dans `app/src/lib/marque.js`).
 - **Base de production** : seulement `game_state`, `paris` et `private.admin_secret`. Les anciennes tables (`players`, `periodes`, `pronostics`, `private.player_secrets`) et fonctions (codes, périodes, `create_pari`…) ont été supprimées par la v8 ; leur contenu n'existe plus que dans `backups/2026-11-13_1400/` (à conserver).
-- **Reste à faire** : 1) prévenir le groupe (nouvelle adresse + ce qui change) ; 2) décider si `pari2027.vercel.app` redirige vers `audoigtmouille.vercel.app` (Settings → Domains → Edit → Redirect to) ; 3) supprimer les variables Vercel « Preview » et le projet Supabase de test (devenu inutile) ; 4) brique de scoring quand les candidats officiels seront connus.
+- **Reste à faire** : 1) supprimer les variables Vercel « Preview » et le projet Supabase de test (devenu inutile) ; 2) brique de scoring quand les candidats officiels seront connus. **Ne pas reproposer** le message au groupe ni la redirection de `pari2027.vercel.app` (abandonnés par l'utilisateur).
 
 ## Documents
 

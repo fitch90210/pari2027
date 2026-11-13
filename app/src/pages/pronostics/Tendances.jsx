@@ -50,7 +50,7 @@ function PremierTour() {
   }
   return (
     <section className={s.pile}>
-      <p className={s.sous}>Le dernier pronostic de {personnes(t.personnes)}. Survole un avatar pour voir son pourcentage.</p>
+      <p className={s.sous}>Les candidats qui reviennent le plus et les pourcentages qui leur sont attribués. Survole un avatar pour voir son pourcentage.</p>
       <Carte liste>
         {t.candidats.map((c, i) => (
           <div key={c.nom} className={s.ligne}>
