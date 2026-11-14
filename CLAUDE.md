@@ -32,7 +32,7 @@ Jeu de pronostics entre amis pour la présidentielle 2027. Présentation complè
 - **Base** : Supabase. Tables : `paris` (les pronostics ; colonnes `pseudo`, `m1` à `m5`, `masque` ; `player_id`, `periode` et `legacy_pronostic_id` ne sont que des valeurs d'origine des 10 premiers paris) et `game_state` (résultats réels et liste officielle des candidats). Le public n'a que la **lecture** : `paris` seulement les pronostics non masqués. Toute écriture passe par des fonctions SQL `SECURITY DEFINER` :
   - public : `create_pronostic` (pseudo, sans code, validé côté serveur : 2 à 40 candidats, total 100 %, finalistes = deux premiers, vainqueur à plus de 50 % ; anti-rafale : un pronostic par pseudo et par minute, 120 par heure) ;
   - admin (mot de passe haché en bcrypt dans `private.admin_secret`, schéma non exposé par l'API) : `admin_login`, `admin_save_results`, `admin_save_official_candidates`, `admin_set_masque`, `admin_paris_masques`.
-- **Hébergement** : Vercel, projet `audoigtmouille`, relié au dépôt GitHub `fitch90210/pari2027` (public), **Root Directory = `app`** (`app/.vercel/project.json` garde l'ancien nom `app`, sans conséquence : seul l'identifiant compte). Un push sur `main` déploie en production.
+- **Hébergement** : Vercel, projet `audoigtmouille`, relié au dépôt GitHub `fitch90210/audoigtmouille` (public, renommé depuis `pari2027` le 14/11 ; l'ancienne adresse redirige), **Root Directory = `app`** (`app/.vercel/project.json` garde l'ancien nom `app`, sans conséquence : seul l'identifiant compte). Un push sur `main` déploie en production.
 - **Keepalive** : [app/api/keepalive.js](app/api/keepalive.js) + cron quotidien (8h UTC) dans `app/vercel.json`, pour que Supabase gratuit ne se mette pas en pause.
 
 ## Environnement de test
