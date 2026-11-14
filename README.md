@@ -1,44 +1,36 @@
-# Pari 2027
+# ☝️ Au doigt mouillé
 
-Jeu de pronostics entre amis pour l'élection présidentielle française de 2027 : qui sera candidat, avec quels scores, qui ira au second tour et qui l'emportera.
+Pronostics entre amis pour l'élection présidentielle française de 2027 : qui sera au premier tour, avec quels scores, qui ira au second tour et qui l'emportera.
 
-**[pari2027.vercel.app](https://pari2027.vercel.app)**
+**[audoigtmouille.vercel.app](https://audoigtmouille.vercel.app)**
 
 ![Page d'accueil](docs/accueil.png)
 
 ## Le concept
 
-Un groupe d'amis parie sur l'élection, un an avant le premier tour. L'application est accessible par un simple lien, sans compte à créer, depuis un téléphone ou un ordinateur.
+On poste un pronostic avec un simple **pseudo**, sans compte ni code, depuis un téléphone ou un ordinateur, et on voit ce que les autres pronostiquent.
 
-Le jeu se joue en **trois phases**, ouvertes par l'administrateur au fil du calendrier électoral :
+Un pronostic couvre **toujours les deux tours** :
 
-| Phase | Quand | Ce qu'on pronostique |
-|---|---|---|
-| 1 | Un an avant le 1er tour | Tout, à l'aveugle |
-| 2 | Liste officielle des candidats connue | Tout, avec les vrais candidats |
-| 3 | Entre les deux tours | Le score du second tour |
+1. **1er tour** : les candidats et leur pourcentage (total 100 %).
+2. **2nd tour** : les finalistes sont les deux premiers du 1er tour ; on choisit le vainqueur et son score (plus de 50 %), le vaincu a le complément.
+3. **Pseudo** et récapitulatif, puis envoi.
 
-Chaque phase compte **cinq pronostics** :
+Un pronostic est définitif : pour changer d'avis, on en poste un nouveau. Les tendances ne retiennent que le dernier pronostic de chaque pseudo, la liste les montre tous.
 
-| # | Pronostic | Barème |
-|---|---|---|
-| 1 | Candidats présents au 1er tour | +2 pts par candidat correct, +3 si le nombre total est exact |
-| 2 | Scores du 1er tour | +2 pts par score à ±2 points du résultat réel |
-| 3 | Les deux finalistes | +8 si les deux sont bons, +3 pour un seul |
-| 4 | Le vainqueur | +6 pts |
-| 5 | Score du vainqueur au 2nd tour | +2 pts si à ±2 points |
+Pas de score ni de classement pour l'instant : une brique de scoring viendra quand la liste officielle des candidats sera connue.
 
-Chaque phase est scorée indépendamment ; le classement général fait la somme. En cas d'égalité, le meilleur score au pronostic 2 départage.
+![Tendances du 1er tour](docs/pronostics.png)
 
-![Pronostics des joueurs](docs/pronostics.png)
+## Écrans
 
-## Fonctionnalités
-
-- **Saisie guidée** : recherche de candidats avec photos, finalistes déduits des scores saisis, sauvegarde automatique à chaque modification
-- **Lecture publique** de tous les pronostics et des classements
-- **Gel automatique** des pronostics d'une phase quand la suivante s'ouvre
-- **Panneau d'administration** : changement de phase, saisie des résultats officiels, gestion des joueurs et de leurs codes
-- **Responsive**, pensé d'abord pour le mobile
+| Adresse | Contenu |
+|---|---|
+| `/` | La promesse, le nombre de pronostics, le vainqueur le plus pronostiqué, les derniers pronostics |
+| `/pronostics` | 1er tour / 2nd tour : les tendances candidat par candidat, puis la liste des pronostics |
+| `/pronostics/:id` | Le détail d'un pronostic |
+| `/pronostiquer` | La saisie en trois étapes |
+| `/admin` | Résultats réels et modération (masquer ou réafficher un pronostic) |
 
 ## Stack
 
@@ -50,34 +42,27 @@ Chaque phase est scorée indépendamment ; le classement général fait la somme
 
 Pas de backend applicatif : le frontend parle directement à Supabase. Toute la logique sensible vit dans PostgreSQL.
 
-## Sécurité sans comptes utilisateurs
+## Sécurité sans comptes
 
-L'application devait rester sans inscription, mais un lien public ne doit pas permettre d'effacer ou de modifier les paris des autres. Le modèle retenu :
-
-- **Lecture seule pour le public.** Les politiques Row Level Security n'autorisent que la lecture ; les droits d'écriture directe sont retirés.
-- **Écritures via des fonctions SQL** (`SECURITY DEFINER`) qui vérifient un secret avant d'agir :
-  - chaque joueur a un **code à 4 chiffres**, demandé une fois par appareil, pour modifier ses propres pronostics ;
-  - l'administrateur a un **mot de passe vérifié côté serveur**, jamais embarqué dans le code client.
-- **Secrets hachés** (bcrypt via `pgcrypto`) dans un schéma `private` non exposé par l'API.
-- **Anti force brute** : 5 codes faux bloquent le joueur 15 minutes.
-- Les fonctions refusent aussi une écriture sur une phase close ou gelée, et valident la taille des données.
-
-Le détail est dans [`supabase_migration_v3_securite.sql`](supabase_migration_v3_securite.sql).
+- **Lecture seule pour le public** : les politiques Row Level Security n'autorisent que la lecture, et seulement des pronostics non masqués.
+- **Écritures via des fonctions SQL** `SECURITY DEFINER` :
+  - `create_pronostic` (publique) valide tout côté serveur : 2 à 40 candidats, total de 100 %, finalistes = deux premiers, vainqueur à plus de 50 %, pseudo de 30 caractères au plus ; anti-rafale (un pronostic par pseudo et par minute, 120 par heure) ;
+  - les fonctions d'administration (`admin_login`, `admin_save_results`, `admin_set_masque`…) vérifient un **mot de passe haché** (bcrypt via `pgcrypto`) rangé dans un schéma `private` non exposé par l'API.
 
 ## Structure
 
 ```
 app/
-  api/keepalive.js        Ping quotidien (cron Vercel) pour éviter la mise en pause de Supabase
+  api/keepalive.js         Ping quotidien (cron Vercel) pour que Supabase gratuit ne se mette pas en pause
   src/
-    pages/                Accueil, Pronostics, Tous les pronostics, Classements, Admin
-    components/           Navigation, avatars des candidats, vue de lecture, confettis
-    store/GameContext.jsx État global et accès aux données
-    lib/scoring.js        Moteur de calcul des points
-    data/                 Liste des candidats potentiels et photos
-supabase_schema.sql       Schéma initial
-supabase_migration_*.sql  Migrations successives
-specs_pari2027.docx       Spécifications d'origine
+    pages/                 Accueil, pronostics (tendances, liste, détail), pronostiquer, admin
+    ui/, layout/           Composants d'interface et coque de l'application
+    store/GameContext.jsx  État global et accès aux données
+    lib/                   Logique pure testée (parcours, pronostic, tendances, photos, marque)
+    data/                  Candidats potentiels et photos
+docs/                      Cadrage produit (pivot-pronostics.md) et historique de la refonte
+supabase_schema.sql        Schéma initial
+supabase_migration_*.sql   Migrations successives (v2 à v8)
 ```
 
 ## Lancer en local
@@ -87,10 +72,15 @@ cd app
 npm install
 cp .env.example .env   # renseigner l'URL et la clé anon du projet Supabase
 npm run dev
+npm test               # tests Vitest de app/src/lib
 ```
 
-Pour une base neuve, exécuter dans l'éditeur SQL de Supabase, dans l'ordre : `supabase_schema.sql`, `supabase_migration_v2.sql`, `supabase_migration_v3_securite.sql`, puis définir le mot de passe admin dans `private.admin_secret`.
+Pour une base neuve, exécuter dans l'éditeur SQL de Supabase, dans l'ordre : `supabase_schema.sql` puis les migrations `v2` à `v8`, et définir le mot de passe admin dans `private.admin_secret`. La v8 retire l'ancien modèle (joueurs, périodes, codes) : les fichiers antérieurs décrivent l'historique, pas la base actuelle.
 
 ## Déploiement
 
-Chaque push sur `main` est déployé automatiquement par Vercel. Les variables `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` sont à définir dans le projet Vercel.
+Chaque push sur `main` est déployé automatiquement par Vercel (Root Directory : `app`). Les variables `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` sont à définir dans le projet Vercel.
+
+## Historique
+
+Le projet s'appelait **Pari 2027** : paris par phases, codes joueurs, barème et classement ([specs d'origine](specs_pari2027.docx)). Il a été simplifié le 13 novembre 2026 en un site de pronostics avec pseudo ([docs/pivot-pronostics.md](docs/pivot-pronostics.md)). L'ancienne adresse [pari2027.vercel.app](https://pari2027.vercel.app) répond toujours.
